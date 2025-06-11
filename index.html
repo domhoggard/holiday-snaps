@@ -70,8 +70,11 @@
     };
 
     const app = initializeApp(firebaseConfig);
+
+    // ✅ THIS IS THE IMPORTANT CHANGE:
+    const storage = getStorage(app, "gs://holidaysnaps-af8d3.firebasestorage.app");
+
     const auth = getAuth(app);
-    const storage = getStorage(app);
 
     const emailField = document.getElementById("email");
     const passwordField = document.getElementById("password");
