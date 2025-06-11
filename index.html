@@ -29,6 +29,14 @@
         </div>
         <p id="user-status">Not logged in</p>
       </section>
+      <section class="upload-box">
+  <h2>Upload a Holiday Snap</h2>
+  <input type="file" id="photo" accept="image/*" />
+  <input type="text" id="resort" placeholder="Resort name" />
+  <input type="date" id="date" />
+  <button onclick="uploadPhoto()">Upload Photo</button>
+</section>
+
     </main>
 
     <footer>
@@ -45,6 +53,8 @@
       signOut,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js";
+
 
     const firebaseConfig = {
       apiKey: "AIzaSyDM3cs-CkpXNSXDiFYjuiNzdiGLMXZKZ5o",
@@ -58,6 +68,8 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const storage = getStorage(app);
+
 
     const emailField = document.getElementById("email");
     const passwordField = document.getElementById("password");
@@ -81,6 +93,28 @@
 
     onAuthStateChanged(auth, user => {
       userStatus.textContent = user ? `Logged in as ${user.email}` : "Not logged in";
+      window.uploadPhoto = async function () {
+  const file = document.getElementById("photo").files[0];
+  const resort = document.getElementById("resort").value.trim();
+  const date = document.getElementById("date").value;
+
+  if (!file || !resort || !date) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  const filePath = `${resort}/${date}/${file.name}`;
+  const fileRef = ref(storage, filePath);
+
+  try {
+    await uploadBytes(fileRef, file);
+    const downloadURL = await getDownloadURL(fileRef);
+    alert("Photo uploaded! Share this URL:\n" + downloadURL);
+  } catch (error) {
+    alert("Upload failed: " + error.message);
+  }
+};
+
     });
   </script>
 </body>
