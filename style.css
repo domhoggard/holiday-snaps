@@ -10,9 +10,9 @@ body {
 
 /* Logo image */
 .logo {
-  width: 120px;
-  margin-top: 20px;
-  margin-bottom: 10px;
+  width: 160px; /* Increased from 120px to 160px */
+  margin-top: 30px;
+  margin-bottom: 20px;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
