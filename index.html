@@ -14,11 +14,22 @@
   </header>
 
   <main>
-    <section class="upload-box">
-      <h2>Photo Upload Coming Soon...</h2>
-      <p>Login functionality will be added next!</p>
-    </section>
-  </main>
+  <section class="auth-box">
+    <h2>Welcome to HolidaySnaps</h2>
+    
+    <div id="auth-forms">
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+
+      <button onclick="signUp()">Sign Up</button>
+      <button onclick="logIn()">Log In</button>
+      <button onclick="logOut()">Log Out</button>
+    </div>
+
+    <p id="user-status">Not logged in</p>
+  </section>
+</main>
+
 
   <footer>
     <p>&copy; 2025 HolidaySnaps</p>
