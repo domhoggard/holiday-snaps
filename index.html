@@ -1,39 +1,39 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>HolidaySnaps</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="icon" type="image/png" href="logo.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <h1>HolidaySnaps</h1>
-    <p>Upload and share your holiday memories!</p>
-  </header>
+  <div class="background">
+    <header>
+      <img src="logo.png" alt="HolidaySnaps Logo" class="logo" />
+      <h1>HolidaySnaps</h1>
+      <p>Upload and share your holiday memories!</p>
+    </header>
 
-  <main>
-  <section class="auth-box">
-    <h2>Welcome to HolidaySnaps</h2>
-    
-    <div id="auth-forms">
-      <input type="email" id="email" placeholder="Email" />
-      <input type="password" id="password" placeholder="Password" />
-
-      <button onclick="signUp()">Sign Up</button>
-      <button onclick="logIn()">Log In</button>
-      <button onclick="logOut()">Log Out</button>
-    </div>
-
-    <p id="user-status">Not logged in</p>
-  </section>
-</main>
-
+    <main>
+      <section class="auth-box">
+        <h2>Welcome to HolidaySnaps</h2>
+        <input type="email" id="email" placeholder="Email" />
+        <input type="password" id="password" placeholder="Password" />
+        <div class="buttons">
+          <button onclick="signUp()">Sign Up</button>
+          <button onclick="logIn()">Log In</button>
+          <button onclick="logOut()">Log Out</button>
+        </div>
+        <p id="user-status">Not logged in</p>
+      </section>
+    </main>
 
     <footer>
-    <p>&copy; 2025 HolidaySnaps</p>
-  </footer>
+      <p>&copy; 2025 HolidaySnaps</p>
+    </footer>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
@@ -64,39 +64,23 @@
 
     window.signUp = function () {
       createUserWithEmailAndPassword(auth, emailField.value, passwordField.value)
-        .then(userCredential => {
-          alert("Signed up!");
-        })
-        .catch(error => {
-          alert(error.message);
-        });
+        .then(() => alert("Signed up!"))
+        .catch(error => alert(error.message));
     };
 
     window.logIn = function () {
       signInWithEmailAndPassword(auth, emailField.value, passwordField.value)
-        .then(userCredential => {
-          alert("Logged in!");
-        })
-        .catch(error => {
-          alert(error.message);
-        });
+        .then(() => alert("Logged in!"))
+        .catch(error => alert(error.message));
     };
 
     window.logOut = function () {
-      signOut(auth).then(() => {
-        alert("Logged out!");
-      });
+      signOut(auth).then(() => alert("Logged out!"));
     };
 
     onAuthStateChanged(auth, user => {
-      if (user) {
-        userStatus.textContent = "Logged in as " + user.email;
-      } else {
-        userStatus.textContent = "Not logged in";
-      }
+      userStatus.textContent = user ? `Logged in as ${user.email}` : "Not logged in";
     });
   </script>
-
-
 </body>
 </html>
