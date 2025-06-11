@@ -31,71 +31,72 @@
 </main>
 
 
-  <footer>
+    <footer>
     <p>&copy; 2025 HolidaySnaps</p>
   </footer>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-  import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyDM3cs-CkpXNSXDiFYjuiNzdiGLMXZKZ5o",
-  authDomain: "holidaysnaps-af8d3.firebaseapp.com",
-  projectId: "holidaysnaps-af8d3",
-  storageBucket: "holidaysnaps-af8d3.appspot.com",
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-  messagingSenderId: "438127405798",
-  appId: "1:438127405798:web:96fcaf79348e0a1e586927",
-  measurementId: "G-BXC6W0GZ08"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDM3cs-CkpXNSXDiFYjuiNzdiGLMXZKZ5o",
+      authDomain: "holidaysnaps-af8d3.firebaseapp.com",
+      projectId: "holidaysnaps-af8d3",
+      storageBucket: "holidaysnaps-af8d3.appspot.com",
+      messagingSenderId: "438127405798",
+      appId: "1:438127405798:web:96fcaf79348e0a1e586927",
+      measurementId: "G-BXC6W0GZ08"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-  const emailField = document.getElementById("email");
-  const passwordField = document.getElementById("password");
-  const userStatus = document.getElementById("user-status");
+    const emailField = document.getElementById("email");
+    const passwordField = document.getElementById("password");
+    const userStatus = document.getElementById("user-status");
 
-  window.signUp = function () {
-    createUserWithEmailAndPassword(auth, emailField.value, passwordField.value)
-      .then(userCredential => {
-        alert("Signed up!");
-      })
-      .catch(error => {
-        alert(error.message);
+    window.signUp = function () {
+      createUserWithEmailAndPassword(auth, emailField.value, passwordField.value)
+        .then(userCredential => {
+          alert("Signed up!");
+        })
+        .catch(error => {
+          alert(error.message);
+        });
+    };
+
+    window.logIn = function () {
+      signInWithEmailAndPassword(auth, emailField.value, passwordField.value)
+        .then(userCredential => {
+          alert("Logged in!");
+        })
+        .catch(error => {
+          alert(error.message);
+        });
+    };
+
+    window.logOut = function () {
+      signOut(auth).then(() => {
+        alert("Logged out!");
       });
-  };
+    };
 
-  window.logIn = function () {
-    signInWithEmailAndPassword(auth, emailField.value, passwordField.value)
-      .then(userCredential => {
-        alert("Logged in!");
-      })
-      .catch(error => {
-        alert(error.message);
-      });
-  };
-
-  window.logOut = function () {
-    signOut(auth).then(() => {
-      alert("Logged out!");
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        userStatus.textContent = "Logged in as " + user.email;
+      } else {
+        userStatus.textContent = "Not logged in";
+      }
     });
-  };
+  </script>
 
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      userStatus.textContent = "Logged in as " + user.email;
-    } else {
-      userStatus.textContent = "Not logged in";
-    }
-  });
-</script>
 
 </body>
 </html>
