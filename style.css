@@ -97,3 +97,30 @@ footer {
   font-size: 0.9rem;
   color: #f0f0f0;
 }
+
+.upload-box {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  margin: 30px auto;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.upload-box input,
+.upload-box button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+}
+
+.upload-box button {
+  background-color: #ff774e;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
