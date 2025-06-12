@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Your Profile - HolidaySnaps</title>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Pacifico&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
@@ -14,15 +14,16 @@
       <h1>HolidaySnaps</h1>
       <nav>
         <a href="index.html">Home</a>
-        <a href="gallery.html">My Trips</a>
         <a href="friends.html">Friends</a>
-        <a href="logout.html">Logout</a>
+        <a href="trips.html">My Trips</a>
+        <a href="login.html" id="logout-link">Logout</a>
       </nav>
     </header>
 
     <main>
-      <section class="auth-box">
-        <h2>Welcome, <span id="profile-name">Loading...</span>!</h2>
+      <section class="profile-box auth-box">
+        <h2>Your Profile</h2>
+        <p><strong>Name:</strong> <span id="profile-name">Loading...</span></p>
         <p><strong>Date of Birth:</strong> <span id="profile-dob">Loading...</span></p>
         <p><strong>Email:</strong> <span id="profile-email">Loading...</span></p>
       </section>
@@ -33,8 +34,6 @@
     </footer>
   </div>
 
-  <!-- Load the profile logic -->
-  <script type="module" src="firebase.js"></script>
   <script type="module" src="profile.js"></script>
 </body>
 </html>
