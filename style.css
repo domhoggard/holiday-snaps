@@ -1,126 +1,51 @@
-/* Global page styles */
 body {
   font-family: 'Open Sans', sans-serif;
+  background: #f2f2f2;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, #f78e69, #9cc2b1);
-  color: #fff;
-  text-align: center;
 }
-
-/* Logo image */
-.logo {
-  width: 240px; /* Increased from 120px to 160px */
-  margin-top: 30px;
-  margin-bottom: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Header styling */
-header {
-  padding: 20px;
-}
-
-header h1 {
-  font-family: 'Pacifico', cursive;
-  font-size: 3rem;
-  margin: 10px 0 5px;
-  color: #fff;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-header p {
-  font-size: 1.1rem;
-  margin: 0;
-}
-
-/* Main section box */
-.auth-box {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 30px;
-  width: 90%;
-  max-width: 400px;
-  margin: 40px auto;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
-}
-
-/* Auth section headings */
-.auth-box h2 {
-  font-family: 'Pacifico', cursive;
-  margin-bottom: 20px;
-  font-size: 2rem;
-  color: #ffffff;
-}
-
-/* Input fields */
-input[type="email"],
-input[type="password"] {
-  padding: 10px;
-  margin: 10px 0;
-  width: 90%;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
-/* Buttons */
-button {
-  padding: 10px 20px;
-  margin: 10px 5px;
-  background-color: #ffffff;
-  color: #333;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  background-color: #fcd5b5;
-  color: #000;
-}
-
-/* User status */
-#user-status {
-  margin-top: 15px;
-  font-weight: bold;
-}
-
-/* Footer */
-footer {
-  padding: 20px;
-  font-size: 0.9rem;
-  color: #f0f0f0;
-}
-
-.upload-box {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 20px;
-  border-radius: 12px;
-  margin: 30px auto;
-  max-width: 400px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  text-align: center;
-}
-
-.upload-box input,
-.upload-box button {
-  width: 100%;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-}
-
-.upload-box button {
-  background-color: #ff774e;
+header, footer {
+  background: #0077cc;
   color: white;
-  font-weight: bold;
+  padding: 1em;
+  text-align: center;
+}
+.logo {
+  height: 60px;
+}
+.auth-box {
+  background: white;
+  max-width: 400px;
+  margin: 2em auto;
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+input, button {
+  display: block;
+  width: 100%;
+  margin: 0.5em 0;
+  padding: 0.75em;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+button {
+  background: #0077cc;
+  color: white;
+  border: none;
   cursor: pointer;
 }
-
+nav a {
+  margin: 0 1em;
+  color: white;
+  text-decoration: none;
+}
+.button {
+  display: inline-block;
+  background: #0077cc;
+  color: white;
+  padding: 1em 2em;
+  border-radius: 5px;
+  margin: 1em;
+  text-decoration: none;
+}
