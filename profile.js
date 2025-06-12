@@ -1,36 +1,26 @@
 // profile.js
+import { auth, db } from './firebase.js';
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { app } from './firebase.js';
-
-// Initialize Firebase services
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Watch for login state
-onAuthStateChanged(auth, async (user) => {
+auth.onAuthStateChanged(async user => {
   if (user) {
-    try {
-      // Get the user's document from Firestore
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+    const uid = user.uid;
+    const userDocRef = doc(db, "users", uid);
+    const userDoc = await getDoc(userDocRef);
 
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-
-        // Fill in the profile HTML with user data
-        document.getElementById("profile-name").textContent = data.name;
-        document.getElementById("profile-dob").textContent = data.dob;
-        document.getElementById("profile-email").textContent = user.email;
-      } else {
-        console.error("No user profile found in Firestore.");
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      document.getElementById("profile-name").textContent = userData.name;
+      document.getElementById("profile-dob").textContent = userData.dob;
+      document.getElementById("profile-email").textContent = user.email;
+    } else {
+      console.error("No profile data found.");
     }
   } else {
-    // If not signed in, redirect to login page
+    // Not signed in, redirect to login
     window.location.href = "login.html";
   }
 });
