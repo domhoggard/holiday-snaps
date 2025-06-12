@@ -2,23 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Profile - HolidaySnaps</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Profile - HolidaySnaps</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="profile.html">Profile</a>
-      <a href="trips.html">My Trips</a>
-      <a href="#" onclick="logOut()">Log Out</a>
-    </nav>
-  </header>
-  <main class="auth-box">
-    <h2>Your Profile</h2>
-    <p id="user-info">Loading...</p>
-    <div id="friend-requests"></div>
-  </main>
+  <div class="background">
+    <header>
+      <img src="logo.png" alt="HolidaySnaps Logo" class="logo" />
+      <h1>HolidaySnaps</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="gallery.html">My Trips</a>
+        <a href="friends.html">Friends</a>
+        <a href="logout.html">Logout</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="auth-box">
+        <h2>Welcome, <span id="profile-name">Loading...</span>!</h2>
+        <p><strong>Date of Birth:</strong> <span id="profile-dob">Loading...</span></p>
+        <p><strong>Email:</strong> <span id="profile-email">Loading...</span></p>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 HolidaySnaps</p>
+    </footer>
+  </div>
+
+  <!-- Load the profile logic -->
+  <script type="module" src="firebase.js"></script>
   <script type="module" src="profile.js"></script>
 </body>
 </html>
