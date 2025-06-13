@@ -1,1 +1,42 @@
-<!-- trips.html placeholder -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Trips - HolidaySnaps</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="background">
+    <header>
+      <img src="logo.png" alt="HolidaySnaps Logo" class="logo large" />
+      <h1>HolidaySnaps</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="profile.html">Profile</a>
+        <button id="logout-button">Log Out</button>
+      </nav>
+    </header>
+    <main>
+      <section class="upload-box">
+        <h2>Upload a Photo</h2>
+        <input type="file" id="photo" accept="image/*" />
+        <input type="text" id="resort" placeholder="Resort name" />
+        <input type="date" id="date" />
+        <select id="privacy">
+          <option value="public">Public</option>
+          <option value="friends">Friends Only</option>
+          <option value="private">Private</option>
+        </select>
+        <button id="upload-button">Upload</button>
+      </section>
+      <section class="gallery">
+        <h2>Your Photos</h2>
+        <div id="photo-grid" class="photo-grid"></div>
+      </section>
+    </main>
+    <footer><p>&copy; 2025 HolidaySnaps</p></footer>
+  </div>
+  <script type="module" src="trips.js"></script>
+</body>
+</html>

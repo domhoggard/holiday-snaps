@@ -1,1 +1,32 @@
-<!-- profile.html placeholder -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Profile - HolidaySnaps</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="background">
+    <header>
+      <img src="logo.png" alt="HolidaySnaps Logo" class="logo large" />
+      <h1>HolidaySnaps</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="trips.html">My Trips</a>
+        <button id="logout-button">Log Out</button>
+      </nav>
+    </header>
+    <main>
+      <section class="profile-box">
+        <h2>Your Profile</h2>
+        <p><strong>Name:</strong> <span id="displayName"></span></p>
+        <p><strong>Date of Birth:</strong> <span id="displayDOB"></span></p>
+        <button id="delete-account">Delete Account</button>
+      </section>
+    </main>
+    <footer><p>&copy; 2025 HolidaySnaps</p></footer>
+  </div>
+  <script type="module" src="profile.js"></script>
+</body>
+</html>
