@@ -1,52 +1,100 @@
+import { app, auth, db, storage } from "./firebase.js";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+  listAll
+} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-import { auth, storage } from './firebase.js';
-import { ref, uploadBytes, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js";
+const photoForm = document.getElementById("photo-form");
+const gallery = document.getElementById("photo-gallery");
 
-document.getElementById("upload-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const file = document.getElementById("photo").files[0];
-  const resort = document.getElementById("resort").value;
-  const date = document.getElementById("date").value;
-  const privacy = document.getElementById("privacy").value;
-
-  const user = auth.currentUser;
-  const filePath = \`\${user.uid}/\${resort}/\${date}/\${privacy}/\${file.name}\`;
-  const fileRef = ref(storage, filePath);
-
-  try {
-    await uploadBytes(fileRef, file);
-    alert("Photo uploaded successfully!");
-    loadPhotos(); // refresh gallery
-  } catch (error) {
-    alert(error.message);
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    alert("You must be logged in to use this page.");
+    window.location.href = "login.html";
+    return;
   }
-});
 
-async function loadPhotos() {
-  const gallery = document.getElementById("gallery");
-  gallery.innerHTML = "";
-  const user = auth.currentUser;
-  const baseRef = ref(storage, user.uid);
+  // Handle form submit
+  photoForm.addEventListener("submit", async e => {
+    e.preventDefault();
 
-  const list = await listAll(baseRef);
-  for (const folder of list.prefixes) {
-    const photos = await listAll(folder);
-    for (const photoRef of photos.items) {
-      const url = await getDownloadURL(photoRef);
-      const img = document.createElement("img");
-      img.src = url;
-      img.className = "gallery-photo";
-      gallery.appendChild(img);
+    const file = document.getElementById("photo").files[0];
+    const resort = document.getElementById("resort").value.trim();
+    const date = document.getElementById("date").value;
+    const privacy = document.getElementById("privacy").value;
+
+    if (!file || !resort || !date || !privacy) {
+      alert("Please complete all fields.");
+      return;
     }
-  }
-}
 
-window.onload = () => {
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "login.html";
-    } else {
-      loadPhotos();
+    const path = `${user.uid}/${resort}/${date}/${file.name}`;
+    const fileRef = storageRef(storage, path);
+
+    try {
+      await uploadBytes(fileRef, file);
+      const url = await getDownloadURL(fileRef);
+
+      await addDoc(collection(db, "photos"), {
+        userId: user.uid,
+        url,
+        resort,
+        date,
+        privacy,
+        timestamp: Date.now()
+      });
+
+      alert("Photo uploaded!");
+      photoForm.reset();
+      loadPhotos(user.uid); // reload
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Failed to upload photo.");
     }
   });
-};
+
+  // Load user's uploaded photos
+  loadPhotos(user.uid);
+});
+
+async function loadPhotos(userId) {
+  gallery.innerHTML = "";
+
+  const q = query(
+    collection(db, "photos"),
+    where("userId", "==", userId)
+  );
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+    gallery.innerHTML = "<p>No photos uploaded yet.</p>";
+    return;
+  }
+
+  snapshot.forEach(doc => {
+    const { url, resort, date, privacy } = doc.data();
+
+    const photoDiv = document.createElement("div");
+    photoDiv.className = "photo";
+
+    photoDiv.innerHTML = `
+      <img src="${url}" alt="Holiday photo">
+      <p><strong>Resort:</strong> ${resort}</p>
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Privacy:</strong> ${privacy}</p>
+    `;
+
+    gallery.appendChild(photoDiv);
+  });
+}
+
