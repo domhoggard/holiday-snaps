@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Your Profile - HolidaySnaps</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Pacifico&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="logo.png" />
 </head>
 <body>
   <div class="background">
@@ -13,20 +15,27 @@
       <h1>HolidaySnaps</h1>
       <nav>
         <a href="index.html">Home</a>
-        <a href="trips.html">My Trips</a>
-        <button id="logout-button">Log Out</button>
+        <a href="trips.html">Trips</a>
+        <a href="#" onclick="logOut()">Log Out</a>
       </nav>
     </header>
+
     <main>
       <section class="profile-box">
         <h2>Your Profile</h2>
-        <p><strong>Name:</strong> <span id="displayName"></span></p>
-        <p><strong>Date of Birth:</strong> <span id="displayDOB"></span></p>
-        <button id="delete-account">Delete Account</button>
+        <p><strong>Name:</strong> <span id="user-name"></span></p>
+        <p><strong>Email:</strong> <span id="user-email"></span></p>
+        <p><strong>Date of Birth:</strong> <span id="user-dob"></span></p>
+        <button onclick="deleteAccount()" class="danger">Delete My Account</button>
       </section>
     </main>
-    <footer><p>&copy; 2025 HolidaySnaps</p></footer>
+
+    <footer>
+      <p>&copy; 2025 HolidaySnaps</p>
+    </footer>
   </div>
+
+  <script type="module" src="firebase.js"></script>
   <script type="module" src="profile.js"></script>
 </body>
 </html>
