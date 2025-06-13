@@ -1,27 +1,24 @@
-// profile.js
-import { auth, db } from './firebase.js';
-import { onAuthStateChanged, deleteUser, signOut } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+import { auth, db, signOut } from './firebase.js';
+import { onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
-// DOM elements
-const nameField = document.getElementById('user-name');
-const emailField = document.getElementById('user-email');
-const dobField = document.getElementById('user-dob');
+const profileName = document.getElementById('profile-name');
+const profileDob = document.getElementById('profile-dob');
 
-// Make logout work
-window.logOut = async function () {
-  await signOut(auth);
-  window.location.href = 'index.html';
-};
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const docSnap = await getDoc(doc(db, "users", user.uid));
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      profileName.innerHTML = data.name;
+      profileDob.innerHTML = data.dob;
+    }
+  }
+});
 
-// Make delete account work
 window.deleteAccount = async function () {
-  const confirmDelete = confirm("Are you sure you want to delete your account?");
-  if (!confirmDelete) return;
-
-  const user = auth.currentUser;
   try {
-    await deleteUser(user);
+    await deleteUser(auth.currentUser);
     alert("Account deleted.");
     window.location.href = "index.html";
   } catch (error) {
@@ -29,23 +26,6 @@ window.deleteAccount = async function () {
   }
 };
 
-// Fetch and display profile data
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      nameField.textContent = data.name || "Unknown";
-      emailField.textContent = user.email;
-      dobField.textContent = data.dob || "Unknown";
-    } else {
-      nameField.textContent = "Unknown";
-      emailField.textContent = user.email;
-      dobField.textContent = "Unknown";
-    }
-  } else {
-    window.location.href = "login.html";
-  }
-});
+window.logOut = function () {
+  signOut(auth).then(() => window.location.href = "index.html");
+};
