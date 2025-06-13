@@ -1,21 +1,19 @@
+import { auth, db } from './firebase.js';
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+import { setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
-import { auth, db } from "./firebase.js";
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { setDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-document.getElementById('signup-form').addEventListener('submit', async (e) => {
+document.getElementById("signup-form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const name = document.getElementById('name').value;
-  const dob = document.getElementById('dob').value;
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+  const name = document.getElementById("name").value.trim();
+  const dob = document.getElementById("dob").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = userCredential.user.uid;
-    await setDoc(doc(db, "users", uid), { name, dob });
+    await setDoc(doc(db, "users", userCredential.user.uid), { name, dob, email });
     window.location.href = "profile.html";
   } catch (error) {
-    alert(error.message);
+    alert("Error: " + error.message);
   }
 });

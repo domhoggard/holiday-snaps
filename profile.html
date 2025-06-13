@@ -1,30 +1,27 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profile - HolidaySnaps</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Pacifico&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="background">
     <header>
-      <img src="logo.png" alt="HolidaySnaps Logo" class="logo" />
-      <h1>HolidaySnaps</h1>
+      <img src="logo.png" alt="HolidaySnaps Logo" class="logo"/>
+      <h1>Your Profile</h1>
       <nav>
         <a href="index.html">Home</a>
-        <a href="#" onclick="logOut()">Log Out</a>
+        <a href="login.html">Log Out</a>
       </nav>
     </header>
-    <main class="profile">
-      <h2>Welcome, <span id="user-name">User</span></h2>
-      <p>Date of Birth: <span id="user-dob"></span></p>
+    <main>
+      <div id="profile-info"></div>
+      <button id="delete-account">Delete Account</button>
     </main>
-    <footer>
-      <p>&copy; 2025 HolidaySnaps</p>
-    </footer>
+    <footer><p>&copy; 2025 HolidaySnaps</p></footer>
   </div>
   <script type="module" src="firebase.js"></script>
   <script type="module" src="profile.js"></script>

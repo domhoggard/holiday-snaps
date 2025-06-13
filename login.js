@@ -1,15 +1,15 @@
+import { auth } from './firebase.js';
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-import { auth } from "./firebase.js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+document.getElementById("login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-window.logIn = function () {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      window.location.href = 'profile.html';
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-}
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "profile.html";
+  } catch (error) {
+    alert("Login failed: " + error.message);
+  }
+});
