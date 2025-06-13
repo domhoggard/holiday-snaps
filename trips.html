@@ -2,41 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Trips - HolidaySnaps</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Trips - HolidaySnaps</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Pacifico&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="background">
     <header>
-      <img src="logo.png" alt="HolidaySnaps Logo" class="logo large" />
+      <img src="logo.png" alt="HolidaySnaps Logo" class="logo" />
       <h1>HolidaySnaps</h1>
       <nav>
         <a href="index.html">Home</a>
         <a href="profile.html">Profile</a>
-        <button id="logout-button">Log Out</button>
+        <a href="#" onclick="logOut()">Log Out</a>
       </nav>
     </header>
+
     <main>
       <section class="upload-box">
-        <h2>Upload a Photo</h2>
+        <h2>Upload a Holiday Snap</h2>
         <input type="file" id="photo" accept="image/*" />
         <input type="text" id="resort" placeholder="Resort name" />
         <input type="date" id="date" />
         <select id="privacy">
           <option value="public">Public</option>
-          <option value="friends">Friends Only</option>
+          <option value="friends">Friends only</option>
           <option value="private">Private</option>
         </select>
-        <button id="upload-button">Upload</button>
+        <button id="upload-button">Upload Photo</button>
       </section>
-      <section class="gallery">
-        <h2>Your Photos</h2>
-        <div id="photo-grid" class="photo-grid"></div>
+
+      <section class="gallery-section">
+        <h2>Your Photo Gallery</h2>
+        <div id="gallery" class="gallery"></div>
       </section>
     </main>
-    <footer><p>&copy; 2025 HolidaySnaps</p></footer>
+
+    <footer>
+      <p>&copy; 2025 HolidaySnaps</p>
+    </footer>
   </div>
-  <script type="module" src="trips.js"></script>
+
+  <script type="module" src="./trips.js"></script>
+  <script type="module">
+    import { logOut } from './firebase.js';
+    window.logOut = logOut;
+  </script>
 </body>
 </html>
