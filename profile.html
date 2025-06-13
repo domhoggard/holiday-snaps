@@ -4,12 +4,12 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profile - HolidaySnaps</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="background">
     <header>
-      <img src="logo.png" class="logo" />
+      <img src="logo.png" alt="HolidaySnaps Logo" class="logo-large" />
       <h1>HolidaySnaps</h1>
       <nav>
         <a href="index.html">Home</a>
@@ -17,10 +17,18 @@
         <a href="#" onclick="logOut()">Log Out</a>
       </nav>
     </header>
+
     <main>
-      <h2 id="welcome"></h2>
-      <button onclick="deleteAccount()">Delete My Account</button>
+      <section class="profile-box">
+        <h2>Your Profile</h2>
+        <p id="profile-info"></p>
+        <button onclick="deleteAccount()">Delete Account</button>
+      </section>
     </main>
+
+    <footer>
+      <p>&copy; 2025 HolidaySnaps</p>
+    </footer>
   </div>
   <script type="module" src="profile.js"></script>
 </body>
