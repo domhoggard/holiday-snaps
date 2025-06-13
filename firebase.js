@@ -21,5 +21,5 @@ const db = getFirestore(app);
 const storage = getStorage(app); // 👈 ADD THIS
 
 // Export everything
-export { app, auth, db, storage }; // 👈 EXPORT STORAGE
+export { app, auth, db, storage, logOut }; // 👈 EXPORT STORAGE
 
