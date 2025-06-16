@@ -11,16 +11,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (form) {
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
+          console.log("Form submitted"); // Debugging log
           const file = document.getElementById("photo").files[0];
           const resort = document.getElementById("resort").value;
           const date = document.getElementById("date").value;
           const privacy = document.getElementById("privacy").value;
 
-          const filePath = `${user.uid}/${resort}/${date}/${privacy}/${file.name}`;
-          const fileRef = ref(storage, filePath);
-          await uploadBytes(fileRef, file);
-          alert("Photo uploaded!");
-          loadPhotos(user.uid);
+          console.log(file, resort, date, privacy); // Debugging log
+
+          if (file && resort && date && privacy) {
+            const filePath = `${user.uid}/${resort}/${date}/${privacy}/${file.name}`;
+            const fileRef = ref(storage, filePath);
+            await uploadBytes(fileRef, file);
+            alert("Photo uploaded!");
+            loadPhotos(user.uid);
+          } else {
+            alert("Please fill out all fields and select a file.");
+          }
         });
       }
 
@@ -55,3 +62,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
