@@ -12,6 +12,9 @@ import {
 import {
   getStorage
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js";
+import {
+  getFirestore
+} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js"; // ✅ Added for db
 
 const firebaseConfig = {
   apiKey: "AIzaSyDM3cs-CkpXNSXDiFYjuiNzdiGLMXZKZ5o",
@@ -26,20 +29,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const storage = getStorage(app);
+const db = getFirestore(app); // ✅ This line enables Firestore access
 
-// Export what your other scripts need
-export {
-  app,
-  auth,
-  storage,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  deleteUser,
-  logOut
-};
-
-// Optional helper
+// ✅ Define logOut before exporting it
 function logOut() {
   signOut(auth).then(() => {
     alert("Logged out.");
@@ -49,3 +41,17 @@ function logOut() {
     alert("Logout failed.");
   });
 }
+
+// ✅ Export everything
+export {
+  app,
+  auth,
+  storage,
+  db, // ✅ Added db export
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  deleteUser,
+  logOut
+};
+
