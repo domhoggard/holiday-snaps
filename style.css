@@ -155,24 +155,32 @@ footer {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 40px;
+  font-size: 32px;
   font-weight: bold;
-  color: #333;
-  background: rgba(255, 255, 255, 0.9);
+  color: white;
+  background: rgba(0, 0, 0, 0.4);  /* transparent dark background */
+  border: 2px solid white;
   border-radius: 50%;
-  padding: 10px 14px;
+  padding: 8px 12px;
   cursor: pointer;
   z-index: 1002;
   user-select: none;
+  transition: background 0.2s ease;
 }
 
+.modal-arrow:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Move arrows closer to image */
 #modal-prev {
-  left: -60px;
+  left: 10px;
 }
 
 #modal-next {
-  right: -60px;
+  right: 10px;
 }
+
 
 /* --- Forms and Boxes --- */
 .auth-box,
