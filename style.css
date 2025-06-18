@@ -126,6 +126,12 @@ footer {
   pointer-events: all;
 }
 
+.modal-inner {
+  position: relative;
+  max-width: 90vw;
+  max-height: 80vh;
+}
+
 .modal-content {
   max-width: 80vw;
   max-height: 80vh;
