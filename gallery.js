@@ -62,6 +62,6 @@ function showModal(url) {
   modalImg.src = url;
 
   document.getElementById("modal-close").onclick = function () {
-    modal.style.display = "none";
-  };
+    document.getElementById("modal").style.display = "none";
+ };
 }
