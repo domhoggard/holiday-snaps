@@ -1,36 +1,62 @@
-import { auth, storage, logOut } from './firebase.js';
-import { ref, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
-import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
+import { storage } from './firebase.js';
+import { ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js";
 
-const title = document.getElementById("resort-title");
-const gallery = document.getElementById("photo-gallery");
+const gallery = document.getElementById("gallery");
+const filterBtn = document.getElementById("filter-btn");
 
-const params = new URLSearchParams(window.location.search);
-const resort = params.get("resort");
+filterBtn.addEventListener("click", () => {
+  const startDate = new Date(document.getElementById("start-date").value);
+  const endDate = new Date(document.getElementById("end-date").value);
+  loadPublicPhotos(startDate, endDate);
+});
 
-onAuthStateChanged(auth, async user => {
-  if (!user || !resort) return location.href = "trips.html";
+async function loadPublicPhotos(start, end) {
+  gallery.innerHTML = "Loading photos...";
+  const rootRef = ref(storage);
+  const userFolders = await listAll(rootRef);
+  gallery.innerHTML = "";
 
-  title.textContent = `Gallery - ${resort}`;
-  const resortRef = ref(storage, `${user.uid}/${resort}`);
-  const dates = await listAll(resortRef);
+  for (const userFolder of userFolders.prefixes) {
+    const resorts = await listAll(userFolder);
+    for (const resort of resorts.prefixes) {
+      const dates = await listAll(resort);
+      for (const dateFolder of dates.prefixes) {
+        const dateStr = dateFolder.name;
+        const date = new Date(dateStr);
+        if (start && date < start) continue;
+        if (end && date > end) continue;
 
-  for (const dateFolder of dates.prefixes) {
-    const date = dateFolder.name;
-    const heading = document.createElement("h3");
-    heading.textContent = date;
-    gallery.appendChild(heading);
+        const privacies = await listAll(dateFolder);
+        for (const privacyFolder of privacies.prefixes) {
+          const privacy = privacyFolder.name;
+          if (privacy !== "public" && privacy !== "friends") continue;
 
-    const privacies = await listAll(dateFolder);
-    for (const privacyFolder of privacies.prefixes) {
-      const pics = await listAll(privacyFolder);
-      for (const item of pics.items) {
-        const url = await getDownloadURL(item);
-        const img = document.createElement("img");
-        img.src = url;
-        img.classList.add("gallery-img");
-        gallery.appendChild(img);
+          const files = await listAll(privacyFolder);
+          for (const file of files.items) {
+            const url = await getDownloadURL(file);
+            const photo = document.createElement("div");
+            photo.classList.add("photo-card");
+
+            const img = document.createElement("img");
+            img.src = url;
+            img.alt = file.name;
+            img.classList.add("gallery-img");
+
+            const badge = document.createElement("span");
+            badge.className = `badge ${privacy}`;
+            badge.textContent = privacy === "friends" ? "Friends Only" : "Public";
+
+            photo.appendChild(img);
+            photo.appendChild(badge);
+            gallery.appendChild(photo);
+          }
+        }
       }
     }
   }
-});
+
+  if (gallery.innerHTML === "") {
+    gallery.innerHTML = "<p>No photos found for that date range.</p>";
+  }
+}
+
