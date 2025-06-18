@@ -34,7 +34,7 @@ footer {
   font-size: 0.9em;
 }
 
-/* --- ADDED FOR GALLERY --- */
+/* --- GALLERY STYLES --- */
 .photo-gallery {
   display: flex;
   flex-wrap: wrap;
@@ -58,6 +58,12 @@ footer {
   height: 100%;
   object-fit: cover;
   display: block;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.gallery-img:hover {
+  transform: scale(1.05);
 }
 
 .badge {
@@ -91,3 +97,36 @@ footer {
 .filter-box label {
   margin: 0 10px;
 }
+
+/* --- POPUP LIGHTBOX STYLES --- */
+.gallery-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.gallery-popup img {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+.gallery-popup .close-btn {
+  position: absolute;
+  top: 30px;
+  right: 50px;
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
