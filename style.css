@@ -118,29 +118,25 @@ footer {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: transparent; /* No dark overlay */
-  display: none;
+  background: transparent;
+  display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  pointer-events: all;
 }
 
 .modal-inner {
   position: relative;
-  max-width: 90vw;
-  max-height: 80vh;
+  display: inline-block;
 }
 
 .modal-content {
-  max-width: 80vw;
+  max-width: 90vw;
   max-height: 80vh;
   border-radius: 16px;
   object-fit: contain;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
   background-color: white;
-  position: relative;
-  z-index: 1001;
 }
 
 .modal-close {
@@ -158,6 +154,7 @@ footer {
   z-index: 1002;
   user-select: none;
 }
+
 
 /* Arrows positioned relative to image */
 .modal-arrow {
