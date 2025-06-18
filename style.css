@@ -114,29 +114,33 @@ footer {
 /* --- POPUP MODAL STYLES --- */
 .modal {
   position: fixed;
-  display: none;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.85);
-  z-index: 9999;
+  display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
-  max-width: 90%;
-  max-height: 80%;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  width: 80vw;
+  max-width: 600px;
+  height: auto;
+  max-height: 80vh;
+  border-radius: 16px;
+  object-fit: contain;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  background-color: white;
 }
 
 .modal-close {
   position: absolute;
   top: 20px;
-  right: 40px;
-  font-size: 36px;
+  right: 30px;
+  font-size: 32px;
   font-weight: bold;
   color: white;
   cursor: pointer;
