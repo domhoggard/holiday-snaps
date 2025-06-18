@@ -5,6 +5,14 @@ const gallery = document.getElementById('photo-gallery');
 const startDateInput = document.getElementById('startDate');
 const endDateInput = document.getElementById('endDate');
 const filterBtn = document.getElementById('filterBtn');
+const modal = document.getElementById("modal");
+const modalImg = document.getElementById("modal-img");
+const modalClose = document.getElementById("modal-close");
+const modalPrev = document.getElementById("modal-prev");
+const modalNext = document.getElementById("modal-next");
+
+let imageList = [];
+let currentIndex = 0;
 
 filterBtn.addEventListener('click', () => {
   const startDate = startDateInput.value;
@@ -18,6 +26,8 @@ filterBtn.addEventListener('click', () => {
 
 async function loadPhotos(start, end) {
   gallery.innerHTML = "";
+  imageList = [];
+
   const result = await listAll(ref(storage));
   for (const userFolder of result.prefixes) {
     const resortList = await listAll(userFolder);
@@ -33,16 +43,22 @@ async function loadPhotos(start, end) {
               const images = await listAll(privacyFolder);
               for (const item of images.items) {
                 const url = await getDownloadURL(item);
+                imageList.push({ url, privacy });
+
                 const card = document.createElement("div");
                 card.className = "photo-card";
+
                 const img = document.createElement("img");
                 img.src = url;
                 img.alt = "Photo";
                 img.className = "gallery-img";
-                img.addEventListener("click", () => showModal(url));
+                const index = imageList.length - 1;
+                img.addEventListener("click", () => showModal(index));
+
                 const badge = document.createElement("span");
-                badge.className = "privacy-badge " + privacy;
+                badge.className = "badge " + privacy;
                 badge.textContent = privacy.charAt(0).toUpperCase() + privacy.slice(1);
+
                 card.appendChild(img);
                 card.appendChild(badge);
                 gallery.appendChild(card);
@@ -55,13 +71,22 @@ async function loadPhotos(start, end) {
   }
 }
 
-function showModal(url) {
-  const modal = document.getElementById("modal");
-  const modalImg = document.getElementById("modal-img");
-  modal.style.display = "block";
-  modalImg.src = url;
-
-  document.getElementById("modal-close").onclick = function () {
-    document.getElementById("modal").style.display = "none";
- };
+function showModal(index) {
+  currentIndex = index;
+  modalImg.src = imageList[currentIndex].url;
+  modal.style.display = "flex";
 }
+
+modalClose.onclick = () => {
+  modal.style.display = "none";
+};
+
+modalPrev.onclick = () => {
+  currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
+  modalImg.src = imageList[currentIndex].url;
+};
+
+modalNext.onclick = () => {
+  currentIndex = (currentIndex + 1) % imageList.length;
+  modalImg.src = imageList[currentIndex].url;
+};
