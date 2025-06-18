@@ -1,4 +1,3 @@
-
 import { auth, storage, logOut } from './firebase.js';
 import { ref, uploadBytes, listAll } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
@@ -27,15 +26,23 @@ document.addEventListener("DOMContentLoaded", () => {
           return alert("Please fill in all fields.");
         }
 
-        // Convert HEIC to JPEG if needed
-        if (file.name.toLowerCase().endsWith('.heic')) {
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        if (fileExtension === "heic" && !isMobile) {
+          alert("HEIC files are not supported on desktop. Please upload from a mobile device or convert the image to JPG/PNG.");
+          return;
+        }
+
+        // Convert HEIC on mobile (if supported)
+        if (fileExtension === "heic") {
           try {
             const heic2any = (await import('https://cdn.jsdelivr.net/npm/heic2any@0.0.3/dist/heic2any.min.js')).default;
             const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg' });
             file = new File([convertedBlob], file.name.replace(/\.heic$/, '.jpg'), { type: 'image/jpeg' });
           } catch (conversionError) {
             console.error("HEIC conversion failed:", conversionError);
-            alert("HEIC conversion failed. Please try another file format.");
+            alert("HEIC conversion failed. Please try a different file or upload from mobile.");
             return;
           }
         }
@@ -75,3 +82,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
