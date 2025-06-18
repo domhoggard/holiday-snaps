@@ -1,41 +1,63 @@
 import { auth, storage, logOut } from './firebase.js';
-import { ref, uploadBytes, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
+import { ref, uploadBytes, listAll } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
-const resortList = document.getElementById("resort-list");
-const uploadBtn = document.getElementById("uploadBtn");
+document.addEventListener("DOMContentLoaded", () => {
+  const uploadBtn = document.getElementById("uploadBtn");
+  const resortList = document.getElementById("resort-list");
+  const logoutLink = document.getElementById("logout-link");
 
-onAuthStateChanged(auth, user => {
-  if (!user) return location.href = "login.html";
-
-  if (uploadBtn) {
-    uploadBtn.addEventListener("click", async () => {
-      const file = document.getElementById("photo").files[0];
-      const resort = document.getElementById("resort").value.trim();
-      const date = document.getElementById("date").value;
-      const privacy = document.getElementById("privacy").value;
-      if (!file || !resort || !date) return alert("Please fill all fields");
-
-      const path = `${user.uid}/${resort}/${date}/${privacy}/${file.name}`;
-      await uploadBytes(ref(storage, path), file);
-      alert("Photo uploaded!");
-      listResorts(user.uid);
-    });
-  }
-
-  listResorts(user.uid);
-});
-
-async function listResorts(uid) {
-  resortList.innerHTML = "";
-  const result = await listAll(ref(storage, uid));
-  result.prefixes.forEach(folderRef => {
-    const resort = folderRef.name;
-    const li = document.createElement("li");
-    const a = document.createElement("a");
-    a.href = `gallery.html?resort=${encodeURIComponent(resort)}`;
-    a.textContent = resort;
-    li.appendChild(a);
-    resortList.appendChild(li);
+  logoutLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    logOut();
   });
-}
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) return location.href = "login.html";
+
+    if (uploadBtn) {
+      uploadBtn.addEventListener("click", async () => {
+        const file = document.getElementById("photo").files[0];
+        const resort = document.getElementById("resort").value.trim();
+        const date = document.getElementById("date").value;
+        const privacy = document.getElementById("privacy").value;
+
+        if (!file || !resort || !date) {
+          return alert("Please fill in all fields.");
+        }
+
+        const filePath = `${user.uid}/${resort}/${date}/${privacy}/${file.name}`;
+        const storageRef = ref(storage, filePath);
+        try {
+          await uploadBytes(storageRef, file);
+          alert("Photo uploaded successfully!");
+          await listResorts(user.uid);
+        } catch (error) {
+          console.error("Upload error:", error);
+          alert("Upload failed.");
+        }
+      });
+    }
+
+    listResorts(user.uid);
+  });
+
+  async function listResorts(uid) {
+    resortList.innerHTML = "";
+    try {
+      const userRef = ref(storage, uid);
+      const result = await listAll(userRef);
+      result.prefixes.forEach((resortFolder) => {
+        const resortName = resortFolder.name;
+        const li = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = `gallery.html?resort=${encodeURIComponent(resortName)}`;
+        link.textContent = resortName;
+        li.appendChild(link);
+        resortList.appendChild(li);
+      });
+    } catch (error) {
+      console.error("Listing resorts failed:", error);
+    }
+  }
+});
