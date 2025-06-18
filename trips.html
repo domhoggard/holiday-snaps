@@ -21,20 +21,22 @@
     <main>
       <section class="upload-box">
         <h2>Upload a Holiday Snap</h2>
-        <input type="file" id="photo" accept="image/*" />
-        <input type="text" id="resort" placeholder="Resort name" />
-        <input type="date" id="date" />
-        <select id="privacy">
-          <option value="public">Public</option>
-          <option value="friends">Friends Only</option>
-          <option value="private">Private</option>
-        </select>
-        <button id="uploadBtn">Upload Photo</button>
+        <form id="upload-form">
+          <input type="file" id="photo" accept="image/*" required />
+          <input type="text" id="resort" placeholder="Resort name" required />
+          <input type="date" id="date" required />
+          <select id="privacy" required>
+            <option value="public">Public</option>
+            <option value="friends">Friends Only</option>
+            <option value="private">Private</option>
+          </select>
+          <button type="submit">Upload Photo</button>
+        </form>
       </section>
 
       <section class="gallery-box">
         <h2>Your Photo Gallery</h2>
-        <div id="photo-gallery"></div>
+        <div id="gallery"></div>
       </section>
     </main>
 
