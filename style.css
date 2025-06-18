@@ -126,9 +126,7 @@ footer {
 }
 
 .modal-content {
-  width: 80vw;
-  max-width: 600px;
-  height: auto;
+  max-width: 90vw;
   max-height: 80vh;
   border-radius: 16px;
   object-fit: contain;
