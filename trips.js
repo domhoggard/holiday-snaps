@@ -11,13 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (form) {
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
-          console.log("Form submitted"); // Debugging log
           const file = document.getElementById("photo").files[0];
           const resort = document.getElementById("resort").value;
           const date = document.getElementById("date").value;
           const privacy = document.getElementById("privacy").value;
-
-          console.log(file, resort, date, privacy); // Debugging log
 
           if (file && resort && date && privacy) {
             const filePath = `${user.uid}/${resort}/${date}/${privacy}/${file.name}`;
@@ -38,28 +35,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   async function loadPhotos(uid) {
-    if (gallery) {
-      gallery.innerHTML = "";
-      const userRef = ref(storage, `${uid}`);
-      const res = await listAll(userRef);
-      for (const folder of res.prefixes) {
-        const dates = await listAll(folder);
-        for (const dateFolder of dates.prefixes) {
-          const privacies = await listAll(dateFolder);
-          for (const privacyFolder of privacies.prefixes) {
-            const pics = await listAll(privacyFolder);
-            for (const item of pics.items) {
-              const url = await getDownloadURL(item);
-              const img = document.createElement("img");
-              img.src = url;
-              img.alt = "Uploaded photo";
-              img.classList.add("gallery-img");
-              gallery.appendChild(img);
-            }
+    if (!gallery) return;
+    gallery.innerHTML = "";
+    const userRef = ref(storage, `${uid}`);
+    const res = await listAll(userRef);
+
+    for (const resortFolder of res.prefixes) {
+      const dates = await listAll(resortFolder);
+      for (const dateFolder of dates.prefixes) {
+        const privacies = await listAll(dateFolder);
+        for (const privacyFolder of privacies.prefixes) {
+          const photos = await listAll(privacyFolder);
+          for (const item of photos.items) {
+            const url = await getDownloadURL(item);
+            const img = document.createElement("img");
+            img.src = url;
+            img.alt = "Holiday snap";
+            img.classList.add("gallery-img");
+            gallery.appendChild(img);
           }
         }
       }
     }
   }
 });
-
