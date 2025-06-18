@@ -59,4 +59,3 @@ async function loadPublicPhotos(start, end) {
     gallery.innerHTML = "<p>No photos found for that date range.</p>";
   }
 }
-
