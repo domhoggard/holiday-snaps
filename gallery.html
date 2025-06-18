@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gallery - HolidaySnaps</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="background">
     <header>
-      <img src="logo.png" alt="HolidaySnaps Logo" class="logo-large" />
-      <h1>HolidaySnaps</h1>
+      <img src="logo.png" alt="HolidaySnaps Logo" class="logo" />
+      <h1>HolidaySnaps Gallery</h1>
       <nav>
         <a href="index.html">Home</a>
         <a href="profile.html">Profile</a>
-        <a href="trips.html">My Trips</a>
       </nav>
     </header>
 
     <main>
       <section class="filter-box">
-        <h2>Browse Holiday Snaps</h2>
-        <label>Start Date: <input type="date" id="start-date" /></label>
-        <label>End Date: <input type="date" id="end-date" /></label>
-        <button id="filter-btn">Filter</button>
+        <h2>Search Photos</h2>
+        <input type="date" id="startDate" />
+        <input type="date" id="endDate" />
+        <button id="filterBtn">Filter</button>
       </section>
 
       <section class="gallery-box">
-        <h2>Gallery</h2>
-        <div id="gallery" class="photo-gallery"></div>
+        <h2>Photo Gallery</h2>
+        <div id="photo-gallery"></div>
       </section>
     </main>
 
@@ -37,7 +36,11 @@
     </footer>
   </div>
 
+  <div id="modal" class="modal">
+    <span id="modal-close" class="modal-close">&times;</span>
+    <img id="modal-img" class="modal-content" />
+  </div>
+
   <script type="module" src="gallery.js"></script>
 </body>
 </html>
-
