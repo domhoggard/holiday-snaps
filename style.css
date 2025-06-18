@@ -1,4 +1,6 @@
-/* Base Styles (unchanged parts omitted for brevity) */
+
+
+
 body {
   font-family: 'Open Sans', sans-serif;
   background: url('beach-background.jpg') no-repeat center center fixed;
@@ -14,8 +16,17 @@ body {
   min-height: 100vh;
 }
 
+header {
+  text-align: center;
+}
+
 .logo {
   width: 120px;
+  margin-top: 10px;
+}
+
+.logo-large {
+  width: 160px;
   margin-top: 10px;
 }
 
@@ -30,7 +41,13 @@ nav a:hover {
   text-decoration: underline;
 }
 
-/* Gallery Thumbnail Grid */
+footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.9em;
+}
+
+/* --- GALLERY STYLES --- */
 .photo-gallery {
   display: flex;
   flex-wrap: wrap;
@@ -62,7 +79,6 @@ nav a:hover {
   transform: scale(1.05);
 }
 
-/* Privacy Badges */
 .badge {
   position: absolute;
   bottom: 4px;
@@ -86,69 +102,129 @@ nav a:hover {
   color: white;
 }
 
-/* Popup Modal */
+.filter-box {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.filter-box label {
+  margin: 0 10px;
+}
+
+/* --- POPUP MODAL STYLES --- */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  background-color: transparent; /* No dark overlay */
   display: none;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  background: none; /* Removes the dark overlay */
+  pointer-events: all;
+}
+
+.modal-inner {
+  position: relative;
+  max-width: 90vw;
+  max-height: 80vh;
 }
 
 .modal-content {
-  max-width: 90vw;
+  max-width: 80vw;
   max-height: 80vh;
   border-radius: 16px;
   object-fit: contain;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
   background-color: white;
   position: relative;
   z-index: 1001;
 }
 
-/* X Button */
 .modal-close {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  font-size: 28px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  padding: 4px 10px;
+  top: 12px;
+  right: 12px;
+  font-size: 24px;
   font-weight: bold;
-  color: #333;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  padding: 6px 12px;
   cursor: pointer;
   z-index: 1002;
+  user-select: none;
 }
 
-/* Arrows */
+/* Arrows positioned relative to image */
 .modal-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 36px;
-  color: #333;
-  background: rgba(255, 255, 255, 0.8);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid white;
+  border-radius: 50%;
+  padding: 6px 10px;
   cursor: pointer;
-  z-index: 1002;
+  z-index: 1001;
+  user-select: none;
+  transition: background 0.2s ease;
 }
 
-.modal-arrow:hover {
-  background: rgba(255, 255, 255, 1);
+#modal-prev {
+  left: -40px;
 }
 
-.modal-arrow.left {
-  left: 10px;
+#modal-next {
+  right: -40px;
 }
 
-.modal-arrow.right {
-  right: 10px;
+.modal-arrow:hover,
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.7);
 }
+
+
+/* --- Forms and Boxes --- */
+.auth-box,
+.profile-box,
+.upload-box,
+.gallery-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 500px;
+  margin: 20px auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+input,
+select,
+button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+}
+
+button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
