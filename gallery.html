@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Trips - HolidaySnaps</title>
+  <title>Gallery - HolidaySnaps</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -14,27 +14,15 @@
       <nav>
         <a href="index.html">Home</a>
         <a href="profile.html">Profile</a>
+        <a href="trips.html">Trips</a>
         <a href="#" onclick="logOut()">Log Out</a>
       </nav>
     </header>
 
     <main>
-      <section class="upload-box">
-        <h2>Upload a Holiday Snap</h2>
-        <input type="file" id="photo" accept="image/*" />
-        <input type="text" id="resort" placeholder="Resort name" />
-        <input type="date" id="date" />
-        <select id="privacy">
-          <option value="public">Public</option>
-          <option value="friends">Friends Only</option>
-          <option value="private">Private</option>
-        </select>
-        <button id="uploadBtn">Upload Photo</button>
-      </section>
-
       <section class="gallery-box">
-        <h2>Your Resorts</h2>
-        <ul id="resort-list"></ul>
+        <h2 id="resort-title">Gallery</h2>
+        <div id="photo-gallery"></div>
       </section>
     </main>
 
@@ -42,6 +30,6 @@
       <p>&copy; 2025 HolidaySnaps</p>
     </footer>
   </div>
-  <script type="module" src="trips.js"></script>
+  <script type="module" src="gallery.js"></script>
 </body>
 </html>
