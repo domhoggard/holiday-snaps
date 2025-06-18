@@ -1,5 +1,6 @@
-import { storage } from './firebase.js';
+import { auth, storage } from './firebase.js';
 import { ref, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
 const gallery = document.getElementById('photo-gallery');
 const startDateInput = document.getElementById('startDate');
@@ -13,6 +14,13 @@ const modalNext = document.getElementById("modal-next");
 
 let imageList = [];
 let currentIndex = 0;
+let currentUserId = null;
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUserId = user.uid;
+  }
+});
 
 filterBtn.addEventListener('click', () => {
   const startDate = startDateInput.value;
@@ -30,6 +38,7 @@ async function loadPhotos(start, end) {
 
   const result = await listAll(ref(storage));
   for (const userFolder of result.prefixes) {
+    const uid = userFolder.name;
     const resortList = await listAll(userFolder);
     for (const resortFolder of resortList.prefixes) {
       const dateList = await listAll(resortFolder);
@@ -39,7 +48,8 @@ async function loadPhotos(start, end) {
           const privacyList = await listAll(dateFolder);
           for (const privacyFolder of privacyList.prefixes) {
             const privacy = privacyFolder.name;
-            if (privacy === "public" || privacy === "friends") {
+            const allowPrivate = (uid === currentUserId);
+            if (privacy === "public" || privacy === "friends" || (privacy === "private" && allowPrivate)) {
               const images = await listAll(privacyFolder);
               for (const item of images.items) {
                 const url = await getDownloadURL(item);
