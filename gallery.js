@@ -1,29 +1,67 @@
-// Get references to DOM elements
-var overlay   = document.getElementById('overlay');
-var popupImage = document.getElementById('popupImage');
-var closeBtn  = document.getElementById('closeBtn');
-var galleryLinks = document.querySelectorAll('.gallery a');
+import { storage } from './firebase.js';
+import { ref, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
 
-// When a thumbnail is clicked, show the overlay and centered image
-for (var i = 0; i < galleryLinks.length; i++) {
-  galleryLinks[i].addEventListener('click', function(e) {
-    e.preventDefault();  // Prevent navigating to the image file
-    var imageSrc = this.getAttribute('href');
-    popupImage.src = imageSrc;          // Set the popup image source to the full-size image
-    overlay.style.display = 'flex';     // Show the overlay (uses flex to center content)
-  });
+const gallery = document.getElementById('photo-gallery');
+const startDateInput = document.getElementById('startDate');
+const endDateInput = document.getElementById('endDate');
+const filterBtn = document.getElementById('filterBtn');
+
+filterBtn.addEventListener('click', () => {
+  const startDate = startDateInput.value;
+  const endDate = endDateInput.value;
+  if (!startDate || !endDate) {
+    alert("Please select both start and end dates.");
+    return;
+  }
+  loadPhotos(startDate, endDate);
+});
+
+async function loadPhotos(start, end) {
+  gallery.innerHTML = "";
+  const result = await listAll(ref(storage));
+  for (const userFolder of result.prefixes) {
+    const resortList = await listAll(userFolder);
+    for (const resortFolder of resortList.prefixes) {
+      const dateList = await listAll(resortFolder);
+      for (const dateFolder of dateList.prefixes) {
+        const date = dateFolder.name;
+        if (date >= start && date <= end) {
+          const privacyList = await listAll(dateFolder);
+          for (const privacyFolder of privacyList.prefixes) {
+            const privacy = privacyFolder.name;
+            if (privacy === "public" || privacy === "friends") {
+              const images = await listAll(privacyFolder);
+              for (const item of images.items) {
+                const url = await getDownloadURL(item);
+                const card = document.createElement("div");
+                card.className = "photo-card";
+                const img = document.createElement("img");
+                img.src = url;
+                img.alt = "Photo";
+                img.className = "gallery-img";
+                img.addEventListener("click", () => showModal(url));
+                const badge = document.createElement("span");
+                badge.className = "privacy-badge " + privacy;
+                badge.textContent = privacy.charAt(0).toUpperCase() + privacy.slice(1);
+                card.appendChild(img);
+                card.appendChild(badge);
+                gallery.appendChild(card);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
-// When the close button is clicked, hide the overlay
-closeBtn.addEventListener('click', function(e) {
-  e.stopPropagation();                 // Stop event from bubbling to overlay
-  overlay.style.display = 'none';
-});
+function showModal(url) {
+  const modal = document.getElementById("modal");
+  const modalImg = document.getElementById("modal-img");
+  modal.style.display = "block";
+  modalImg.src = url;
 
-// Optional: close the popup if user clicks outside the image (on the overlay background)
-overlay.addEventListener('click', function(e) {
-  if (e.target === overlay) {
-    overlay.style.display = 'none';
-  }
-});
-
+  document.getElementById("modal-close").onclick = function () {
+    document.getElementById("modal").style.display = "none";
+ };
+}

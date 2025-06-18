@@ -1,36 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HolidaySnaps Gallery</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gallery - HolidaySnaps</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+  <div class="background">
+    <header>
+      <img src="logo.png" alt="HolidaySnaps Logo" class="logo" />
+      <h1>HolidaySnaps Gallery</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="profile.html">Profile</a>
+        <a href="trips.html">Trips</a>
+      </nav>
+    </header>
 
-  <!-- Header / Navigation (if any) would go here. -->
-  <h1>HolidaySnaps Photo Gallery</h1>
-  <p>Click on any image to view it in full size.</p>
+    <main>
+      <section class="filter-box">
+        <h2>Search Photos</h2>
+        <input type="date" id="startDate" />
+        <input type="date" id="endDate" />
+        <button id="filterBtn">Filter</button>
+      </section>
 
-  <!-- Image thumbnails gallery -->
-  <div class="gallery">
-    <a href="images/pic1_large.jpg"><img src="images/pic1_thumb.jpg" alt="Picture 1" /></a>
-    <a href="images/pic2_large.jpg"><img src="images/pic2_thumb.jpg" alt="Picture 2" /></a>
-    <a href="images/pic3_large.jpg"><img src="images/pic3_thumb.jpg" alt="Picture 3" /></a>
-    <a href="images/pic4_large.jpg"><img src="images/pic4_thumb.jpg" alt="Picture 4" /></a>
-    <a href="images/pic5_large.jpg"><img src="images/pic5_thumb.jpg" alt="Picture 5" /></a>
-    <a href="images/pic6_large.jpg"><img src="images/pic6_thumb.jpg" alt="Picture 6" /></a>
-    <!-- Add more images as needed -->
+      <section class="gallery-box">
+        <h2>Photo Gallery</h2>
+        <div id="photo-gallery" class="photo-gallery"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 HolidaySnaps</p>
+    </footer>
   </div>
 
-  <!-- Popup overlay for full-size image -->
-  <div id="overlay">
-    <div id="popup">
-      <img id="popupImage" src="" alt="Full-size view" />
-      <span id="closeBtn">&times;</span>
-    </div>
+  <div id="modal" class="modal" style="display:none;">
+    <span id="modal-close" class="modal-close">&times;</span>
+    <img id="modal-img" class="modal-content" />
   </div>
 
-  <script src="gallery.js"></script>
+  <script type="module" src="gallery.js"></script>
 </body>
 </html>
