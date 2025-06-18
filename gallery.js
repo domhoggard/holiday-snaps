@@ -35,13 +35,16 @@ async function loadPhotos(start, end) {
                 const url = await getDownloadURL(item);
                 const card = document.createElement("div");
                 card.className = "photo-card";
-                card.innerHTML = `
-                  <img src="${url}" class="gallery-img" alt="Photo" />
-                  <span class="privacy-badge">${privacy}</span>
-                `;
-                card.querySelector("img").addEventListener("click", () => {
-                  showModal(url);
-                });
+                const img = document.createElement("img");
+                img.src = url;
+                img.alt = "Photo";
+                img.className = "gallery-img";
+                img.addEventListener("click", () => showModal(url));
+                const badge = document.createElement("span");
+                badge.className = "privacy-badge " + privacy;
+                badge.textContent = privacy.charAt(0).toUpperCase() + privacy.slice(1);
+                card.appendChild(img);
+                card.appendChild(badge);
                 gallery.appendChild(card);
               }
             }
