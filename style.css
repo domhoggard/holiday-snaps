@@ -1,88 +1,47 @@
-/* General page styles (beach-themed design) */
-body {
-  background-color: #e0f7fa;  /* a light aqua background for a beach feel */
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  color: #333;
-}
-
-/* Heading style */
-h1 {
-  text-align: center;
-  padding: 20px 0;
-  color: #005f6b;  /* a deep teal color for contrast */
-}
-
-/* Gallery layout */
-.gallery {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;               /* space between thumbnails */
-  padding: 10px;
-}
-
-/* Thumbnail images */
-.gallery img {
-  width: 200px;
-  height: auto;
-  border: 3px solid #fff;         /* white border for a polaroid-like look */
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.gallery img:hover {
-  transform: scale(1.05);        /* subtle zoom on hover */
-}
-
-/* Popup overlay (centered image container) */
-#overlay {
+/* --- POPUP MODAL STYLES --- */
+.modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* Removed the dark background overlay */
-  background: transparent;
-  display: none;                 /* shown as flex when activated via script */
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;                 /* ensure overlay is on top */
+  pointer-events: none; /* prevents click-blocking */
 }
 
-/* Popup content (image and close button) */
-#popup {
-  position: relative;
+.modal-content-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2000;
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
 }
 
-/* Full-size popup image */
-#popupImage {
+.modal-content {
   max-width: 90vw;
-  max-height: 90vh;
-  border: 3px solid #fff;        /* white border for consistency */
-  border-radius: 5px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  max-height: 80vh;
+  border-radius: 10px;
+  display: block;
 }
 
-/* Close button (X) on the popup image */
-#closeBtn {
+.modal-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  color: #fff;
+  top: -10px;
+  right: -10px;
   font-size: 24px;
-  text-decoration: none;
-  background: rgba(0, 0, 0, 0.6);  /* semi-transparent dark background for contrast */
+  color: white;
+  background: #333;
   border-radius: 50%;
-  padding: 5px 8px;
+  width: 30px;
+  height: 30px;
+  line-height: 28px;
+  text-align: center;
   cursor: pointer;
-  line-height: 1;
-}
-#closeBtn:hover {
-  background: rgba(0, 0, 0, 0.8);
+  z-index: 2001;
+  font-weight: bold;
 }
 
