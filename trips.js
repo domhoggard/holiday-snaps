@@ -1,3 +1,4 @@
+
 import { auth, storage, logOut } from './firebase.js';
 import { ref, uploadBytes, listAll } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
@@ -17,13 +18,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (uploadBtn) {
       uploadBtn.addEventListener("click", async () => {
-        const file = document.getElementById("photo").files[0];
+        let file = document.getElementById("photo").files[0];
         const resort = document.getElementById("resort").value.trim();
         const date = document.getElementById("date").value;
         const privacy = document.getElementById("privacy").value;
 
         if (!file || !resort || !date) {
           return alert("Please fill in all fields.");
+        }
+
+        // Convert HEIC to JPEG if needed
+        if (file.name.toLowerCase().endsWith('.heic')) {
+          try {
+            const heic2any = (await import('https://cdn.jsdelivr.net/npm/heic2any@0.0.3/dist/heic2any.min.js')).default;
+            const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg' });
+            file = new File([convertedBlob], file.name.replace(/\.heic$/, '.jpg'), { type: 'image/jpeg' });
+          } catch (conversionError) {
+            console.error("HEIC conversion failed:", conversionError);
+            alert("HEIC conversion failed. Please try another file format.");
+            return;
+          }
         }
 
         const filePath = `${user.uid}/${resort}/${date}/${privacy}/${file.name}`;
