@@ -1,54 +1,89 @@
 import { auth, db } from "./firebase.js";
 import {
-  doc,
-  getDoc,
-  deleteDoc,
-  updateDoc,
-  getDocs,
-  collection,
-  query,
-  where
+  doc, getDoc, deleteDoc, updateDoc, arrayUnion, getDocs, collection, query, where
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 import {
-  onAuthStateChanged,
-  deleteUser,
-  signOut
+  onAuthStateChanged, deleteUser, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
 const profileInfo = document.getElementById("profile-info");
-const searchInput = document.getElementById("searchInput");
-const searchBtn = document.getElementById("searchBtn");
-const searchResults = document.getElementById("searchResults");
+const searchInput = document.getElementById("user-search");
+const resultsList = document.getElementById("search-results");
 
-let currentUser = null;
-let currentUserData = null;
+let currentUserId = null;
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return (window.location.href = "login.html");
-  currentUser = user;
-
-  const userDocRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userDocRef);
-  if (userSnap.exists()) {
-    currentUserData = userSnap.data();
-    profileInfo.innerHTML = `
-      <h3>Welcome, ${currentUserData.name}</h3>
-      <p><strong>Email:</strong> ${user.email}</p>
-      <p><strong>Date of Birth:</strong> ${currentUserData.dob}</p>
-      <p><a href="trips.html">View My Trips</a></p>
-      <button onclick="deleteAccount()">Delete Account</button>
-    `;
+  if (user) {
+    currentUserId = user.uid;
+    const docSnap = await getDoc(doc(db, "users", user.uid));
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      profileInfo.innerHTML = `
+        <h3>Welcome, ${userData.name}</h3>
+        <p><strong>Email:</strong> ${user.email}</p>
+        <p><strong>Date of Birth:</strong> ${userData.dob}</p>
+        <p><a href="trips.html">View My Trips</a></p>
+        <button onclick="deleteAccount()">Delete Account</button>
+        <hr />
+        <h4>Search for Friends</h4>
+        <input type="text" id="user-search" placeholder="Enter name or email" />
+        <ul id="search-results"></ul>
+      `;
+      document.getElementById("user-search").addEventListener("input", searchUsers);
+    }
   } else {
-    profileInfo.innerHTML = `<p>No profile data found.</p>`;
+    window.location.href = "login.html";
   }
 });
 
+async function searchUsers(event) {
+  const term = event.target.value.trim().toLowerCase();
+  resultsList.innerHTML = "";
+
+  if (term.length < 3) return;
+
+  const usersRef = collection(db, "users");
+  const snapshot = await getDocs(usersRef);
+
+  snapshot.forEach(docSnap => {
+    const user = docSnap.data();
+    const uid = docSnap.id;
+
+    if (
+      uid !== currentUserId &&
+      (user.name?.toLowerCase().includes(term) || user.email?.toLowerCase().includes(term))
+    ) {
+      const li = document.createElement("li");
+      li.innerHTML = `${user.name} (${user.email}) 
+        <button data-id="${uid}">Add Friend</button>`;
+      li.querySelector("button").addEventListener("click", () => addFriend(uid));
+      resultsList.appendChild(li);
+    }
+  });
+}
+
+async function addFriend(friendId) {
+  if (!confirm("Send friend request?")) return;
+  try {
+    const userRef = doc(db, "users", currentUserId);
+    await updateDoc(userRef, {
+      friends: arrayUnion(friendId)
+    });
+    alert("Friend added!");
+  } catch (err) {
+    console.error("Error adding friend:", err);
+    alert("Failed to add friend.");
+  }
+}
+
 window.deleteAccount = async function () {
-  if (!currentUser) return;
+  const user = auth.currentUser;
+  if (!user) return;
+
   if (confirm("Are you sure you want to delete your account? This cannot be undone.")) {
     try {
-      await deleteDoc(doc(db, "users", currentUser.uid));
-      await deleteUser(currentUser);
+      await deleteDoc(doc(db, "users", user.uid));
+      await deleteUser(user);
       alert("Your account has been deleted.");
       window.location.href = "index.html";
     } catch (error) {
@@ -66,56 +101,3 @@ window.logOut = function () {
     alert("Logout failed.");
   });
 };
-
-// 🔍 Friend Search
-searchBtn.addEventListener("click", async () => {
-  const keyword = searchInput.value.trim().toLowerCase();
-  searchResults.innerHTML = "";
-
-  if (!keyword || !currentUser || !currentUserData) return;
-
-  const usersSnapshot = await getDocs(collection(db, "users"));
-  usersSnapshot.forEach((docSnap) => {
-    const user = docSnap.data();
-    const uid = docSnap.id;
-
-    // Skip current user and existing friends
-    if (
-      uid === currentUser.uid ||
-      (currentUserData.friends && currentUserData.friends.includes(uid))
-    ) return;
-
-    const nameMatch = user.name.toLowerCase().includes(keyword);
-    const emailMatch = user.email.toLowerCase().includes(keyword);
-    if (nameMatch || emailMatch) {
-      const li = document.createElement("li");
-      li.textContent = `${user.name} (${user.email}) `;
-
-      const btn = document.createElement("button");
-      btn.textContent = "Add Friend";
-      btn.onclick = () => addFriend(uid, user.name);
-
-      li.appendChild(btn);
-      searchResults.appendChild(li);
-    }
-  });
-});
-
-async function addFriend(friendUid, friendName) {
-  if (!currentUser || !currentUserData) return;
-
-  try {
-    const newFriends = [...(currentUserData.friends || []), friendUid];
-    await updateDoc(doc(db, "users", currentUser.uid), {
-      friends: newFriends
-    });
-
-    alert(`${friendName} has been added as a friend.`);
-    searchResults.innerHTML = "";
-    searchInput.value = "";
-  } catch (err) {
-    console.error("Error adding friend:", err);
-    alert("Failed to add friend.");
-  }
-}
-
