@@ -1,21 +1,32 @@
 import { auth, db } from "./firebase.js";
 import {
-  doc, getDoc, deleteDoc, updateDoc, arrayUnion, getDocs, collection
+  doc,
+  getDoc,
+  deleteDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 import {
-  onAuthStateChanged, deleteUser, signOut
+  onAuthStateChanged,
+  deleteUser,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
 const profileInfo = document.getElementById("profile-info");
-const searchInput = document.getElementById("user-search");
-const resultsList = document.getElementById("search-results");
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const searchResults = document.getElementById("searchResults");
 
 let currentUserId = null;
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUserId = user.uid;
-    const docSnap = await getDoc(doc(db, "users", user.uid));
+    const docSnap = await getDoc(doc(db, "users", currentUserId));
     if (docSnap.exists()) {
       const userData = docSnap.data();
       profileInfo.innerHTML = `
@@ -33,49 +44,56 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-if (searchInput) {
-  searchInput.addEventListener("input", searchUsers);
-}
+searchBtn.addEventListener("click", async () => {
+  const term = searchInput.value.trim().toLowerCase();
+  searchResults.innerHTML = "";
 
-async function searchUsers(event) {
-  const term = event.target.value.trim().toLowerCase();
-  resultsList.innerHTML = "";
+  if (!term) {
+    return alert("Please enter a name or email to search.");
+  }
 
-  if (term.length < 3) return;
+  // Search for name OR email
+  const q = query(collection(db, "users"));
+  const querySnapshot = await getDocs(q);
 
-  const usersRef = collection(db, "users");
-  const snapshot = await getDocs(usersRef);
-
-  snapshot.forEach(docSnap => {
+  let resultsFound = 0;
+  querySnapshot.forEach((docSnap) => {
     const user = docSnap.data();
     const uid = docSnap.id;
 
     if (
       uid !== currentUserId &&
-      (user.name?.toLowerCase().includes(term) || user.email?.toLowerCase().includes(term))
+      (user.name.toLowerCase().includes(term) || user.email.toLowerCase().includes(term))
     ) {
+      resultsFound++;
       const li = document.createElement("li");
-      li.innerHTML = `${user.name} (${user.email}) 
-        <button data-id="${uid}">Add Friend</button>`;
-      li.querySelector("button").addEventListener("click", () => addFriend(uid));
-      resultsList.appendChild(li);
+      li.innerHTML = `
+        <strong>${user.name}</strong> (${user.email})
+        <button class="add-friend-btn" data-id="${uid}">Add Friend</button>
+      `;
+      searchResults.appendChild(li);
     }
   });
-}
 
-async function addFriend(friendId) {
-  if (!confirm("Send friend request?")) return;
-  try {
-    const userRef = doc(db, "users", currentUserId);
-    await updateDoc(userRef, {
-      friends: arrayUnion(friendId)
-    });
-    alert("Friend added!");
-  } catch (err) {
-    console.error("Error adding friend:", err);
-    alert("Failed to add friend.");
+  if (resultsFound === 0) {
+    searchResults.innerHTML = `<li>No matches found.</li>`;
   }
-}
+});
+
+searchResults.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("add-friend-btn")) {
+    const friendId = e.target.getAttribute("data-id");
+    try {
+      await updateDoc(doc(db, "users", currentUserId), {
+        friends: arrayUnion(friendId)
+      });
+      alert("Friend added!");
+    } catch (error) {
+      console.error("Error adding friend:", error);
+      alert("Failed to add friend.");
+    }
+  }
+});
 
 window.deleteAccount = async function () {
   const user = auth.currentUser;
