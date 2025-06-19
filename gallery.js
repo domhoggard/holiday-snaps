@@ -1,6 +1,6 @@
 import { auth, storage, db } from './firebase.js';
 import { ref, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
-import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+import { collection, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
 const gallery = document.getElementById('photo-gallery');
@@ -16,9 +16,16 @@ const modalNext = document.getElementById("modal-next");
 let imageList = [];
 let currentIndex = 0;
 let currentUserId = null;
+let friendIds = [];
 
-onAuthStateChanged(auth, (user) => {
-  currentUserId = user?.uid || null;
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUserId = user.uid;
+    const userDoc = await getDoc(doc(db, "users", currentUserId));
+    if (userDoc.exists()) {
+      friendIds = userDoc.data().friends || [];
+    }
+  }
 });
 
 filterBtn.addEventListener('click', async () => {
@@ -38,9 +45,8 @@ async function loadPhotos(start, end) {
   const userDocs = await getDocs(collection(db, "users"));
   for (const userDoc of userDocs.docs) {
     const uid = userDoc.id;
-    const userData = userDoc.data();
-    const isFriend = userData.friends?.includes(currentUserId);
     const isOwner = uid === currentUserId;
+    const isFriend = friendIds.includes(uid);
 
     try {
       const resortList = await listAll(ref(storage, uid));
@@ -55,7 +61,7 @@ async function loadPhotos(start, end) {
 
               const canView =
                 privacy === "public" ||
-                (privacy === "friends" && isFriend) ||
+                (privacy === "friends" && (isOwner || isFriend)) ||
                 (privacy === "private" && isOwner);
 
               if (canView) {
