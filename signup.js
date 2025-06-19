@@ -15,7 +15,8 @@ document.getElementById("signup-form").addEventListener("submit", async (e) => {
     await setDoc(doc(db, "users", uid), {
       name,
       dob,
-      email
+      email,
+      friends: []
     });
     window.location.href = "profile.html";
   } catch (error) {
