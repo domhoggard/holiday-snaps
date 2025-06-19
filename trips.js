@@ -1,5 +1,6 @@
-import { auth, storage, logOut } from './firebase.js';
+import { auth, storage, db, logOut } from './firebase.js';
 import { ref, uploadBytes, listAll } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
+import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -49,8 +50,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const filePath = `${user.uid}/${resort}/${date}/${privacy}/${file.name}`;
         const storageRef = ref(storage, filePath);
+
+        // Prepare metadata
+        let metadata = {
+          customMetadata: {
+            privacy: privacy,
+            owner: user.uid
+          }
+        };
+
+        if (privacy === "friends") {
+          try {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              const friendsArray = userData.friends || [];
+              metadata.customMetadata.friends = JSON.stringify(friendsArray);
+            }
+          } catch (error) {
+            console.error("Error fetching friends for metadata:", error);
+          }
+        }
+
         try {
-          await uploadBytes(storageRef, file);
+          await uploadBytes(storageRef, file, metadata);
           alert("Photo uploaded successfully!");
           await listResorts(user.uid);
         } catch (error) {
@@ -82,4 +105,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
 
