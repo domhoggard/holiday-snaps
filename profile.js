@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase.js";
 import {
-  doc, getDoc, deleteDoc, updateDoc, arrayUnion, getDocs, collection, query, where
+  doc, getDoc, deleteDoc, updateDoc, arrayUnion, getDocs, collection
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 import {
   onAuthStateChanged, deleteUser, signOut
@@ -24,17 +24,18 @@ onAuthStateChanged(auth, async (user) => {
         <p><strong>Date of Birth:</strong> ${userData.dob}</p>
         <p><a href="trips.html">View My Trips</a></p>
         <button onclick="deleteAccount()">Delete Account</button>
-        <hr />
-        <h4>Search for Friends</h4>
-        <input type="text" id="user-search" placeholder="Enter name or email" />
-        <ul id="search-results"></ul>
       `;
-      document.getElementById("user-search").addEventListener("input", searchUsers);
+    } else {
+      profileInfo.innerHTML = `<p>No profile data found.</p>`;
     }
   } else {
     window.location.href = "login.html";
   }
 });
+
+if (searchInput) {
+  searchInput.addEventListener("input", searchUsers);
+}
 
 async function searchUsers(event) {
   const term = event.target.value.trim().toLowerCase();
