@@ -1,69 +1,83 @@
-
 body {
-  font-family: 'Open Sans', sans-serif;
-  background: url('beach-background.jpg') no-repeat center center fixed;
-  background-size: cover;
-  color: #333;
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(to bottom, #e0f7f5, #c5dfd9);
+  color: #104a42;
   margin: 0;
   padding: 0;
 }
 
 .background {
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 20px;
   min-height: 100vh;
-}
-
-.site-header {
-  background-color: #ffffff;
-  border-bottom: 2px solid #ccc;
-  padding: 10px 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-inner {
-  max-width: 1200px;
-  margin: auto;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
-}
-
-.logo-header {
-  height: 50px;
-  margin-right: 10px;
-}
-
-.site-title {
-  font-size: 1.8em;
-  color: #007BFF;
-  margin: 0;
-  font-weight: bold;
-  display: inline-block;
-}
-
-.main-nav {
-  display: flex;
-  gap: 20px;
-}
-
-.main-nav a {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-}
-
-.main-nav a img {
-  height: 20px;
-  margin-right: 8px;
 }
 
 footer {
   text-align: center;
-  margin-top: 40px;
+  margin: 20px 0;
   font-size: 0.9em;
+}
+
+.homepage-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+.homepage-logo {
+  width: 240px;
+  margin: 30px 0;
+}
+
+.login-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+
+.login-box h2 {
+  margin-top: 0;
+  color: #104a42;
+}
+
+.login-box p {
+  margin: 10px 0 20px;
+}
+
+.login-box input {
+  width: 90%;
+  margin: 10px auto;
+  padding: 12px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: block;
+}
+
+.login-box button {
+  background-color: #1ba29c;
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  width: 95%;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.login-box button:hover {
+  background-color: #0c7973;
+}
+
+.signup-link {
+  font-size: 0.9em;
+  margin-top: 10px;
 }
