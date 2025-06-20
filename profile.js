@@ -1,31 +1,27 @@
+
 import { auth, db } from "./firebase.js";
 import {
-  doc,
-  getDoc,
-  deleteDoc,
-  getDocs,
-  query,
-  collection,
-  updateDoc,
-  arrayUnion
+  doc, getDoc, deleteDoc, getDocs,
+  query, collection, updateDoc, arrayUnion,
+  setDoc, onSnapshot, deleteField
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 import {
-  onAuthStateChanged,
-  deleteUser,
-  signOut
+  onAuthStateChanged, deleteUser, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
 const profileInfo = document.getElementById("profile-info");
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
 const searchResults = document.getElementById("searchResults");
+const friendRequestsList = document.getElementById("friendRequests");
+const notificationBadge = document.getElementById("notificationBadge");
 
 let currentUserId = null;
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUserId = user.uid;
-    const docSnap = await getDoc(doc(db, "users", user.uid));
+    const docSnap = await getDoc(doc(db, "users", currentUserId));
     if (docSnap.exists()) {
       const userData = docSnap.data();
       profileInfo.innerHTML = `
@@ -38,9 +34,14 @@ onAuthStateChanged(auth, async (user) => {
         <h3>Search for Friends</h3>
         <input type="text" id="searchInput" placeholder="Enter name or email" />
         <ul id="searchResults"></ul>
+        <hr />
+        <h3>Friend Requests <span id="notificationBadge" style="color:red;"></span></h3>
+        <ul id="friendRequests"></ul>
       `;
+
+      watchFriendRequests();
     } else {
-      profileInfo.innerHTML = `<p>No profile data found.</p>`;
+      profileInfo.innerHTML = "<p>No profile data found.</p>";
     }
   } else {
     window.location.href = "login.html";
@@ -73,56 +74,85 @@ window.logOut = function () {
   });
 };
 
-// Friend search logic
+// Friend search
 searchBtn.addEventListener("click", async () => {
   const term = searchInput.value.trim().toLowerCase();
-  console.log("🔍 Searching for:", term);
   searchResults.innerHTML = "";
 
   if (!term) return alert("Please enter a name or email to search.");
 
-  try {
-    const q = query(collection(db, "users"));
-    const querySnapshot = await getDocs(q);
-    console.log("📄 Total user documents:", querySnapshot.size);
+  const allUsers = await getDocs(query(collection(db, "users")));
+  allUsers.forEach(async (docSnap) => {
+    const user = docSnap.data();
+    const uid = docSnap.id;
 
-    let found = 0;
+    if (uid !== currentUserId &&
+        (user.name?.toLowerCase().includes(term) || user.email?.toLowerCase().includes(term))) {
+      const li = document.createElement("li");
+      li.textContent = `${user.name} (${user.email})`;
 
-    querySnapshot.forEach((docSnap) => {
-      const user = docSnap.data();
-      const uid = docSnap.id;
+      const btn = document.createElement("button");
+      btn.textContent = "Send Friend Request";
+      btn.onclick = async () => {
+        await setDoc(doc(db, "users", uid, "friendRequests", currentUserId), {
+          from: currentUserId,
+          name: auth.currentUser.displayName || user.name || "Someone",
+          status: "pending"
+        });
+        alert("Friend request sent.");
+      };
 
-      if (
-        uid !== currentUserId &&
-        (user.name?.toLowerCase().includes(term) || user.email?.toLowerCase().includes(term))
-      ) {
-        found++;
-        console.log("✅ Match found:", user.email);
+      li.appendChild(btn);
+      searchResults.appendChild(li);
+    }
+  });
+});
 
+// Watch friend requests
+function watchFriendRequests() {
+  const ref = collection(db, "users", currentUserId, "friendRequests");
+
+  onSnapshot(ref, (snapshot) => {
+    let pendingCount = 0;
+    friendRequestsList.innerHTML = "";
+
+    snapshot.forEach((docSnap) => {
+      const request = docSnap.data();
+      if (request.status === "pending") {
+        pendingCount++;
         const li = document.createElement("li");
-        li.textContent = `${user.name} (${user.email})`;
+        li.textContent = `Friend request from ${request.name}`;
 
-        const btn = document.createElement("button");
-        btn.textContent = "Add Friend";
-        btn.onclick = async () => {
+        const acceptBtn = document.createElement("button");
+        acceptBtn.textContent = "Accept";
+        acceptBtn.onclick = async () => {
           await updateDoc(doc(db, "users", currentUserId), {
-            friends: arrayUnion(uid)
+            friends: arrayUnion(request.from)
           });
-          alert(`${user.name} added as a friend!`);
+          await updateDoc(doc(db, "users", request.from), {
+            friends: arrayUnion(currentUserId)
+          });
+          await setDoc(doc(db, "users", currentUserId, "friendRequests", request.from), {
+            ...request,
+            status: "accepted"
+          });
         };
 
-        li.appendChild(btn);
-        searchResults.appendChild(li);
+        const declineBtn = document.createElement("button");
+        declineBtn.textContent = "Decline";
+        declineBtn.onclick = async () => {
+          await setDoc(doc(db, "users", currentUserId, "friendRequests", request.from), {
+            ...request,
+            status: "declined"
+          });
+        };
+
+        li.appendChild(acceptBtn);
+        li.appendChild(declineBtn);
+        friendRequestsList.appendChild(li);
       }
     });
 
-    if (found === 0) {
-      console.log("❌ No matches found.");
-      searchResults.innerHTML = `<li>No matching users found.</li>`;
-    }
-
-  } catch (err) {
-    console.error("Error during search:", err);
-    alert("Search failed. See console for details.");
-  }
-});
+    notificationBadge.textContent = pendingCount > 0 ? `(${pendingCount})` : "";
+  });
+}
