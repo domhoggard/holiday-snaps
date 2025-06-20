@@ -1,6 +1,4 @@
 
-
-
 body {
   font-family: 'Open Sans', sans-serif;
   background: url('beach-background.jpg') no-repeat center center fixed;
@@ -16,29 +14,52 @@ body {
   min-height: 100vh;
 }
 
-header {
-  text-align: center;
+.site-header {
+  background-color: #ffffff;
+  border-bottom: 2px solid #ccc;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.logo {
-  width: 120px;
-  margin-top: 10px;
+.header-inner {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.logo-large {
-  width: 160px;
-  margin-top: 10px;
+.logo-header {
+  height: 50px;
+  margin-right: 10px;
 }
 
-nav a {
-  margin: 0 10px;
-  text-decoration: none;
+.site-title {
+  font-size: 1.8em;
   color: #007BFF;
+  margin: 0;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.main-nav {
+  display: flex;
+  gap: 20px;
+}
+
+.main-nav a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
   font-weight: bold;
 }
 
-nav a:hover {
-  text-decoration: underline;
+.main-nav a img {
+  height: 20px;
+  margin-right: 8px;
 }
 
 footer {
@@ -46,187 +67,3 @@ footer {
   margin-top: 40px;
   font-size: 0.9em;
 }
-
-/* --- GALLERY STYLES --- */
-.photo-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding: 1rem;
-  justify-content: center;
-}
-
-.photo-card {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  background-color: white;
-}
-
-.gallery-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.gallery-img:hover {
-  transform: scale(1.05);
-}
-
-.badge {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  background: rgba(255, 255, 255, 0.9);
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 8px;
-  font-weight: bold;
-  color: #333;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
-}
-
-.badge.friends {
-  background-color: #2196f3;
-  color: white;
-}
-
-.badge.public {
-  background-color: #4caf50;
-  color: white;
-}
-
-.filter-box {
-  text-align: center;
-  margin: 20px 0;
-}
-
-.filter-box label {
-  margin: 0 10px;
-}
-
-/* --- POPUP MODAL STYLES --- */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  background: none;
-}
-
-.modal-inner {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  max-width: 90vw;
-  max-height: 80vh;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  background: white;
-}
-
-.modal-close {
-  position: absolute;
-  top: -15px;
-  right: -15px;
-  font-size: 26px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  padding: 6px 12px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-.modal-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 32px;
-  color: #333;
-  background-color: rgba(255, 255, 255, 0.8);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 1001;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 40px;
-  height: 40px;      /* ✅ constrain size */
-  min-width: 0;      /* ✅ prevent auto expansion */
-  min-height: 0;
-  max-width: 40px;
-  max-height: 40px;
-}
-
-
-
-.modal-arrow.left {
-  left: -50px;
-}
-
-.modal-arrow.right {
-  right: -50px;
-}
-
-
-
-
-
-/* --- Forms and Boxes --- */
-.auth-box,
-.profile-box,
-.upload-box,
-.gallery-box {
-  background-color: white;
-  padding: 20px;
-  border-radius: 12px;
-  max-width: 500px;
-  margin: 20px auto;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-input,
-select,
-button {
-  display: block;
-  width: 100%;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 1em;
-}
-
-button {
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
