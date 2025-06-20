@@ -1,83 +1,106 @@
 body {
-  font-family: 'Nunito', sans-serif;
-  background: linear-gradient(to bottom, #e0f7f5, #c5dfd9);
-  color: #104a42;
+  font-family: 'Open Sans', sans-serif;
+  background: linear-gradient(to bottom, #ffa733, #a3d5a0);
+  color: #223;
   margin: 0;
   padding: 0;
 }
 
 .background {
+  padding: 20px;
   min-height: 100vh;
+}
+
+.site-header {
+  background-color: #ffa733;
+  padding: 10px 20px;
+  border-bottom: 2px solid #f1c078;
+}
+
+.header-inner {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.logo-small {
+  height: 40px;
+}
+
+.site-title {
+  font-size: 1.8em;
+  color: #00b3ad;
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+.main-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: #222;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.main-nav a img {
+  height: 24px;
+  margin-right: 5px;
 }
 
 footer {
   text-align: center;
-  margin: 20px 0;
+  margin-top: 40px;
   font-size: 0.9em;
+  color: #222;
 }
 
-.homepage-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
+.profile-box {
+  background-color: #fffbd5;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin: 20px auto;
+  max-width: 700px;
 }
 
-.homepage-logo {
-  width: 240px;
-  margin: 30px 0;
-}
-
-.login-box {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  max-width: 420px;
-  width: 100%;
-  text-align: center;
-}
-
-.login-box h2 {
-  margin-top: 0;
-  color: #104a42;
-}
-
-.login-box p {
-  margin: 10px 0 20px;
-}
-
-.login-box input {
-  width: 90%;
-  margin: 10px auto;
-  padding: 12px;
-  font-size: 1em;
-  border: 1px solid #ccc;
+input[type="text"] {
+  width: 300px;
+  padding: 10px;
+  margin: 10px;
   border-radius: 8px;
-  display: block;
+  border: 1px solid #ccc;
 }
 
-.login-box button {
-  background-color: #1ba29c;
-  color: white;
-  padding: 12px;
-  font-weight: bold;
-  font-size: 1em;
+button {
+  padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  width: 95%;
+  font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
 }
 
-.login-box button:hover {
-  background-color: #0c7973;
+button:hover {
+  opacity: 0.9;
 }
 
-.signup-link {
-  font-size: 0.9em;
-  margin-top: 10px;
+button.approve {
+  background-color: #00b3ad;
+  color: white;
+}
+
+button.decline {
+  background-color: #eee5b5;
+}
+
+#profile-info a {
+  color: red;
+  font-weight: bold;
+  text-decoration: none;
 }
