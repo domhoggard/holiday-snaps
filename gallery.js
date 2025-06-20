@@ -46,7 +46,7 @@ async function loadPhotos(start, end) {
   for (const userDoc of userDocs.docs) {
     const uid = userDoc.id;
     const isOwner = uid === currentUserId;
-    const isFriend = friendIds.includes(uid);
+    const isFriend = friendIds.includes(uid); // <- used for access check
 
     try {
       const resortList = await listAll(ref(storage, uid));
