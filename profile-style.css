@@ -1,0 +1,99 @@
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background: #FDB543;
+  margin: 0;
+  padding: 0;
+  color: #004d40;
+}
+
+.background {
+  padding: 0;
+}
+
+.site-header {
+  background-color: #FDB543;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.logo-small {
+  background: transparent;
+  width: 90px;
+  margin-right: 10px;
+}
+
+.site-title {
+  font-size: 24px;
+  color: #00AFAA;
+  margin-right: auto;
+}
+
+.main-nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9em;
+}
+
+.main-nav img {
+  width: 24px;
+  margin-right: 6px;
+}
+
+main {
+  padding: 20px;
+}
+
+.profile-card {
+  background-color: #FFF9D9;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-card h2 {
+  margin-top: 0;
+}
+
+input[type="text"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #00AFAA;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+button:hover {
+  background-color: #007f7f;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9em;
+  background-color: transparent;
+}
