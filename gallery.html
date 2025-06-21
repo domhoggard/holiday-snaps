@@ -4,29 +4,32 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gallery - HolidaySnaps</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="gallery-style.css"/>
 </head>
 <body>
   <div class="background">
-    <header>
-      <img src="logo.png" alt="HolidaySnaps Logo" class="logo" />
-      <h1>HolidaySnaps Gallery</h1>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="profile.html">Profile</a>
-        <a href="trips.html">Trips</a>
-      </nav>
+    <header class="site-header">
+      <div class="header-inner">
+        <img src="logo2.png" alt="HolidaySnaps Logo" class="logo-small"/>
+        <h1 class="site-title">HolidaySnaps</h1>
+        <nav class="main-nav">
+          <a href="index.html"><img src="icons/home.png" alt="Home"/>Home</a>
+          <a href="trips.html"><img src="icons/calendar.png" alt="Trips"/>Trips</a>
+          <a href="profile.html"><img src="icons/profile.png" alt="Profile"/>Friends</a>
+          <a href="#" onclick="logOut()"><img src="icons/logout.png" alt="Logout"/>Logout</a>
+        </nav>
+      </div>
     </header>
 
     <main>
-      <section class="filter-box">
+      <section class="profile-card">
         <h2>Search Photos</h2>
         <input type="date" id="startDate" />
         <input type="date" id="endDate" />
         <button id="filterBtn">Filter</button>
       </section>
 
-      <section class="gallery-box">
+      <section class="profile-card">
         <h2>Photo Gallery</h2>
         <div id="photo-gallery" class="photo-gallery"></div>
       </section>
@@ -37,18 +40,14 @@
     </footer>
   </div>
 
-  <!-- Modal Viewer -->
-<div id="modal" class="modal" style="display:none;">
-  <div class="modal-inner">
-    <span id="modal-close" class="modal-close">&times;</span>
-    <button id="modal-prev" class="modal-arrow left">&#8592;</button>
-    <img id="modal-img" class="modal-content" />
-    <button id="modal-next" class="modal-arrow right">&#8594;</button>
+  <div id="modal" class="modal">
+    <div class="modal-inner">
+      <span id="modal-close" class="modal-close">&times;</span>
+      <button id="modal-prev" class="modal-arrow left">&#8592;</button>
+      <img id="modal-img" class="modal-content" />
+      <button id="modal-next" class="modal-arrow right">&#8594;</button>
+    </div>
   </div>
-</div>
-
-
-
 
   <script type="module" src="gallery.js"></script>
 </body>
