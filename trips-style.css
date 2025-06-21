@@ -1,3 +1,4 @@
+
 body {
   font-family: 'Open Sans', sans-serif;
   background: #FDB543;
@@ -7,10 +8,7 @@ body {
 }
 
 .background {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  padding: 0;
 }
 
 .site-header {
@@ -60,19 +58,14 @@ body {
 
 main {
   padding: 20px;
-  flex-grow: 1;
 }
 
-.card {
+.upload-box, .gallery-box {
   background-color: #FFF9D9;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.card h2 {
-  margin-top: 0;
 }
 
 input[type="file"],
@@ -100,6 +93,11 @@ button {
 
 button:hover {
   background-color: #007f7f;
+}
+
+#resort-list {
+  list-style-type: none;
+  padding: 0;
 }
 
 footer {
