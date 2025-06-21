@@ -4,22 +4,25 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Trips - HolidaySnaps</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="trips-style.css"/>
 </head>
 <body>
   <div class="background">
-    <header>
-      <img src="logo.png" alt="HolidaySnaps Logo" class="logo-large" />
-      <h1>HolidaySnaps</h1>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="profile.html">Profile</a>
-        <a href="#" id="logout-link">Log Out</a>
-      </nav>
+    <header class="site-header">
+      <div class="header-inner">
+        <img src="logo2.png" alt="HolidaySnaps Logo" class="logo-small"/>
+        <h1 class="site-title">HolidaySnaps</h1>
+        <nav class="main-nav">
+          <a href="index.html"><img src="icons/home.png" alt="Home Icon"/>Home</a>
+          <a href="trips.html"><img src="icons/trips.png" alt="Trips Icon"/>Trips</a>
+          <a href="profile.html"><img src="icons/friends.png" alt="Friends Icon"/>Friends</a>
+          <a href="#" onclick="logOut()"><img src="icons/logout.png" alt="Logout Icon"/>Logout</a>
+        </nav>
+      </div>
     </header>
 
     <main>
-      <section class="upload-box">
+      <section class="card">
         <h2>Upload a Holiday Snap</h2>
         <input type="file" id="photo" accept="image/*" />
         <input type="text" id="resort" placeholder="Resort name" />
@@ -32,7 +35,7 @@
         <button id="uploadBtn">Upload Photo</button>
       </section>
 
-      <section class="gallery-box">
+      <section class="card">
         <h2>Your Resorts</h2>
         <ul id="resort-list"></ul>
       </section>
@@ -46,4 +49,3 @@
   <script type="module" src="trips.js"></script>
 </body>
 </html>
-

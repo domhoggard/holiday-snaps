@@ -7,10 +7,7 @@ body {
 }
 
 .background {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  padding: 0;
 }
 
 .site-header {
@@ -60,7 +57,6 @@ body {
 
 main {
   padding: 20px;
-  flex-grow: 1;
 }
 
 .card {
@@ -100,6 +96,11 @@ button {
 
 button:hover {
   background-color: #007f7f;
+}
+
+#resort-list {
+  list-style-type: none;
+  padding: 0;
 }
 
 footer {
