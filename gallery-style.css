@@ -137,14 +137,18 @@ footer {
 }
 
 .modal-inner {
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
-  padding: 20px;
+  width: 90%;
+  max-width: 1000px;
 }
 
 .modal-content {
-  max-width: 80%;
-  max-height: 80vh;
+  max-width: 100%;
+  max-height: 90vh;
   width: auto;
   height: auto;
   display: inline-block;
