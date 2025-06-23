@@ -192,30 +192,38 @@ footer {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
+  background: none !important;
+  border: none !important;
   padding: 0;
   z-index: 1001;
   cursor: pointer;
-  outline: none;
+  outline: none !important;
 }
 
+.modal-arrow:focus,
+.modal-arrow:hover,
+.modal-arrow:active {
+  background: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
 .modal-arrow img {
-  width: 60px;
-  height: 60px;
-  border-radius: 0;         /* remove circular shape */
-  background-color: transparent; /* remove green background */
-  padding: 0;               /* remove internal spacing */
-  box-shadow: none;         /* remove any shadow */
-  transition: opacity 0.3s ease;
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: transparent !important;
+  padding: 0;
+  box-shadow: none !important;
   display: block;
+  transition: opacity 0.2s ease;
 }
 
 .modal-arrow img:hover,
 .modal-arrow img:focus,
 .modal-arrow img:active {
-  background-color: transparent !important; /* Remove all hover/active bg */
-  outline: none;
+  background: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
   opacity: 0.8;
 }
 
