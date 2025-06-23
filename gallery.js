@@ -79,13 +79,15 @@ saveTripBtn.addEventListener('click', async () => {
   }
 });
 
-loadTripBtn.addEventListener('click', () => {
+loadTripBtn.addEventListener('click', async () => {
   const selected = savedTripsDropdown.value;
   if (!selected) return;
   const { start, end } = JSON.parse(selected);
   startDateInput.value = start;
   endDateInput.value = end;
+  await loadPhotos(start, end); // <-- load gallery immediately
 });
+
 
 function loadSavedTrips(trips) {
   for (const trip of trips) {
