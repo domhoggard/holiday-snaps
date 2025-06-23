@@ -235,3 +235,23 @@ footer {
 .modal-arrow.right {
   right: -40px; /* overlaps slightly onto the image */
 }
+
+/* Saved Trips Section */
+#tripName {
+  padding: 10px;
+  margin-right: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 250px;
+}
+
+#savedTripsDropdown {
+  padding: 10px;
+  margin: 10px 10px 0 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #004d40;
+  font-weight: bold;
+  font-family: 'Nunito', sans-serif;
+}
