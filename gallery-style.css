@@ -197,6 +197,7 @@ footer {
   padding: 0;
   z-index: 1001;
   cursor: pointer;
+  outline: none;
 }
 
 .modal-arrow img {
@@ -207,9 +208,14 @@ footer {
   padding: 0;               /* remove internal spacing */
   box-shadow: none;         /* remove any shadow */
   transition: opacity 0.3s ease;
+  display: block;
 }
 
-.modal-arrow img:hover {
+.modal-arrow img:hover,
+.modal-arrow img:focus,
+.modal-arrow img:active {
+  background-color: transparent !important; /* Remove all hover/active bg */
+  outline: none;
   opacity: 0.8;
 }
 
