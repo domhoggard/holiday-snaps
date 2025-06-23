@@ -229,9 +229,9 @@ footer {
 
 
 .modal-arrow.left {
-  left: -60px; /* overlaps slightly onto the image */
+  left: -40px; /* overlaps slightly onto the image */
 }
 
 .modal-arrow.right {
-  right: -60px; /* overlaps slightly onto the image */
+  right: -40px; /* overlaps slightly onto the image */
 }
