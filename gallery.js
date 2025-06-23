@@ -1,7 +1,13 @@
 import { auth, storage, db } from './firebase.js';
-import { ref, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
-import { collection, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
-import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
+import {
+  ref, listAll, getDownloadURL
+} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
+import {
+  collection, getDocs, doc, getDoc, updateDoc, arrayUnion
+} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+import {
+  onAuthStateChanged
+} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
 const gallery = document.getElementById('photo-gallery');
 const startDateInput = document.getElementById('startDate');
@@ -13,6 +19,11 @@ const modalClose = document.getElementById("modal-close");
 const modalPrev = document.getElementById("modal-prev");
 const modalNext = document.getElementById("modal-next");
 
+const saveTripBtn = document.getElementById('saveTripBtn');
+const loadTripBtn = document.getElementById('loadTripBtn');
+const tripNameInput = document.getElementById('tripName');
+const savedTripsDropdown = document.getElementById('savedTripsDropdown');
+
 let imageList = [];
 let currentIndex = 0;
 let currentUserId = null;
@@ -21,9 +32,12 @@ let friendIds = [];
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUserId = user.uid;
-    const userDoc = await getDoc(doc(db, "users", currentUserId));
+    const userDocRef = doc(db, "users", currentUserId);
+    const userDoc = await getDoc(userDocRef);
     if (userDoc.exists()) {
-      friendIds = userDoc.data().friends || [];
+      const data = userDoc.data();
+      friendIds = data.friends || [];
+      loadSavedTrips(data.savedTrips || []);
     }
   }
 });
@@ -38,6 +52,50 @@ filterBtn.addEventListener('click', async () => {
   await loadPhotos(startDate, endDate);
 });
 
+saveTripBtn.addEventListener('click', async () => {
+  const name = tripNameInput.value.trim();
+  const start = startDateInput.value;
+  const end = endDateInput.value;
+
+  if (!name || !start || !end) {
+    alert("Please provide a name and date range.");
+    return;
+  }
+
+  const newTrip = { name, start, end };
+  try {
+    const userDocRef = doc(db, "users", currentUserId);
+    await updateDoc(userDocRef, {
+      savedTrips: arrayUnion(newTrip)
+    });
+    const option = document.createElement("option");
+    option.textContent = name;
+    option.value = JSON.stringify({ start, end });
+    savedTripsDropdown.appendChild(option);
+    tripNameInput.value = "";
+    alert("Trip saved successfully!");
+  } catch (err) {
+    console.error("Failed to save trip:", err);
+  }
+});
+
+loadTripBtn.addEventListener('click', () => {
+  const selected = savedTripsDropdown.value;
+  if (!selected) return;
+  const { start, end } = JSON.parse(selected);
+  startDateInput.value = start;
+  endDateInput.value = end;
+});
+
+function loadSavedTrips(trips) {
+  for (const trip of trips) {
+    const option = document.createElement("option");
+    option.textContent = trip.name;
+    option.value = JSON.stringify({ start: trip.start, end: trip.end });
+    savedTripsDropdown.appendChild(option);
+  }
+}
+
 async function loadPhotos(start, end) {
   gallery.innerHTML = "";
   imageList = [];
@@ -46,7 +104,7 @@ async function loadPhotos(start, end) {
   for (const userDoc of userDocs.docs) {
     const uid = userDoc.id;
     const isOwner = uid === currentUserId;
-    const isFriend = friendIds.includes(uid); // <- used for access check
+    const isFriend = friendIds.includes(uid);
 
     try {
       const resortList = await listAll(ref(storage, uid));
@@ -58,7 +116,6 @@ async function loadPhotos(start, end) {
             const privacyList = await listAll(dateFolder);
             for (const privacyFolder of privacyList.prefixes) {
               const privacy = privacyFolder.name;
-
               const canView =
                 privacy === "public" ||
                 (privacy === "friends" && (isOwner || isFriend)) ||
