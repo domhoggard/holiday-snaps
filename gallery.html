@@ -11,7 +11,6 @@
     <header class="site-header">
       <div class="header-inner">
         <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
-       
         <nav class="main-nav">
           <a href="index.html"><img src="icons/home.png" alt="Home Icon"/>Home</a>
           <a href="trips.html"><img src="icons/trips.png" alt="Trips Icon"/>Trips</a>
@@ -30,6 +29,16 @@
       </section>
 
       <section class="profile-card">
+        <h2>Saved Trips</h2>
+        <input type="text" id="tripName" placeholder="Trip name (e.g. Cyprus 2025)" />
+        <button id="saveTripBtn">Save This Trip</button>
+        <select id="savedTripsDropdown">
+          <option value="">-- Select a Saved Trip --</option>
+        </select>
+        <button id="loadTripBtn">Load Selected Trip</button>
+      </section>
+
+      <section class="profile-card">
         <h2>Photo Gallery</h2>
         <div id="photo-gallery" class="photo-gallery"></div>
       </section>
@@ -41,18 +50,17 @@
   </div>
 
   <div id="modal" class="modal">
-  <div class="modal-inner">
-    <span id="modal-close" class="modal-close">&times;</span>
-    <button id="modal-prev" class="modal-arrow left">
-      <img src="icons/arrow-left.png" alt="Previous">
-    </button>
-    <img id="modal-img" class="modal-content" />
-    <button id="modal-next" class="modal-arrow right">
-      <img src="icons/arrow-right.png" alt="Next">
-    </button>
+    <div class="modal-inner">
+      <span id="modal-close" class="modal-close">&times;</span>
+      <button id="modal-prev" class="modal-arrow left">
+        <img src="icons/arrow-left.png" alt="Previous">
+      </button>
+      <img id="modal-img" class="modal-content" />
+      <button id="modal-next" class="modal-arrow right">
+        <img src="icons/arrow-right.png" alt="Next">
+      </button>
+    </div>
   </div>
-</div>
-
 
   <script type="module" src="gallery.js"></script>
 </body>
