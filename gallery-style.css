@@ -159,8 +159,12 @@ footer {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  width: 90%;
-  max-width: 1000px;
+  width: auto;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-content {
@@ -210,9 +214,9 @@ footer {
 }
 
 .modal-arrow.left {
-  left: 10px;
+  left: -60px; /* overlaps slightly onto the image */
 }
 
 .modal-arrow.right {
-  right: 10px;
+  right: -60px; /* overlaps slightly onto the image */
 }
