@@ -200,8 +200,8 @@ footer {
 }
 
 .modal-arrow img {
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
   border-radius: 0;         /* remove circular shape */
   background-color: transparent; /* remove green background */
   padding: 0;               /* remove internal spacing */
