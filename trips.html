@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +10,8 @@
   <div class="background">
     <header class="site-header">
       <div class="header-inner">
-        <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
+        <img src="logo2.png" alt="HolidaySnaps Logo" class="logo-small"/>
+        <h1 class="site-title">HolidaySnaps</h1>
         <nav class="main-nav">
           <a href="index.html"><img src="icons/home.png" alt="Home Icon"/>Home</a>
           <a href="trips.html"><img src="icons/trips.png" alt="Trips Icon"/>Trips</a>
@@ -22,7 +22,21 @@
     </header>
 
     <main>
-      <section class="upload-box">
+      <!-- NEW: Search all resorts section -->
+      <section class="card search-box">
+        <h2>Search All Resorts</h2>
+        <select id="search-resort">
+          <option value="">-- Select a resort --</option>
+        </select>
+        <div class="date-range">
+          <input type="date" id="search-startDate" />
+          <input type="date" id="search-endDate" />
+        </div>
+        <button id="searchAllBtn">View in Gallery</button>
+      </section>
+
+      <!-- Your existing upload section -->
+      <section class="card upload-box">
         <h2>Upload a Holiday Snap</h2>
         <input type="file" id="photo" accept="image/*" />
         <input type="text" id="resort" placeholder="Resort name" />
@@ -35,7 +49,8 @@
         <button id="uploadBtn">Upload Photo</button>
       </section>
 
-      <section class="gallery-box">
+      <!-- Your existing “My Resorts” list -->
+      <section class="card">
         <h2>Your Resorts</h2>
         <ul id="resort-list"></ul>
       </section>
