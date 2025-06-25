@@ -1,165 +1,182 @@
-import { auth, storage, db } from './firebase.js';
+import { auth, storage, db, logOut } from './firebase.js';
 import {
-  ref, listAll, getDownloadURL,
-  deleteObject, updateMetadata
+  ref,
+  listAll,
+  getDownloadURL
 } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
 import {
-  collection, getDocs, doc, getDoc
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion
 } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
-const gallery      = document.getElementById('photo-gallery');
-const startDateIn  = document.getElementById('startDate');
-const endDateIn    = document.getElementById('endDate');
-const filterBtn    = document.getElementById('filterBtn');
-const modal        = document.getElementById("modal");
-const modalImg     = document.getElementById("modal-img");
-const modalClose   = document.getElementById("modal-close");
-const modalPrev    = document.getElementById("modal-prev");
-const modalNext    = document.getElementById("modal-next");
+const gallery        = document.getElementById('photo-gallery');
+const startDateInput = document.getElementById('startDate');
+const endDateInput   = document.getElementById('endDate');
+const filterBtn      = document.getElementById('filterBtn');
+const modal          = document.getElementById("modal");
+const modalImg       = document.getElementById("modal-img");
+const modalClose     = document.getElementById("modal-close");
+const modalPrev      = document.getElementById("modal-prev");
+const modalNext      = document.getElementById("modal-next");
 
-let imageList = [], currentIndex = 0;
-let currentUserId = null, friendIds = [];
+const saveBtn        = document.getElementById('saveCurrentTripBtn');
+const loadTripBtn    = document.getElementById('loadSavedTripBtn');
+const tripsSelect    = document.getElementById('savedTripsSelect');
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    currentUserId = user.uid;
-    const userDoc = await getDoc(doc(db, "users", currentUserId));
-    if (userDoc.exists()) friendIds = userDoc.data().friends || [];
-  } else {
-    location.href = "login.html";
+let imageList   = [];
+let currentIndex= 0;
+let currentUser = null;
+let friendIds   = [];
+let resortParam = null;
+
+// Helper to parse URL params
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+onAuthStateChanged(auth, async user => {
+  if (!user) return location.href = 'login.html';
+  currentUser = user;
+  resortParam = getParam('resort');
+
+  // 1) Load saved trips dropdown
+  await populateSavedTrips();
+
+  // 2) If URL has resort & dates, pre-fill and load
+  const startP = getParam('start');
+  const endP   = getParam('end');
+  if (resortParam && startP && endP) {
+    startDateInput.value = startP;
+    endDateInput.value   = endP;
+    await loadPhotos(startP, endP, resortParam);
   }
+
+  // 3) Fetch friend list for “friends” privacy
+  const userDoc = await getDoc(doc(db, 'users', user.uid));
+  friendIds = (userDoc.data().friends || []);
+
+  // 4) Bind filter button
+  filterBtn.addEventListener('click', () => {
+    const s = startDateInput.value, e = endDateInput.value;
+    if (!s || !e) return alert('Select both dates');
+    loadPhotos(s, e, resortParam);
+  });
+
+  // 5) Bind save & load trip
+  saveBtn.addEventListener('click', async () => {
+    if (!resortParam) return alert('Cannot save: no resort selected');
+    const s = startDateInput.value, e = endDateInput.value;
+    if (!s || !e) return alert('Select both dates to save trip');
+    const trip = { resort: resortParam, start: s, end: e };
+    await updateDoc(doc(db,'users', user.uid), {
+      savedTrips: arrayUnion(trip)
+    });
+    alert('Trip saved!');
+    await populateSavedTrips();
+  });
+
+  loadTripBtn.addEventListener('click', () => {
+    const sel = tripsSelect.value;
+    if (!sel) return alert('Pick a saved trip');
+    const { resort, start, end } = JSON.parse(sel);
+    startDateInput.value = start;
+    endDateInput.value   = end;
+    loadPhotos(start, end, resort);
+  });
+
+  // 6) Modal arrows & close
+  modalClose.onclick = () => modal.style.display = 'none';
+  modalPrev.onclick  = () => {
+    currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
+    modalImg.src = imageList[currentIndex].url;
+  };
+  modalNext.onclick  = () => {
+    currentIndex = (currentIndex + 1) % imageList.length;
+    modalImg.src = imageList[currentIndex].url;
+  };
 });
 
-filterBtn.addEventListener('click', async () => {
-  const s = startDateIn.value, e = endDateIn.value;
-  if (!s || !e) return alert("Please select both dates.");
-  await loadPhotos(s, e);
-});
+// Populate saved trips dropdown from Firestore
+async function populateSavedTrips() {
+  tripsSelect.innerHTML = '<option value="">-- Select a saved trip --</option>';
+  const docSnap = await getDoc(doc(db, 'users', currentUser.uid));
+  const saved = docSnap.data().savedTrips || [];
+  saved.forEach(trip => {
+    const o = document.createElement('option');
+    o.value = JSON.stringify(trip);
+    o.textContent = `${trip.resort}: ${trip.start} → ${trip.end}`;
+    tripsSelect.appendChild(o);
+  });
+}
 
-async function loadPhotos(start, end) {
-  gallery.innerHTML = "";
+// Main photo loader: filters by resort (if given) + date range
+async function loadPhotos(start, end, resortFilter=null) {
+  gallery.innerHTML = '';
   imageList = [];
 
-  const users = await getDocs(collection(db, "users"));
+  const users = await getDocs(collection(db, 'users'));
   for (let u of users.docs) {
-    const uid     = u.id;
-    const isOwner = uid === currentUserId;
-    const isFriend= friendIds.includes(uid);
+    const uid = u.id;
+    const isOwner  = uid === currentUser.uid;
+    const isFriend = friendIds.includes(uid);
 
     try {
-      const resorts = await listAll(ref(storage, uid));
-      for (let resortFolder of resorts.prefixes) {
-        const dates = await listAll(resortFolder);
-        for (let dateFolder of dates.prefixes) {
+      const userFolder = ref(storage, uid);
+      const resorts = (await listAll(userFolder)).prefixes;
+      for (let resortFolder of resorts) {
+        const resortName = resortFolder.name;
+        if (resortFilter && resortName !== resortFilter) continue;
+
+        const dates = (await listAll(resortFolder)).prefixes;
+        for (let dateFolder of dates) {
           const date = dateFolder.name;
           if (date < start || date > end) continue;
 
-          const privs = await listAll(dateFolder);
-          for (let pFolder of privs.prefixes) {
-            const privacy = pFolder.name;
-            const canView = 
-              privacy === "public" ||
-              (privacy === "friends" && (isOwner||isFriend)) ||
-              (privacy === "private" && isOwner);
-
+          const privs = (await listAll(dateFolder)).prefixes;
+          for (let privFolder of privs) {
+            const privacy = privFolder.name;
+            const canView = privacy === 'public'
+              || (privacy === 'friends' && (isOwner||isFriend))
+              || (privacy === 'private' && isOwner);
             if (!canView) continue;
 
-            const items = await listAll(pFolder);
-            for (let item of items.items) {
-              const url = await getDownloadURL(item);
-              const idx = imageList.length;
-              imageList.push({ url, privacy, item });
+            const items = (await listAll(privFolder)).items;
+            for (let itemRef of items) {
+              const url = await getDownloadURL(itemRef);
+              imageList.push({ url, privacy });
 
               // build card
-              const card = document.createElement("div");
-              card.className = "photo-card";
+              const card = document.createElement('div');
+              card.className = 'photo-card';
 
-              const img = document.createElement("img");
-              img.src       = url;
-              img.alt       = "Photo";
-              img.className = "gallery-img";
-              img.addEventListener("click", () => showModal(idx));
+              const img = document.createElement('img');
+              img.src = url;
+              img.className = 'gallery-img';
+              const idx = imageList.length - 1;
+              img.onclick = () => {
+                currentIndex = idx;
+                modalImg.src = url;
+                modal.style.display = 'flex';
+              };
 
-              const badge = document.createElement("span");
-              badge.className = "badge " + privacy;
-              badge.textContent = privacy.charAt(0).toUpperCase() + privacy.slice(1);
+              const badge = document.createElement('span');
+              badge.className = `badge ${privacy}`;
+              badge.textContent = privacy;
 
-              // overlay
-              const overlay = document.createElement("div");
-              overlay.className = "card-overlay";
-
-              // delete
-              const delBtn = document.createElement("button");
-              delBtn.className = "delete-btn";
-              delBtn.innerHTML = "🗑️";
-              delBtn.title     = "Delete this photo";
-              delBtn.addEventListener("click", async e => {
-                e.stopPropagation();
-                if (!confirm("Delete this photo?")) return;
-                try {
-                  await deleteObject(item);
-                  card.remove();
-                  alert("Deleted.");
-                } catch (err) {
-                  console.error(err);
-                  alert("Delete failed.");
-                }
-              });
-
-              // privacy selector
-              const sel = document.createElement("select");
-              ["public","friends","private"].forEach(opt => {
-                const o = document.createElement("option");
-                o.value = opt;
-                o.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
-                if (opt === privacy) o.selected = true;
-                sel.appendChild(o);
-              });
-              sel.addEventListener("change", async e => {
-                const newPriv = e.target.value;
-                try {
-                  const md = (await item.getMetadata()).customMetadata || {};
-                  md.privacy = newPriv;
-                  await updateMetadata(item, { customMetadata: md });
-                  badge.textContent = newPriv.charAt(0).toUpperCase() + newPriv.slice(1);
-                  badge.className = "badge " + newPriv;
-                  alert("Privacy updated.");
-                } catch (err) {
-                  console.error(err);
-                  alert("Could not update privacy.");
-                }
-              });
-
-              overlay.appendChild(delBtn);
-              overlay.appendChild(sel);
-
-              // assemble
-              card.appendChild(img);
-              card.appendChild(badge);
-              card.appendChild(overlay);
+              card.append(img, badge);
               gallery.appendChild(card);
             }
           }
         }
       }
-    } catch (_) {
-      console.warn(`Skipping user ${uid}`);
+    } catch (err) {
+      console.warn(`Skipping user ${uid}:`, err);
     }
   }
 }
 
-function showModal(i) {
-  currentIndex = i;
-  modalImg.src = imageList[i].url;
-  modal.style.display = "flex";
-}
-modalClose.onclick = () => modal.style.display = "none";
-modalPrev.onclick  = () => {
-  currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
-  modalImg.src = imageList[currentIndex].url;
-};
-modalNext.onclick  = () => {
-  currentIndex = (currentIndex + 1) % imageList.length;
-  modalImg.src = imageList[currentIndex].url;
-};
