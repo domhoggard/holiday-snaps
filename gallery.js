@@ -4,7 +4,8 @@ import {
   listAll,
   getDownloadURL,
   deleteObject,
-  uploadBytes
+  uploadBytes,
+  getMetadata
 } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
 import {
   collection,
@@ -67,7 +68,7 @@ onAuthStateChanged(auth, async user => {
   saveBtn.addEventListener('click', async () => {
     if (!resortParam) return alert('No resort to save');
     const s = startDateInput.value, e = endDateInput.value;
-    if (!s||!e) return alert('Select dates');
+    if (!s || !e) return alert('Select dates');
     const trip = { resort: resortParam, start: s, end: e };
     await updateDoc(doc(db,'users', user.uid), {
       savedTrips: arrayUnion(trip)
@@ -122,90 +123,109 @@ async function loadPhotos(start, end, resortFilter=null) {
       const resorts    = (await listAll(userFolder)).prefixes;
       for (let rf of resorts) {
         const resortName = rf.name;
-        if (resortFilter && resortName!==resortFilter) continue;
+        if (resortFilter && resortName !== resortFilter) continue;
         const dates = (await listAll(rf)).prefixes;
         for (let df of dates) {
           const date = df.name;
-          if (date<start||date> end) continue;
+          if (date < start || date > end) continue;
           const privs = (await listAll(df)).prefixes;
           for (let pf of privs) {
             const privacy = pf.name;
-            const ok = privacy==='public'
-              ||(privacy==='friends'&&(isOwner||isFriend))
-              ||(privacy==='private'&&isOwner);
+            const ok = privacy === 'public'
+              || (privacy === 'friends' && (isOwner || isFriend))
+              || (privacy === 'private' && isOwner);
             if (!ok) continue;
             const items = (await listAll(pf)).items;
             for (let itemRef of items) {
               const url = await getDownloadURL(itemRef);
-              imageList.push({ url, privacy, ref: itemRef,
-                resort: resortName, date, name: itemRef.name
+              imageList.push({
+                url,
+                privacy,
+                ref: itemRef,           // for delete and metadata
+                path: itemRef.fullPath, // for privacy‐change
+                resort: resortName,
+                date,
+                name: itemRef.name
               });
 
+              /* build card */
               const card = document.createElement('div');
               card.className = 'photo-card';
 
+              /* thumbnail */
               const img = document.createElement('img');
-              img.src = url; img.className = 'gallery-img';
-              const idx = imageList.length -1;
-              img.onclick = ()=>{
-                currentIndex=idx;
+              img.src = url;
+              img.className = 'gallery-img';
+              const idx = imageList.length - 1;
+              img.onclick = () => {
+                currentIndex = idx;
                 modalImg.src = url;
                 modal.style.display = 'flex';
               };
 
+              /* thumbnail badge */
               const badge = document.createElement('span');
-              badge.className=`badge ${privacy}`;
+              badge.className = `badge ${privacy}`;
               badge.textContent = privacy;
 
-              // overlay
+              /* hover overlay */
               const overlay = document.createElement('div');
               overlay.className = 'overlay';
 
-              // delete btn
+              /* delete button */
               const delBtn = document.createElement('button');
               delBtn.title = 'Delete photo';
               delBtn.innerHTML = `<img src="icons/trash.png" alt="Del">`;
-              delBtn.onclick = async e=>{
+              delBtn.onclick = async e => {
                 e.stopPropagation();
-                if(!confirm('Delete this photo?')) return;
+                if (!confirm('Delete this photo?')) return;
                 await deleteObject(itemRef);
                 loadPhotos(start, end, resortFilter);
               };
 
-              // privacy btn
-              const prBtn = document.createElement('button');
-              prBtn.title = 'Change privacy';
-              prBtn.innerHTML = `<img src="icons/settings.png" alt="Privacy">`;
-              prBtn.onclick = async e=>{
-                e.stopPropagation();
-                const choice = prompt(
-                  'New privacy (public/friends/private):',
-                  imageList[idx].privacy
-                );
-                if(!['public','friends','private'].includes(choice)) {
-                  return alert('Invalid.');
-                }
-                // download blob
-                const blob = await fetch(url).then(r=>r.blob());
-                const newPath = `${uid}/${resortName}/${date}/${choice}/${itemRef.name}`;
-                const newRef  = ref(storage, newPath);
-                await uploadBytes(newRef, blob, {
-                  customMetadata: itemRef.metadata?.customMetadata || {}
-                });
-                await deleteObject(itemRef);
-                loadPhotos(start, end, resortFilter);
-              };
+              /* privacy‐selector badges */
+              const selector = document.createElement('div');
+              selector.className = 'privacy-selector';
+              for (let choice of ['public','friends','private']) {
+                const span = document.createElement('span');
+                span.className = `privacy-toggle ${choice}`;
+                span.textContent = choice;
+                span.onclick = async e => {
+                  e.stopPropagation();
+                  if (choice === privacy) return;
+                  await changePrivacy(itemRef, choice);
+                  loadPhotos(start, end, resortFilter);
+                  modal.style.display = 'none';
+                };
+                selector.appendChild(span);
+              }
 
-              overlay.append(delBtn, prBtn);
+              overlay.append(delBtn, selector);
               card.append(img, badge, overlay);
               gallery.appendChild(card);
             }
           }
         }
       }
-    } catch(e){
-      console.warn(`Skip ${uid}:`,e);
+    } catch (e) {
+      console.warn(`Skip ${uid}:`, e);
     }
   }
 }
 
+async function changePrivacy(itemRef, newPrivacy) {
+  // get metadata
+  const meta = await getMetadata(itemRef);
+  const oldPath = itemRef.fullPath;
+  // swap out the privacy folder segment
+  const newPath = oldPath.replace(/\/(public|friends|private)\//, `/${newPrivacy}/`);
+  const newRef  = ref(storage, newPath);
+  // download blob & re‐upload
+  const blob = await fetch(imageList[currentIndex].url).then(r => r.blob());
+  await uploadBytes(newRef, blob, {
+    contentType: meta.contentType,
+    customMetadata: meta.customMetadata
+  });
+  // delete old file
+  await deleteObject(itemRef);
+}
