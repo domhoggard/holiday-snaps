@@ -81,20 +81,71 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // 6) Upload your photo (unchanged)
+    // 6) Upload your photo (fully restored)
     if (uploadBtn) {
       uploadBtn.addEventListener("click", async () => {
-        /* 🔥 paste your existing upload handler here 🔥 */
+        // — grab inputs —
         let file = document.getElementById("photo").files[0];
-        const resort = document.getElementById("resort").value.trim();
-        const date = document.getElementById("date").value;
+        const resort  = document.getElementById("resort").value.trim();
+        const date    = document.getElementById("date").value;
         const privacy = document.getElementById("privacy").value;
         if (!file || !resort || !date) {
           return alert("Please fill in all fields.");
         }
-        // … (heic conversion, metadata, uploadBytes) …
-        // after successful upload:
-        await listResorts(user.uid);
+
+        // — HEIC conversion on mobile —
+        const ext = file.name.split('.').pop().toLowerCase();
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (ext === "heic" && !isMobile) {
+          alert("HEIC files not supported on desktop. Use mobile or convert to JPG/PNG.");
+          return;
+        }
+        if (ext === "heic") {
+          try {
+            const heic2any = (await import(
+              'https://cdn.jsdelivr.net/npm/heic2any@0.0.3/dist/heic2any.min.js'
+            )).default;
+            const blob = await heic2any({ blob: file, toType: 'image/jpeg' });
+            file = new File(
+              [blob],
+              file.name.replace(/\.heic$/, '.jpg'),
+              { type: 'image/jpeg' }
+            );
+          } catch (e) {
+            console.error("HEIC conversion failed:", e);
+            return alert("HEIC conversion failed. Try another file.");
+          }
+        }
+
+        // — build storage path & metadata —
+        const filePath = `${user.uid}/${resort}/${date}/${privacy}/${file.name}`;
+        const storageRef = ref(storage, filePath);
+        let metadata = {
+          customMetadata: {
+            privacy: privacy,
+            owner: user.uid
+          }
+        };
+        if (privacy === "friends") {
+          try {
+            const udoc = await getDoc(doc(db, "users", user.uid));
+            metadata.customMetadata.friends = JSON.stringify(
+              udoc.data().friends || []
+            );
+          } catch (e) {
+            console.warn("Couldn't fetch friends for metadata:", e);
+          }
+        }
+
+        // — actually upload —
+        try {
+          await uploadBytes(storageRef, file, metadata);
+          alert("Photo uploaded successfully!");
+          await listResorts(user.uid);
+        } catch (e) {
+          console.error("Upload failed:", e);
+          alert("Upload failed. See console for details.");
+        }
       });
     }
   });
@@ -106,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const userRef = ref(storage, uid);
       const result  = await listAll(userRef);
       result.prefixes.forEach(folder => {
-        const li = document.createElement("li");
+        const li   = document.createElement("li");
         const link = document.createElement("a");
         link.href = `gallery.html?resort=${encodeURIComponent(folder.name)}`;
         link.textContent = folder.name;
@@ -129,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           const resorts = await listAll(u);
           resorts.prefixes.forEach(r => set.add(r.name));
-        } catch (_) { /* ignore */ }
+        } catch (_) { /* ignore per-user errors */ }
       }
       Array.from(set).sort().forEach(name => {
         const o = document.createElement("option");
@@ -147,11 +198,12 @@ document.addEventListener("DOMContentLoaded", () => {
     savedTripsList.innerHTML = "";
     try {
       const userDoc = await getDoc(doc(db, "users", uid));
-      const trips = userDoc.exists() ? (userDoc.data().savedTrips || []) : [];
+      const trips   = userDoc.exists() ? (userDoc.data().savedTrips || []) : [];
       trips.forEach(trip => {
-        const li = document.createElement("li");
+        const li    = document.createElement("li");
         const label = document.createElement("span");
         label.textContent = `${trip.resort}: ${trip.start} → ${trip.end}`;
+
         // Load button
         const loadBtn = document.createElement("button");
         loadBtn.textContent = "Load";
@@ -160,6 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
           url += `&start=${trip.start}&end=${trip.end}`;
           window.location.href = url;
         };
+
         // Delete button
         const delBtn = document.createElement("button");
         delBtn.textContent = "Delete";
@@ -174,6 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Failed to delete saved trip.");
           }
         };
+
         li.append(label, loadBtn, delBtn);
         savedTripsList.appendChild(li);
       });
@@ -182,3 +236,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
