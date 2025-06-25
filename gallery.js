@@ -1,179 +1,128 @@
 import { auth, storage, db } from './firebase.js';
-import {
-  ref, listAll, getDownloadURL
-} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
-import {
-  collection, getDocs, doc, getDoc, updateDoc, arrayUnion
-} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
-import {
-  onAuthStateChanged
-} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
+import { ref, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
+import { collection, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
-const gallery = document.getElementById('photo-gallery');
-const startDateInput = document.getElementById('startDate');
-const endDateInput = document.getElementById('endDate');
-const filterBtn = document.getElementById('filterBtn');
-const modal = document.getElementById("modal");
-const modalImg = document.getElementById("modal-img");
-const modalClose = document.getElementById("modal-close");
-const modalPrev = document.getElementById("modal-prev");
-const modalNext = document.getElementById("modal-next");
+const gallery      = document.getElementById('photo-gallery');
+const startInput   = document.getElementById('startDate');
+const endInput     = document.getElementById('endDate');
+const filterBtn    = document.getElementById('filterBtn');
+const modal        = document.getElementById("modal");
+const modalImg     = document.getElementById("modal-img");
+const modalClose   = document.getElementById("modal-close");
+const modalPrev    = document.getElementById("modal-prev");
+const modalNext    = document.getElementById("modal-next");
 
-const saveTripBtn = document.getElementById('saveTripBtn');
-const loadTripBtn = document.getElementById('loadTripBtn');
-const tripNameInput = document.getElementById('tripName');
-const savedTripsDropdown = document.getElementById('savedTripsDropdown');
+let imageList = [], currentIndex = 0, currentUserId = null, friendIds = [];
 
-let imageList = [];
-let currentIndex = 0;
-let currentUserId = null;
-let friendIds = [];
+// read URL parameters
+const params       = new URLSearchParams(window.location.search);
+const resortFilter = params.get('resort');
+const startParam   = params.get('start');
+const endParam     = params.get('end');
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    currentUserId = user.uid;
-    const userDocRef = doc(db, "users", currentUserId);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-      const data = userDoc.data();
-      friendIds = data.friends || [];
-      loadSavedTrips(data.savedTrips || []);
-    }
-  }
-});
+// if present, seed the form
+if (startParam) startInput.value = startParam;
+if (endParam)   endInput.value   = endParam;
 
-filterBtn.addEventListener('click', async () => {
-  const startDate = startDateInput.value;
-  const endDate = endDateInput.value;
-  if (!startDate || !endDate) {
-    alert("Please select both start and end dates.");
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    location.href = "login.html";
     return;
   }
-  await loadPhotos(startDate, endDate);
-});
+  currentUserId = user.uid;
+  const me       = await getDoc(doc(db, "users", user.uid));
+  friendIds      = me.exists() ? me.data().friends || [] : [];
 
-saveTripBtn.addEventListener('click', async () => {
-  const name = tripNameInput.value.trim();
-  const start = startDateInput.value;
-  const end = endDateInput.value;
-
-  if (!name || !start || !end) {
-    alert("Please provide a name and date range.");
-    return;
-  }
-
-  const newTrip = { name, start, end };
-  try {
-    const userDocRef = doc(db, "users", currentUserId);
-    await updateDoc(userDocRef, {
-      savedTrips: arrayUnion(newTrip)
-    });
-    const option = document.createElement("option");
-    option.textContent = name;
-    option.value = JSON.stringify({ start, end });
-    savedTripsDropdown.appendChild(option);
-    tripNameInput.value = "";
-    alert("Trip saved successfully!");
-  } catch (err) {
-    console.error("Failed to save trip:", err);
+  // if URL had any params, auto-load once
+  if (resortFilter || startParam || endParam) {
+    loadPhotos();
   }
 });
 
-loadTripBtn.addEventListener('click', async () => {
-  const selected = savedTripsDropdown.value;
-  if (!selected) return;
-  const { start, end } = JSON.parse(selected);
-  startDateInput.value = start;
-  endDateInput.value = end;
-  await loadPhotos(start, end); // <-- load gallery immediately
-});
+filterBtn.addEventListener('click', loadPhotos);
 
-
-function loadSavedTrips(trips) {
-  for (const trip of trips) {
-    const option = document.createElement("option");
-    option.textContent = trip.name;
-    option.value = JSON.stringify({ start: trip.start, end: trip.end });
-    savedTripsDropdown.appendChild(option);
-  }
-}
-
-async function loadPhotos(start, end) {
+async function loadPhotos() {
   gallery.innerHTML = "";
   imageList = [];
 
-  const userDocs = await getDocs(collection(db, "users"));
-  for (const userDoc of userDocs.docs) {
-    const uid = userDoc.id;
+  // use defaults so missing start/end means “all dates”
+  const start = startInput.value  || "0000-01-01";
+  const end   = endInput.value    || "9999-12-31";
+
+  const usersSnapshot = await getDocs(collection(db, "users"));
+  for (let uDoc of usersSnapshot.docs) {
+    const uid     = uDoc.id;
     const isOwner = uid === currentUserId;
-    const isFriend = friendIds.includes(uid);
+    const isFriend= friendIds.includes(uid);
 
     try {
-      const resortList = await listAll(ref(storage, uid));
-      for (const resortFolder of resortList.prefixes) {
+      const userRef     = ref(storage, uid);
+      const resortList  = await listAll(userRef);
+      for (let resortFolder of resortList.prefixes) {
+        const name = resortFolder.name;
+        // honor resortFilter if given
+        if (resortFilter && name !== resortFilter) continue;
+
         const dateList = await listAll(resortFolder);
-        for (const dateFolder of dateList.prefixes) {
+        for (let dateFolder of dateList.prefixes) {
           const date = dateFolder.name;
-          if (date >= start && date <= end) {
-            const privacyList = await listAll(dateFolder);
-            for (const privacyFolder of privacyList.prefixes) {
-              const privacy = privacyFolder.name;
-              const canView =
-                privacy === "public" ||
-                (privacy === "friends" && (isOwner || isFriend)) ||
-                (privacy === "private" && isOwner);
+          if (date < start || date > end) continue;
 
-              if (canView) {
-                const images = await listAll(privacyFolder);
-                for (const item of images.items) {
-                  const url = await getDownloadURL(item);
-                  imageList.push({ url, privacy });
+          const privacyList = await listAll(dateFolder);
+          for (let privacyFolder of privacyList.prefixes) {
+            const privacy = privacyFolder.name;
+            const canView =
+              privacy === "public" ||
+              (privacy === "friends" && (isOwner || isFriend)) ||
+              (privacy === "private" && isOwner);
 
-                  const card = document.createElement("div");
-                  card.className = "photo-card";
+            if (!canView) continue;
 
-                  const img = document.createElement("img");
-                  img.src = url;
-                  img.alt = "Photo";
-                  img.className = "gallery-img";
-                  const index = imageList.length - 1;
-                  img.addEventListener("click", () => showModal(index));
+            const images = await listAll(privacyFolder);
+            for (let item of images.items) {
+              const url = await getDownloadURL(item);
+              imageList.push({ url, privacy });
 
-                  const badge = document.createElement("span");
-                  badge.className = "badge " + privacy;
-                  badge.textContent = privacy.charAt(0).toUpperCase() + privacy.slice(1);
+              // build the thumbnail card
+              const card = document.createElement("div");
+              card.className = "photo-card";
 
-                  card.appendChild(img);
-                  card.appendChild(badge);
-                  gallery.appendChild(card);
-                }
-              }
+              const img = document.createElement("img");
+              img.src       = url;
+              img.alt       = "Photo";
+              img.className = "gallery-img";
+              const idx     = imageList.length - 1;
+              img.addEventListener("click", () => showModal(idx));
+
+              const badge = document.createElement("span");
+              badge.className = "badge " + privacy;
+              badge.textContent = privacy.charAt(0).toUpperCase() + privacy.slice(1);
+
+              card.appendChild(img);
+              card.appendChild(badge);
+              gallery.appendChild(card);
             }
           }
         }
       }
     } catch (err) {
-      console.warn(`Skipping user ${uid}:`, err.message);
+      console.warn(`Skipping user ${uid}: ${err.message}`);
     }
   }
 }
 
-function showModal(index) {
-  currentIndex = index;
-  modalImg.src = imageList[currentIndex].url;
+function showModal(i) {
+  currentIndex      = i;
+  modalImg.src      = imageList[i].url;
   modal.style.display = "flex";
 }
-
-modalClose.onclick = () => {
-  modal.style.display = "none";
-};
-
-modalPrev.onclick = () => {
+modalClose.onclick = () => modal.style.display = "none";
+modalPrev.onclick  = () => {
   currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
   modalImg.src = imageList[currentIndex].url;
 };
-
-modalNext.onclick = () => {
+modalNext.onclick  = () => {
   currentIndex = (currentIndex + 1) % imageList.length;
   modalImg.src = imageList[currentIndex].url;
 };
