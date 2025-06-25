@@ -22,7 +22,7 @@
     </header>
 
     <main>
-      <!-- Search all resorts -->
+      <!-- Search all resorts + save -->
       <section class="card search-box">
         <h2>Search All Resorts</h2>
         <select id="search-resort">
@@ -33,6 +33,13 @@
           <input type="date" id="search-endDate" />
         </div>
         <button id="searchAllBtn">View in Gallery</button>
+        <button id="saveTripBtn">Save Trip</button>
+      </section>
+
+      <!-- Saved trips -->
+      <section class="card">
+        <h2>Saved Trips</h2>
+        <ul id="saved-trips"></ul>
       </section>
 
       <!-- Upload your photo -->
@@ -49,7 +56,7 @@
         <button id="uploadBtn">Upload Photo</button>
       </section>
 
-      <!-- My saved trips -->
+      <!-- My saved trips as “My Resorts” -->
       <section class="card">
         <h2>Your Resorts</h2>
         <ul id="resort-list"></ul>
@@ -64,4 +71,3 @@
   <script type="module" src="trips.js"></script>
 </body>
 </html>
-
