@@ -120,3 +120,11 @@ header nav a {
   font-weight: bold;
 }
 
+/* make signup form sit dead-centre of the screen */
+.auth-main {
+  flex-grow: 1;               /* consume available space between header & footer */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    /* vertical centering */
+  align-items: center;        /* horizontal centering */
+}
