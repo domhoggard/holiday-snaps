@@ -37,6 +37,7 @@ main { padding: 20px; }
 }
 .card h2 { margin-top: 0; }
 
+/* --- Upload box styles --- */
 .upload-box input,
 .upload-box select {
   display: block;
@@ -65,7 +66,7 @@ footer {
   background-color: transparent;
 }
 
-/* --- SEARCH BOX SPECIFICS --- */
+/* --- Search box tweaks --- */
 .search-box select,
 .search-box input[type="date"] {
   width: calc(50% - 12px);
