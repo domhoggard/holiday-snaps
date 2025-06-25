@@ -121,7 +121,7 @@ main { padding: 20px; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px; /* increased spacing */
 }
 .preview-card:hover .overlay {
   opacity: 1;
@@ -140,7 +140,7 @@ main { padding: 20px; }
   width: 20px; height: 20px;
 }
 
-/* privacy‐toggle badges */
+/* privacy‐toggle badges (only alternatives: friends/private) */
 .overlay span {
   padding: 6px 10px;
   border-radius: 6px;
@@ -149,7 +149,6 @@ main { padding: 20px; }
   text-transform: capitalize;
   cursor: pointer;
 }
-.overlay span.public  { background-color: #4CAF50; }
 .overlay span.friends { background-color: #FF9800; }
 .overlay span.private { background-color: #F44336; }
 .overlay span:hover   { opacity: 0.8; }
