@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Photos – HolidaySnaps</title>
+  <link rel="stylesheet" href="upload-style.css"/>
+</head>
+<body>
+  <div class="background">
+    <header class="site-header">
+      <div class="header-inner">
+        <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
+        <nav class="main-nav">
+          <a href="index.html"><img src="icons/home.png" alt="Home"/>Home</a>
+          <a href="trips.html"><img src="icons/trips.png" alt="Trips"/>Trips</a>
+          <a href="profile.html"><img src="icons/friends.png" alt="Friends"/>Friends</a>
+          <a href="#" id="logout-link"><img src="icons/logout.png" alt="Logout"/>Logout</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="card upload-card">
+        <h2>Upload Photos</h2>
+
+        <label for="resort-name">Resort Name</label>
+        <input type="text" id="resort-name" placeholder="e.g. Kiani Beach" />
+
+        <label for="file-input">Choose Photos</label>
+        <input type="file" id="file-input" accept="image/*" multiple />
+
+        <div id="preview-grid" class="preview-grid"></div>
+
+        <button id="submit-btn">Submit Photos</button>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 HolidaySnaps</p>
+    </footer>
+  </div>
+
+  <script type="module" src="upload.js"></script>
+</body>
+</html>
