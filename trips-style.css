@@ -37,6 +37,48 @@ main { padding: 20px; }
 }
 .card h2 { margin-top: 0; }
 
+/* --- Search box + save button --- */
+.search-box select,
+.search-box input[type="date"] {
+  width: calc(50% - 12px);
+  margin-right: 8px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+.search-box .date-range { margin-bottom: 10px; }
+.search-box button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #00AFAA;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-right: 8px;
+}
+.search-box button:hover { background-color: #007f7f; }
+
+/* --- Saved Trips list --- */
+#saved-trips {
+  list-style: none;
+  padding: 0;
+}
+#saved-trips li {
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#saved-trips li span {
+  flex: 1;
+}
+#saved-trips li button {
+  margin-left: 8px;
+  padding: 4px 8px;
+  font-size: 0.85em;
+}
+
 /* --- Upload box styles --- */
 .upload-box input,
 .upload-box select {
@@ -47,8 +89,7 @@ main { padding: 20px; }
   border-radius: 6px;
   border: 1px solid #ccc;
 }
-.upload-box button,
-.search-box button {
+.upload-box button {
   padding: 10px 16px;
   border: none;
   border-radius: 6px;
@@ -58,20 +99,9 @@ main { padding: 20px; }
   cursor: pointer;
   margin-top: 5px;
 }
-.upload-box button:hover,
-.search-box button:hover { background-color: #007f7f; }
+.upload-box button:hover { background-color: #007f7f; }
 
 footer {
   text-align: center; padding: 10px; font-size: 0.9em;
   background-color: transparent;
 }
-
-/* --- Search box tweaks --- */
-.search-box select,
-.search-box input[type="date"] {
-  width: calc(50% - 12px);
-  margin-right: 8px;
-  margin-bottom: 10px;
-  display: inline-block;
-}
-.search-box .date-range { margin-bottom: 10px; }
