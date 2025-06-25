@@ -1,9 +1,10 @@
+/* style.css */
 body {
-  font-family: 'Nunito', sans-serif;
-  background: linear-gradient(to bottom, #e0f7f5, #c5dfd9);
-  color: #104a42;
+  font-family: 'Open Sans', sans-serif;
+  background: #FDB543;              /* site‐wide yellow */
   margin: 0;
   padding: 0;
+  color: #004d40;                   /* dark teal text */
 }
 
 .background {
@@ -19,38 +20,51 @@ footer {
   font-size: 0.9em;
 }
 
-.homepage-main {
+/* container for both home and auth pages */
+.homepage-main,
+.auth-main {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex-grow: 1;
   padding: 2rem;
 }
 
-.homepage-logo {
+/* logo on home or signup */
+.homepage-logo,
+.signup-logo {
   width: 240px;
   margin: 30px 0;
 }
 
-.login-box {
-  background: white;
+/* the white “card” behind the form */
+.login-box,
+.auth-box {
+  background-color: #FFF9D9;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   max-width: 420px;
-  width: 100%;
+  width: 90%;
   text-align: center;
 }
 
-.login-box h2 {
+/* headings inside those cards */
+.login-box h2,
+.auth-box h2 {
   margin-top: 0;
-  color: #104a42;
+  color: #004d40;
 }
 
+/* paragraph under “Welcome Back” */
 .login-box p {
   margin: 10px 0 20px;
 }
 
-.login-box input {
+/* inputs in both forms */
+.login-box input,
+.auth-box input,
+.auth-box input[type="date"] {
   width: 90%;
   margin: 10px auto;
   padding: 12px;
@@ -60,8 +74,10 @@ footer {
   display: block;
 }
 
-.login-box button {
-  background-color: #1ba29c;
+/* buttons in both forms */
+.login-box button,
+.auth-box button {
+  background-color: #00AFAA;
   color: white;
   padding: 12px;
   font-weight: bold;
@@ -72,12 +88,35 @@ footer {
   cursor: pointer;
   margin-top: 10px;
 }
-
-.login-box button:hover {
-  background-color: #0c7973;
+.login-box button:hover,
+.auth-box button:hover {
+  background-color: #007f7f;
 }
 
+/* link under login form */
 .signup-link {
   font-size: 0.9em;
   margin-top: 10px;
 }
+
+/* simple site header for signup page */
+header {
+  text-align: center;
+  padding: 20px 0;
+}
+header .logo-large {
+  width: 160px;
+  margin-bottom: 10px;
+}
+header h1 {
+  margin: 0;
+  font-size: 1.8em;
+  color: #00AFAA;
+}
+header nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #004d40;
+  font-weight: bold;
+}
+
