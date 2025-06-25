@@ -69,7 +69,9 @@ main { padding: 20px; }
 }
 #filterBtn:hover { background-color: #007f7f; }
 
-/* Gallery Thumbnails */
+/* ----------------------------------
+   GALLERY THUMBNAILS
+---------------------------------- */
 .photo-card {
   display: inline-block;
   position: relative;
@@ -95,13 +97,19 @@ main { padding: 20px; }
 .badge.friends  { background-color: #FF9800; }
 .badge.private  { background-color: #F44336; }
 
-/* Hover overlay (delete + new privacy badges) */
+/* ----------------------------------
+   HOVER OVERLAY (STACKED)
+---------------------------------- */
 .photo-card .overlay {
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   background: rgba(0,0,0,0.5);
-  opacity: 0; transition: opacity 0.2s;
-  display: flex; align-items: center; justify-content: center;
-  gap: 12px;
+  opacity: 0; transition: opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 .photo-card:hover .overlay {
   opacity: 1;
@@ -116,49 +124,9 @@ main { padding: 20px; }
 .overlay button img {
   width: 20px; height: 20px;
 }
-
-/* ----------------------------------
-   MODAL
----------------------------------- */
-.modal {
-  display: none;
-  position: fixed; z-index: 999;
-  inset: 0;
-  background-color: rgba(0,0,0,0.9);
-  justify-content: center;
-  align-items: center;
-}
-.modal-inner {
-  position: relative;
-}
-.modal-content {
-  max-width: 80vw; max-height: 80vh;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-}
-.modal-close {
-  position: absolute; top: -10px; right: -10px;
-  font-size: 32px; color: white; cursor: pointer;
-}
-/* Arrows */
-.modal-arrow {
-  position: absolute; top: 50%;
-  transform: translateY(-50%);
-  background: none; border: none; padding: 0;
-  cursor: pointer; z-index: 1001;
-}
-.modal-arrow.left  { left: -24px; }
-.modal-arrow.right { right: -24px; }
-.modal-arrow img {
-  width: 36px; height: 36px;
-}
-
-/* ----------------------------------
-   NEW: Overlay Privacy‐Toggle Badges
----------------------------------- */
+/* privacy-selector badges */
 .privacy-selector {
-  display: flex;
-  gap: 6px;
+  display: flex; gap: 6px;
 }
 .privacy-toggle {
   cursor: pointer;
@@ -175,3 +143,36 @@ main { padding: 20px; }
 .privacy-toggle:hover {
   opacity: 0.75;
 }
+
+/* ----------------------------------
+   MODAL
+---------------------------------- */
+.modal {
+  display: none;
+  position: fixed; z-index: 999;
+  inset: 0;
+  background-color: rgba(0,0,0,0.9);
+  justify-content: center; align-items: center;
+}
+.modal-inner {
+  position: relative;
+}
+.modal-content {
+  max-width: 80vw; max-height: 80vh;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.modal-close {
+  position: absolute; top: -10px; right: -10px;
+  font-size: 32px; color: white; cursor: pointer;
+}
+/* arrows */
+.modal-arrow {
+  position: absolute; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none; padding: 0;
+  cursor: pointer; z-index: 1001;
+}
+.modal-arrow.left  { left: -24px; }
+.modal-arrow.right { right: -24px; }
+.modal-arrow img { width: 36px; height: 36px; }
