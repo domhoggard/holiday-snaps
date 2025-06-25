@@ -5,7 +5,8 @@ import {
   getDownloadURL,
   deleteObject,
   uploadBytes,
-  getMetadata
+  getMetadata,
+  getBytes
 } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
 import {
   collection,
@@ -180,7 +181,7 @@ async function loadPhotos(start, end, resortFilter=null) {
                 loadPhotos(start, end, resortFilter);
               };
 
-              // privacy‐selector (skip current)
+              // privacy‐selector (only other two options)
               const selector = document.createElement('div');
               selector.className = 'privacy-selector';
               for (let choice of ['public','friends','private']) {
@@ -210,23 +211,33 @@ async function loadPhotos(start, end, resortFilter=null) {
   }
 }
 
+// ===== FIXED PRIVACY-CHANGE =====
 async function changePrivacy(itemRef, newPrivacy) {
-  // skip if same (shouldn’t even show, but just in case)
-  const oldPrivacy = itemRef.fullPath.match(/\/(public|friends|private)\//)[1];
-  if (oldPrivacy === newPrivacy) return;
+  // determine old
+  const m = itemRef.fullPath.match(/(public|friends|private)/);
+  const oldPrivacy = m ? m[1] : null;
+  if (!oldPrivacy || oldPrivacy === newPrivacy) return;
 
   const meta = await getMetadata(itemRef);
-  const oldPath = itemRef.fullPath;
-  const newPath = oldPath.replace(/\/(public|friends|private)\//, `/${newPrivacy}/`);
-  const newRef  = ref(storage, newPath);
+  const newPath = itemRef.fullPath.replace(
+    new RegExp(`/${oldPrivacy}/`),
+    `/${newPrivacy}/`
+  );
+  const newRef = ref(storage, newPath);
 
-  // download & re-upload
-  const blob = await fetch(imageList[currentIndex].url).then(r => r.blob());
-  await uploadBytes(newRef, blob, {
-    contentType: meta.contentType,
-    customMetadata: meta.customMetadata
-  });
-
-  // remove old
-  await deleteObject(itemRef);
+  try {
+    // download via Firebase SDK (no CORS)
+    const bytes = await getBytes(itemRef);
+    // upload to new location
+    await uploadBytes(newRef, bytes, {
+      contentType: meta.contentType,
+      customMetadata: meta.customMetadata
+    });
+    // only delete when upload succeeds
+    await deleteObject(itemRef);
+  } catch (err) {
+    console.error("⚠️ changePrivacy failed:", err);
+    alert("Failed to change privacy: " + err.message);
+  }
 }
+
