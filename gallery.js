@@ -136,6 +136,7 @@ async function loadPhotos(start, end, resortFilter=null) {
               || (privacy === 'friends' && (isOwner || isFriend))
               || (privacy === 'private' && isOwner);
             if (!ok) continue;
+
             const items = (await listAll(pf)).items;
             for (let itemRef of items) {
               const url = await getDownloadURL(itemRef);
@@ -149,15 +150,13 @@ async function loadPhotos(start, end, resortFilter=null) {
                 name: itemRef.name
               });
 
+              const idx = imageList.length - 1;
               // build thumbnail card
               const card = document.createElement('div');
               card.className = 'photo-card';
-
-              // clicking the card opens modal
-              const idx = imageList.length - 1;
               card.onclick = () => {
                 currentIndex = idx;
-                modalImg.src = imageList[currentIndex].url;
+                modalImg.src = imageList[idx].url;
                 modal.style.display = 'flex';
               };
 
@@ -169,40 +168,43 @@ async function loadPhotos(start, end, resortFilter=null) {
               badge.className = `badge ${privacy}`;
               badge.textContent = privacy;
 
-              // overlay
-              const overlay = document.createElement('div');
-              overlay.className = 'overlay';
+              card.append(img, badge);
 
-              // delete button
-              const delBtn = document.createElement('button');
-              delBtn.title = 'Delete photo';
-              delBtn.innerHTML = `<img src="icons/trash.png" alt="Del">`;
-              delBtn.onclick = async e => {
-                e.stopPropagation();
-                if (!confirm('Delete this photo?')) return;
-                await deleteObject(itemRef);
-                loadPhotos(start, end, resortFilter);
-              };
+              // ⚙️ only add overlay for your own photos
+              if (isOwner) {
+                const overlay = document.createElement('div');
+                overlay.className = 'overlay';
 
-              // privacy selector
-              const selector = document.createElement('div');
-              selector.className = 'privacy-selector';
-              for (let choice of ['public','friends','private']) {
-                if (choice === privacy) continue;
-                const span = document.createElement('span');
-                span.className = `privacy-toggle ${choice}`;
-                span.textContent = choice;
-                span.onclick = async e => {
+                const delBtn = document.createElement('button');
+                delBtn.title = 'Delete photo';
+                delBtn.innerHTML = `<img src="icons/trash.png" alt="Del">`;
+                delBtn.onclick = async e => {
                   e.stopPropagation();
-                  await changePrivacy(itemRef, choice);
+                  if (!confirm('Delete this photo?')) return;
+                  await deleteObject(itemRef);
                   loadPhotos(start, end, resortFilter);
-                  modal.style.display = 'none';
                 };
-                selector.appendChild(span);
+
+                const selector = document.createElement('div');
+                selector.className = 'privacy-selector';
+                for (let choice of ['public','friends','private']) {
+                  if (choice === privacy) continue;
+                  const span = document.createElement('span');
+                  span.className = `privacy-toggle ${choice}`;
+                  span.textContent = choice;
+                  span.onclick = async e => {
+                    e.stopPropagation();
+                    await changePrivacy(itemRef, choice);
+                    loadPhotos(start, end, resortFilter);
+                    modal.style.display = 'none';
+                  };
+                  selector.appendChild(span);
+                }
+
+                overlay.append(delBtn, selector);
+                card.appendChild(overlay);
               }
 
-              overlay.append(delBtn, selector);
-              card.append(img, badge, overlay);
               gallery.appendChild(card);
             }
           }
@@ -216,13 +218,13 @@ async function loadPhotos(start, end, resortFilter=null) {
 
 // ===== PRIVACY-CHANGE helper =====
 async function changePrivacy(itemRef, newPrivacy) {
-  const m = itemRef.fullPath.match(/(public|friends|private)/);
+  const m = itemRef.fullPath.match(/\/(public|friends|private)\//);
   const oldPrivacy = m ? m[1] : null;
   if (!oldPrivacy || oldPrivacy === newPrivacy) return;
 
   const meta = await getMetadata(itemRef);
   const newPath = itemRef.fullPath.replace(
-    new RegExp(`/${oldPrivacy}/`),
+    `/${oldPrivacy}/`,
     `/${newPrivacy}/`
   );
   const newRef = ref(storage, newPath);
