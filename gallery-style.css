@@ -1,7 +1,5 @@
 /* gallery-style.css */
 
-/* ─── GLOBAL RESET & LAYOUT ───────────────────────────────────────────────── */
-
 body {
   font-family: 'Nunito', sans-serif;
   background: #FDB543;
@@ -96,8 +94,7 @@ footer {
 }
 
 
-/* ─── THUMBNAILS ───────────────────────────────────────────────────────────── */
-
+/* --- GALLERY SPECIFIC --- */
 .photo-card {
   width: 150px;
   height: 150px;
@@ -116,6 +113,7 @@ footer {
   display: block;
 }
 
+/* positioning the badge */
 .badge {
   position: absolute;
   bottom: 8px;
@@ -129,13 +127,11 @@ footer {
   text-transform: capitalize;
 }
 
-.badge.public  { background-color: #4CAF50; }
-.badge.friends { background-color: #FF9800; }
-.badge.private { background-color: #F44336; }
+.badge.public    { background-color: #4CAF50; }
+.badge.friends   { background-color: #FF9800; }
+.badge.private   { background-color: #F44336; }
 
-
-/* ─── MODAL POPUP ───────────────────────────────────────────────────────────── */
-
+/* --- MODAL --- */
 .modal {
   display: none;
   position: fixed;
@@ -143,46 +139,37 @@ footer {
   top: 0; left: 0;
   width: 100%; height: 100%;
   background-color: rgba(0,0,0,0.9);
-  /* center contents */
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .modal-inner {
-  position: relative;
-  /* shrink to content */
-  display: inline-block;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   max-width: 90vw;
   max-height: 90vh;
 }
 
 .modal-content {
-  display: block;
   max-width: 100%;
   max-height: 100%;
-  width: auto;
-  height: auto;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
-
-/* ─── CLOSE BUTTON ──────────────────────────────────────────────────────────── */
-
+/* close button */
 .modal-close {
   position: absolute;
-  top: -10px;
-  right: -10px;
+  top: 10px; right: 15px;
   font-size: 36px;
   color: white;
   cursor: pointer;
   z-index: 1000;
 }
 
-
-/* ─── NAVIGATION ARROWS ─────────────────────────────────────────────────────── */
-
+/* arrow buttons */
 .modal-arrow {
   position: absolute;
   top: 50%;
@@ -196,13 +183,14 @@ footer {
   height: 48px;
 }
 
-.modal-arrow.left  { left: -24px;  /* overlap modal-inner by half arrow width */ }
-.modal-arrow.right { right: -24px; /* same */ }
+.modal-arrow.left  { left: 10px; }
+.modal-arrow.right { right: 10px; }
 
 .modal-arrow img {
   width: 100%;
   height: 100%;
   display: block;
+  /* no extra bg */
 }
 
 .modal-arrow img:hover {
