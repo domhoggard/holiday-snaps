@@ -72,12 +72,16 @@ main { padding: 20px; }
   gap: 12px;
   margin-top: 16px;
 }
+
 .preview-card {
   background: #eee;
   border-radius: 8px;
   overflow: hidden;
   position: relative;
   text-align: center;
+
+  /* 1) reserve space below image for date picker */
+  padding-bottom: 12px;
 }
 /* thumbnail */
 .preview-card img {
@@ -89,7 +93,7 @@ main { padding: 20px; }
 /* date picker */
 .preview-card input[type="date"] {
   width: calc(100% - 16px);
-  margin: 6px 8px 0;
+  margin: 6px 8px 12px;     /* bottom margin increased from 0 to 12px */
   padding: 4px 6px;
   border-radius: 4px;
   border: 1px solid #ccc;
@@ -111,20 +115,17 @@ main { padding: 20px; }
 }
 
 /* OVERLAY (trash + privacy choices) */
-.preview-card .overlay {
+.preview-card .badge {
   position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px; /* increased spacing */
-}
-.preview-card:hover .overlay {
-  opacity: 1;
+  top: 6px;
+  right: 6px;
+  background-color: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 4px 6px;
+  border-radius: 8px;
+  font-size: 0.75em;
+  text-transform: capitalize;
+  pointer-events: none;
 }
 
 /* trash button */
