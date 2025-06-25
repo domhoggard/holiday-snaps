@@ -78,23 +78,70 @@ main { padding: 20px; }
   overflow: hidden;
   position: relative;
   text-align: center;
-  padding-bottom: 8px;
 }
+/* thumbnail */
 .preview-card img {
   width: 100%;
   height: 100px;
   object-fit: cover;
   display: block;
 }
-/* each thumbnail’s controls */
-.preview-card input[type="date"],
-.preview-card select {
+/* date picker */
+.preview-card input[type="date"] {
   width: calc(100% - 16px);
   margin: 6px 8px 0;
   padding: 4px 6px;
   border-radius: 4px;
   border: 1px solid #ccc;
   font-size: 0.9em;
+}
+
+/* OVERLAY + BADGES */
+.preview-card .badge {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  background-color: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 4px 6px;
+  border-radius: 8px;
+  font-size: 0.75em;
+  text-transform: capitalize;
+  cursor: default;
+}
+.preview-card .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.preview-card:hover .overlay {
+  opacity: 1;
+}
+.preview-card .overlay span {
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.75em;
+  color: #fff;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.preview-card .overlay span.public {
+  background-color: #4CAF50;
+}
+.preview-card .overlay span.friends {
+  background-color: #FF9800;
+}
+.preview-card .overlay span.private {
+  background-color: #F44336;
+}
+.preview-card .overlay span:hover {
+  opacity: 0.8;
 }
 
 /* FOOTER */
