@@ -1,4 +1,6 @@
-/* GLOBAL + HEADER */
+/* ----------------------------------
+   GLOBAL + HEADER
+---------------------------------- */
 body {
   font-family: 'Open Sans', sans-serif;
   background: #FDB543;
@@ -27,7 +29,9 @@ body {
   width: 36px; height: 36px; margin-right: 6px;
 }
 
-/* MAIN + UPLOAD CARD */
+/* ----------------------------------
+   MAIN + UPLOAD CARD
+---------------------------------- */
 main { padding: 20px; }
 .upload-card {
   background-color: #FFF9D9;
@@ -39,9 +43,7 @@ main { padding: 20px; }
 }
 .upload-card h2 { margin-top: 0; }
 .upload-card label {
-  display: block;
-  margin-top: 12px;
-  font-weight: bold;
+  display: block; margin-top: 12px; font-weight: bold;
 }
 .upload-card input[type="text"],
 .upload-card input[type="file"] {
@@ -65,7 +67,9 @@ main { padding: 20px; }
   background-color: #007f7f;
 }
 
-/* PREVIEW GRID */
+/* ----------------------------------
+   PREVIEW GRID
+---------------------------------- */
 .preview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -76,42 +80,25 @@ main { padding: 20px; }
   background: #eee;
   border-radius: 8px;
   overflow: hidden;
-  position: relative;
+  position: relative;   /* for overlay */
   text-align: center;
 }
-/* thumbnail */
 .preview-card img {
   width: 100%;
   height: 100px;
   object-fit: cover;
   display: block;
 }
-/* date picker */
-.preview-card input[type="date"] {
-  width: calc(100% - 16px);
-  margin: 6px 8px 0;
-  padding: 4px 6px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 0.9em;
-}
 
-/* BADGE (current privacy) */
+/* hide the old default badge (if you still have one lingering) */
 .preview-card .badge {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background-color: rgba(0,0,0,0.7);
-  color: #fff;
-  padding: 4px 6px;
-  border-radius: 8px;
-  font-size: 0.75em;
-  text-transform: capitalize;
-  pointer-events: none;
+  display: none;
 }
 
-/* OVERLAY (trash + privacy choices) */
-..preview-card .overlay {
+/* ----------------------------------
+   HOVER OVERLAY (STACKED — like gallery)
+---------------------------------- */
+.preview-card .overlay {
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.5);
@@ -121,41 +108,55 @@ main { padding: 20px; }
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  /* evenly distribute controls top→bottom */
-  justify-content: space-around;
+  justify-content: center;
+  gap: 8px;
 }
 .preview-card:hover .overlay {
   opacity: 1;
 }
 
-/* trash button */
-.overlay button.trash {
+/* circular icon buttons */
+.preview-card .overlay button {
   background: rgba(255,255,255,0.9);
   border: none;
   border-radius: 50%;
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
-.overlay button.trash img {
-  width: 20px; height: 20px;
+.preview-card .overlay button img {
+  width: 20px;
+  height: 20px;
 }
 
-/* privacy‐toggle badges (only alternatives: friends/private) */
-.overlay span {
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 0.9em;
+/* stacked privacy‐toggle badges */
+.privacy-selector {
+  display: flex;
+  flex-direction: column;  /* stack vertically */
+  gap: 6px;
+}
+.privacy-toggle {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 0.75em;
   color: #fff;
   text-transform: capitalize;
-  cursor: pointer;
+  transition: opacity 0.2s;
 }
-.overlay span.friends { background-color: #FF9800; }
-.overlay span.private { background-color: #F44336; }
-.overlay span:hover   { opacity: 0.8; }
+.privacy-toggle.public   { background-color: #4CAF50; }
+.privacy-toggle.friends  { background-color: #FF9800; }
+.privacy-toggle.private  { background-color: #F44336; }
+.privacy-toggle:hover {
+  opacity: 0.75;
+}
 
-/* FOOTER */
+/* ----------------------------------
+   FOOTER
+---------------------------------- */
 footer {
   text-align: center;
   padding: 10px 0;
