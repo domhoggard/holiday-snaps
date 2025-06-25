@@ -12,15 +12,28 @@
       <div class="header-inner">
         <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
         <nav class="main-nav">
-          <a href="index.html"><img src="icons/home.png" alt="Home Icon"/>Home</a>
-          <a href="trips.html"><img src="icons/trips.png" alt="Trips Icon"/>Trips</a>
-          <a href="profile.html"><img src="icons/friends.png" alt="Friends Icon"/>Friends</a>
-          <a href="#" onclick="logOut()"><img src="icons/logout.png" alt="Logout Icon"/>Logout</a>
+          <a href="index.html"><img src="icons/home.png" alt="Home"/>Home</a>
+          <a href="trips.html"><img src="icons/trips.png" alt="Trips"/>Trips</a>
+          <a href="profile.html"><img src="icons/friends.png" alt="Friends"/>Friends</a>
+          <a href="#" onclick="logOut()"><img src="icons/logout.png" alt="Logout"/>Logout</a>
         </nav>
       </div>
     </header>
 
     <main>
+      <!-- SAVED TRIPS -->
+      <section class="profile-card">
+        <h2>Saved Trips</h2>
+        <div class="saved-trips-controls">
+          <select id="savedTripsSelect">
+            <option value="">-- Select a saved trip --</option>
+          </select>
+          <button id="loadSavedTripBtn">Load Saved Trip</button>
+          <button id="saveCurrentTripBtn">Save Current Trip</button>
+        </div>
+      </section>
+
+      <!-- DATE FILTER -->
       <section class="profile-card">
         <h2>Search Photos</h2>
         <input type="date" id="startDate" />
@@ -28,16 +41,7 @@
         <button id="filterBtn">Filter</button>
       </section>
 
-      <section class="profile-card">
-        <h2>Saved Trips</h2>
-        <input type="text" id="tripName" placeholder="Trip name (e.g. Cyprus 2025)" />
-        <button id="saveTripBtn">Save This Trip</button>
-        <select id="savedTripsDropdown">
-          <option value="">-- Select a Saved Trip --</option>
-        </select>
-        <button id="loadTripBtn">Load Selected Trip</button>
-      </section>
-
+      <!-- PHOTO GALLERY -->
       <section class="profile-card">
         <h2>Photo Gallery</h2>
         <div id="photo-gallery" class="photo-gallery"></div>
@@ -49,6 +53,7 @@
     </footer>
   </div>
 
+  <!-- Modal Viewer -->
   <div id="modal" class="modal">
     <div class="modal-inner">
       <span id="modal-close" class="modal-close">&times;</span>
