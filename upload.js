@@ -20,23 +20,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitBtn   = document.getElementById("submit-btn");
   const logoutLink  = document.getElementById("logout-link");
 
-  // wire up log-out
+  // log out
   logoutLink.addEventListener("click", e => {
     e.preventDefault();
     logOut();
   });
 
-  // ensure user is logged in
+  // auth guard
   onAuthStateChanged(auth, user => {
     if (!user) location.href = "login.html";
   });
 
-  // when files are chosen, build a preview card for each
+  // file selection → preview cards
   fileInput.addEventListener("change", () => {
     previewGrid.innerHTML = "";
     filesData = [];
 
     Array.from(fileInput.files).forEach((file, i) => {
+      const entry = {
+        file,
+        dateInput: null,
+        privacy: 'public'
+      };
+
+      // build card
       const card = document.createElement("div");
       card.className = "preview-card";
 
@@ -50,23 +57,38 @@ document.addEventListener("DOMContentLoaded", () => {
       dateInput.type = "date";
       dateInput.required = true;
       card.appendChild(dateInput);
+      entry.dateInput = dateInput;
 
-      // privacy selector
-      const privacySelect = document.createElement("select");
-      ["public","friends","private"].forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p;
-        opt.textContent = p.charAt(0).toUpperCase() + p.slice(1);
-        privacySelect.appendChild(opt);
-      });
-      card.appendChild(privacySelect);
+      // badge showing current privacy
+      const badge = document.createElement("span");
+      badge.className = `badge public`;
+      badge.textContent = 'Public';
+      card.appendChild(badge);
 
+      // overlay with choices
+      const overlay = document.createElement("div");
+      overlay.className = "overlay";
+      for (let choice of ['public','friends','private']) {
+        const span = document.createElement("span");
+        span.className = choice;
+        span.textContent = choice;
+        span.onclick = e => {
+          e.stopPropagation();
+          entry.privacy = choice;
+          badge.className = `badge ${choice}`;
+          badge.textContent = choice.charAt(0).toUpperCase() + choice.slice(1);
+        };
+        overlay.appendChild(span);
+      }
+      card.appendChild(overlay);
+
+      // add to grid & array
       previewGrid.appendChild(card);
-      filesData.push({ file, dateInput, privacySelect });
+      filesData.push(entry);
     });
   });
 
-  // on submit, upload each file with its date & privacy
+  // submit loop
   submitBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
     if (!user) return alert("Please log in first.");
@@ -78,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return alert("No files selected.");
     }
 
-    // fetch friends list once for metadata
+    // get friends list for metadata
     let friendsList = [];
     try {
       const udoc = await getDoc(doc(db, "users", user.uid));
@@ -87,15 +109,15 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Could not load friends for metadata.");
     }
 
-    // upload loop
-    for (let {file, dateInput, privacySelect} of filesData) {
+    // upload each file with chosen date & privacy
+    for (let entry of filesData) {
+      let { file, dateInput, privacy } = entry;
       const date = dateInput.value;
-      const privacy = privacySelect.value;
       if (!date) {
         return alert("Select a date for each photo.");
       }
 
-      // handle HEIC→JPEG on mobile
+      // HEIC→JPEG on mobile
       const ext = file.name.split('.').pop().toLowerCase();
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       if (ext === "heic" && !isMobile) {
@@ -139,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     alert("All photos uploaded!");
-    // Optionally clear the form:
+    // clear UI
     previewGrid.innerHTML = "";
     fileInput.value = "";
     resortInput.value = "";
