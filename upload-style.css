@@ -116,6 +116,7 @@ main { padding: 20px; }
   opacity: 0;
   transition: opacity 0.2s ease;
   display: flex;
+  flex-direction: column;     /* ← stack badges vertically */
   align-items: center;
   justify-content: center;
   gap: 6px;
