@@ -1,3 +1,5 @@
+console.log("🟢 trips.js loaded");
+
 import { auth, storage, db, logOut } from './firebase.js';
 import {
   ref,
