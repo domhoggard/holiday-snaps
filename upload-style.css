@@ -1,0 +1,106 @@
+/* GLOBAL + HEADER */
+body {
+  font-family: 'Open Sans', sans-serif;
+  background: #FDB543;
+  margin: 0; padding: 0;
+  color: #004d40;
+}
+.background { padding: 0; }
+.site-header {
+  background-color: #FDB543;
+  padding: 10px 20px;
+  display: flex; align-items: center;
+}
+.header-inner {
+  display: flex; align-items: center;
+  width: 100%; justify-content: space-between;
+}
+.logo-small {
+  width: 90px; height: auto; display: block;
+}
+.main-nav a {
+  margin: 0 12px; text-decoration: none;
+  color: #333; font-weight: bold;
+  display: inline-flex; align-items: center;
+}
+.main-nav img {
+  width: 36px; height: 36px; margin-right: 6px;
+}
+
+/* MAIN + UPLOAD CARD */
+main { padding: 20px; }
+.upload-card {
+  background-color: #FFF9D9;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.upload-card h2 { margin-top: 0; }
+.upload-card label {
+  display: block;
+  margin-top: 12px;
+  font-weight: bold;
+}
+.upload-card input[type="text"],
+.upload-card input[type="file"] {
+  width: calc(100% - 20px);
+  padding: 8px 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.upload-card button {
+  margin-top: 16px;
+  padding: 10px 18px;
+  background-color: #00AFAA;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.upload-card button:hover {
+  background-color: #007f7f;
+}
+
+/* PREVIEW GRID */
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.preview-card {
+  background: #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+  padding-bottom: 8px;
+}
+.preview-card img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+/* each thumbnail’s controls */
+.preview-card input[type="date"],
+.preview-card select {
+  width: calc(100% - 16px);
+  margin: 6px 8px 0;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 0.9em;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.9em;
+  background: transparent;
+}
