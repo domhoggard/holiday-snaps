@@ -1,12 +1,13 @@
+/* ----------------------------------
+   GLOBAL + HEADER
+---------------------------------- */
 body {
   font-family: 'Open Sans', sans-serif;
   background: #FDB543;
   margin: 0; padding: 0;
   color: #004d40;
 }
-
 .background { padding: 0; }
-
 .site-header {
   background-color: #FDB543;
   padding: 10px 20px;
@@ -26,8 +27,10 @@ body {
 }
 .main-nav img { width: 36px; height: 36px; margin-right: 6px; }
 
+/* ----------------------------------
+   MAIN + CARDS
+---------------------------------- */
 main { padding: 20px; }
-
 .profile-card {
   background-color: #FFF9D9;
   border-radius: 12px;
@@ -39,10 +42,7 @@ main { padding: 20px; }
 
 /* Saved Trips */
 .saved-trips-controls {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
 }
 .saved-trips-controls select {
   flex: 1 1 auto; padding: 8px;
@@ -69,7 +69,7 @@ main { padding: 20px; }
 }
 #filterBtn:hover { background-color: #007f7f; }
 
-/* Gallery */
+/* Gallery Thumbnails */
 .photo-card {
   display: inline-block;
   position: relative;
@@ -95,7 +95,7 @@ main { padding: 20px; }
 .badge.friends  { background-color: #FF9800; }
 .badge.private  { background-color: #F44336; }
 
-/* Hover overlay */
+/* Hover overlay (delete + new privacy badges) */
 .photo-card .overlay {
   position: absolute; inset: 0;
   background: rgba(0,0,0,0.5);
@@ -117,7 +117,9 @@ main { padding: 20px; }
   width: 20px; height: 20px;
 }
 
-/* Modal */
+/* ----------------------------------
+   MODAL
+---------------------------------- */
 .modal {
   display: none;
   position: fixed; z-index: 999;
@@ -151,3 +153,25 @@ main { padding: 20px; }
   width: 36px; height: 36px;
 }
 
+/* ----------------------------------
+   NEW: Overlay Privacy‐Toggle Badges
+---------------------------------- */
+.privacy-selector {
+  display: flex;
+  gap: 6px;
+}
+.privacy-toggle {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 0.75em;
+  color: #fff;
+  text-transform: capitalize;
+  transition: opacity 0.2s;
+}
+.privacy-toggle.public   { background-color: #4CAF50; }
+.privacy-toggle.friends  { background-color: #FF9800; }
+.privacy-toggle.private  { background-color: #F44336; }
+.privacy-toggle:hover {
+  opacity: 0.75;
+}
