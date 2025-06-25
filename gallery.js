@@ -1,11 +1,16 @@
 import { auth, storage, db } from './firebase.js';
-import { ref, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
-import { collection, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+import {
+  ref, listAll, getDownloadURL,
+  deleteObject, updateMetadata
+} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
+import {
+  collection, getDocs, doc, getDoc
+} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
 const gallery      = document.getElementById('photo-gallery');
-const startInput   = document.getElementById('startDate');
-const endInput     = document.getElementById('endDate');
+const startDateIn  = document.getElementById('startDate');
+const endDateIn    = document.getElementById('endDate');
 const filterBtn    = document.getElementById('filterBtn');
 const modal        = document.getElementById("modal");
 const modalImg     = document.getElementById("modal-img");
@@ -13,78 +18,60 @@ const modalClose   = document.getElementById("modal-close");
 const modalPrev    = document.getElementById("modal-prev");
 const modalNext    = document.getElementById("modal-next");
 
-let imageList = [], currentIndex = 0, currentUserId = null, friendIds = [];
+let imageList = [], currentIndex = 0;
+let currentUserId = null, friendIds = [];
 
-// read URL parameters
-const params       = new URLSearchParams(window.location.search);
-const resortFilter = params.get('resort');
-const startParam   = params.get('start');
-const endParam     = params.get('end');
-
-// if present, seed the form
-if (startParam) startInput.value = startParam;
-if (endParam)   endInput.value   = endParam;
-
-onAuthStateChanged(auth, async user => {
-  if (!user) {
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUserId = user.uid;
+    const userDoc = await getDoc(doc(db, "users", currentUserId));
+    if (userDoc.exists()) friendIds = userDoc.data().friends || [];
+  } else {
     location.href = "login.html";
-    return;
-  }
-  currentUserId = user.uid;
-  const me       = await getDoc(doc(db, "users", user.uid));
-  friendIds      = me.exists() ? me.data().friends || [] : [];
-
-  // if URL had any params, auto-load once
-  if (resortFilter || startParam || endParam) {
-    loadPhotos();
   }
 });
 
-filterBtn.addEventListener('click', loadPhotos);
+filterBtn.addEventListener('click', async () => {
+  const s = startDateIn.value, e = endDateIn.value;
+  if (!s || !e) return alert("Please select both dates.");
+  await loadPhotos(s, e);
+});
 
-async function loadPhotos() {
+async function loadPhotos(start, end) {
   gallery.innerHTML = "";
   imageList = [];
 
-  // use defaults so missing start/end means “all dates”
-  const start = startInput.value  || "0000-01-01";
-  const end   = endInput.value    || "9999-12-31";
-
-  const usersSnapshot = await getDocs(collection(db, "users"));
-  for (let uDoc of usersSnapshot.docs) {
-    const uid     = uDoc.id;
+  const users = await getDocs(collection(db, "users"));
+  for (let u of users.docs) {
+    const uid     = u.id;
     const isOwner = uid === currentUserId;
     const isFriend= friendIds.includes(uid);
 
     try {
-      const userRef     = ref(storage, uid);
-      const resortList  = await listAll(userRef);
-      for (let resortFolder of resortList.prefixes) {
-        const name = resortFolder.name;
-        // honor resortFilter if given
-        if (resortFilter && name !== resortFilter) continue;
-
-        const dateList = await listAll(resortFolder);
-        for (let dateFolder of dateList.prefixes) {
+      const resorts = await listAll(ref(storage, uid));
+      for (let resortFolder of resorts.prefixes) {
+        const dates = await listAll(resortFolder);
+        for (let dateFolder of dates.prefixes) {
           const date = dateFolder.name;
           if (date < start || date > end) continue;
 
-          const privacyList = await listAll(dateFolder);
-          for (let privacyFolder of privacyList.prefixes) {
-            const privacy = privacyFolder.name;
-            const canView =
+          const privs = await listAll(dateFolder);
+          for (let pFolder of privs.prefixes) {
+            const privacy = pFolder.name;
+            const canView = 
               privacy === "public" ||
-              (privacy === "friends" && (isOwner || isFriend)) ||
+              (privacy === "friends" && (isOwner||isFriend)) ||
               (privacy === "private" && isOwner);
 
             if (!canView) continue;
 
-            const images = await listAll(privacyFolder);
-            for (let item of images.items) {
+            const items = await listAll(pFolder);
+            for (let item of items.items) {
               const url = await getDownloadURL(item);
-              imageList.push({ url, privacy });
+              const idx = imageList.length;
+              imageList.push({ url, privacy, item });
 
-              // build the thumbnail card
+              // build card
               const card = document.createElement("div");
               card.className = "photo-card";
 
@@ -92,29 +79,79 @@ async function loadPhotos() {
               img.src       = url;
               img.alt       = "Photo";
               img.className = "gallery-img";
-              const idx     = imageList.length - 1;
               img.addEventListener("click", () => showModal(idx));
 
               const badge = document.createElement("span");
               badge.className = "badge " + privacy;
               badge.textContent = privacy.charAt(0).toUpperCase() + privacy.slice(1);
 
+              // overlay
+              const overlay = document.createElement("div");
+              overlay.className = "card-overlay";
+
+              // delete
+              const delBtn = document.createElement("button");
+              delBtn.className = "delete-btn";
+              delBtn.innerHTML = "🗑️";
+              delBtn.title     = "Delete this photo";
+              delBtn.addEventListener("click", async e => {
+                e.stopPropagation();
+                if (!confirm("Delete this photo?")) return;
+                try {
+                  await deleteObject(item);
+                  card.remove();
+                  alert("Deleted.");
+                } catch (err) {
+                  console.error(err);
+                  alert("Delete failed.");
+                }
+              });
+
+              // privacy selector
+              const sel = document.createElement("select");
+              ["public","friends","private"].forEach(opt => {
+                const o = document.createElement("option");
+                o.value = opt;
+                o.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+                if (opt === privacy) o.selected = true;
+                sel.appendChild(o);
+              });
+              sel.addEventListener("change", async e => {
+                const newPriv = e.target.value;
+                try {
+                  const md = (await item.getMetadata()).customMetadata || {};
+                  md.privacy = newPriv;
+                  await updateMetadata(item, { customMetadata: md });
+                  badge.textContent = newPriv.charAt(0).toUpperCase() + newPriv.slice(1);
+                  badge.className = "badge " + newPriv;
+                  alert("Privacy updated.");
+                } catch (err) {
+                  console.error(err);
+                  alert("Could not update privacy.");
+                }
+              });
+
+              overlay.appendChild(delBtn);
+              overlay.appendChild(sel);
+
+              // assemble
               card.appendChild(img);
               card.appendChild(badge);
+              card.appendChild(overlay);
               gallery.appendChild(card);
             }
           }
         }
       }
-    } catch (err) {
-      console.warn(`Skipping user ${uid}: ${err.message}`);
+    } catch (_) {
+      console.warn(`Skipping user ${uid}`);
     }
   }
 }
 
 function showModal(i) {
-  currentIndex      = i;
-  modalImg.src      = imageList[i].url;
+  currentIndex = i;
+  modalImg.src = imageList[i].url;
   modal.style.display = "flex";
 }
 modalClose.onclick = () => modal.style.display = "none";
