@@ -1,70 +1,61 @@
-/* style.css */
+/* styles.css */
+
 body {
-  font-family: 'Open Sans', sans-serif;
-  background: #FDB543;              /* site‐wide yellow */
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(to bottom, #e0f7f5, #c5dfd9);
+  color: #104a42;
   margin: 0;
   padding: 0;
-  color: #004d40;                   /* dark teal text */
 }
 
+/* center main content vertically, push footer to bottom */
 .background {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
 }
 
+/* keep footer at bottom of the viewport */
 footer {
+  margin-top: auto;
   text-align: center;
   margin: 20px 0;
   font-size: 0.9em;
 }
 
-/* container for both home and auth pages */
-.homepage-main,
-.auth-main {
+.homepage-main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex-grow: 1;
-  padding: 2rem;
+  padding: 1rem;      /* reduced padding */
 }
 
-/* logo on home or signup */
-.homepage-logo,
-.signup-logo {
-  width: 240px;
-  margin: 30px 0;
+.homepage-logo {
+  width: 200px;        /* slightly smaller */
+  margin: 20px 0;      /* reduced gap above/below */
 }
 
-/* the white “card” behind the form */
-.login-box,
-.auth-box {
-  background-color: #FFF9D9;
-  padding: 30px;
+.login-box {
+  background: white;
+  padding: 20px;       /* slimmed down */
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  max-width: 420px;
+  max-width: 360px;    /* narrower box */
   width: 90%;
   text-align: center;
 }
 
-/* headings inside those cards */
-.login-box h2,
-.auth-box h2 {
+.login-box h2 {
   margin-top: 0;
-  color: #004d40;
+  color: #104a42;
 }
 
-/* paragraph under “Welcome Back” */
 .login-box p {
   margin: 10px 0 20px;
 }
 
-/* inputs in both forms */
-.login-box input,
-.auth-box input,
-.auth-box input[type="date"] {
+.login-box input {
   width: 90%;
   margin: 10px auto;
   padding: 12px;
@@ -74,10 +65,8 @@ footer {
   display: block;
 }
 
-/* buttons in both forms */
-.login-box button,
-.auth-box button {
-  background-color: #00AFAA;
+.login-box button {
+  background-color: #1ba29c;
   color: white;
   padding: 12px;
   font-weight: bold;
@@ -88,43 +77,12 @@ footer {
   cursor: pointer;
   margin-top: 10px;
 }
-.login-box button:hover,
-.auth-box button:hover {
-  background-color: #007f7f;
+
+.login-box button:hover {
+  background-color: #0c7973;
 }
 
-/* link under login form */
 .signup-link {
   font-size: 0.9em;
   margin-top: 10px;
-}
-
-/* simple site header for signup page */
-header {
-  text-align: center;
-  padding: 20px 0;
-}
-header .logo-large {
-  width: 160px;
-  margin-bottom: 10px;
-}
-header h1 {
-  margin: 0;
-  font-size: 1.8em;
-  color: #00AFAA;
-}
-header nav a {
-  margin: 0 10px;
-  text-decoration: none;
-  color: #004d40;
-  font-weight: bold;
-}
-
-/* make signup form sit dead-centre of the screen */
-.auth-main {
-  flex-grow: 1;               /* consume available space between header & footer */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;    /* vertical centering */
-  align-items: center;        /* horizontal centering */
 }
