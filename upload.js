@@ -20,30 +20,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitBtn   = document.getElementById("submit-btn");
   const logoutLink  = document.getElementById("logout-link");
 
-  // log out
+  // wire up log-out
   logoutLink.addEventListener("click", e => {
     e.preventDefault();
     logOut();
   });
 
-  // auth guard
+  // ensure user is logged in
   onAuthStateChanged(auth, user => {
     if (!user) location.href = "login.html";
   });
 
-  // file selection → preview cards
+  // when files are chosen, build a preview card for each
   fileInput.addEventListener("change", () => {
     previewGrid.innerHTML = "";
     filesData = [];
 
     Array.from(fileInput.files).forEach((file, i) => {
-      const entry = {
-        file,
-        dateInput: null,
-        privacy: 'public'
-      };
-
-      // build card
       const card = document.createElement("div");
       card.className = "preview-card";
 
@@ -57,38 +50,60 @@ document.addEventListener("DOMContentLoaded", () => {
       dateInput.type = "date";
       dateInput.required = true;
       card.appendChild(dateInput);
-      entry.dateInput = dateInput;
 
-      // badge showing current privacy
+      // default-privacy badge
       const badge = document.createElement("span");
-      badge.className = `badge public`;
-      badge.textContent = 'Public';
+      badge.className = "badge public";
+      badge.textContent = "public";
       card.appendChild(badge);
 
-      // overlay with choices
+      // overlay container
       const overlay = document.createElement("div");
       overlay.className = "overlay";
-      for (let choice of ['public','friends','private']) {
+
+      // trash button
+      const delBtn = document.createElement("button");
+      delBtn.className = "trash";
+      delBtn.innerHTML = `<img src="icons/trash.png" alt="Delete">`;
+      delBtn.onclick = e => {
+        e.stopPropagation();
+        // remove from filesData
+        filesData = filesData.filter(f => f.card !== card);
+        card.remove();
+      };
+      overlay.appendChild(delBtn);
+
+      // privacy choices
+      ["public","friends","private"].forEach(choice => {
         const span = document.createElement("span");
         span.className = choice;
         span.textContent = choice;
         span.onclick = e => {
           e.stopPropagation();
-          entry.privacy = choice;
+          // update badge
+          badge.textContent = choice;
           badge.className = `badge ${choice}`;
-          badge.textContent = choice.charAt(0).toUpperCase() + choice.slice(1);
+          // update filesData entry
+          const entry = filesData.find(f => f.card === card);
+          if (entry) entry.privacy = choice;
         };
         overlay.appendChild(span);
-      }
-      card.appendChild(overlay);
+      });
 
-      // add to grid & array
+      card.appendChild(overlay);
       previewGrid.appendChild(card);
-      filesData.push(entry);
+
+      // remember this file
+      filesData.push({
+        file,
+        dateInput,
+        privacy: "public",
+        card
+      });
     });
   });
 
-  // submit loop
+  // on submit, upload each file with its chosen date & privacy
   submitBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
     if (!user) return alert("Please log in first.");
@@ -96,22 +111,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const resort = resortInput.value.trim();
     if (!resort) return alert("Enter a resort name.");
 
-    if (filesData.length === 0) {
+    if (!filesData.length) {
       return alert("No files selected.");
     }
 
-    // get friends list for metadata
+    // fetch friends list once
     let friendsList = [];
     try {
       const udoc = await getDoc(doc(db, "users", user.uid));
-      friendsList = udoc.exists() ? (udoc.data().friends||[]) : [];
+      friendsList = udoc.exists() ? (udoc.data().friends || []) : [];
     } catch {
       console.warn("Could not load friends for metadata.");
     }
 
-    // upload each file with chosen date & privacy
-    for (let entry of filesData) {
-      let { file, dateInput, privacy } = entry;
+    // upload loop
+    for (let {file, dateInput, privacy} of filesData) {
       const date = dateInput.value;
       if (!date) {
         return alert("Select a date for each photo.");
@@ -146,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const metadata = {
         customMetadata: {
           owner: user.uid,
-          privacy: privacy,
+          privacy,
           friends: privacy === "friends" ? JSON.stringify(friendsList) : ""
         }
       };
@@ -161,10 +175,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     alert("All photos uploaded!");
-    // clear UI
+    // clear form
     previewGrid.innerHTML = "";
     fileInput.value = "";
     resortInput.value = "";
     filesData = [];
   });
 });
+
