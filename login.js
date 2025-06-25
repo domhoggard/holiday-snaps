@@ -32,7 +32,7 @@ resetLink.addEventListener("click", async (e) => {
   try {
     await sendPasswordResetEmail(auth, email);
     alert(
-      "Password reset email sent! Check your inbox (and spam folder) for instructions."
+      "Password reset email sent! Check your inbox (and spam) for instructions."
     );
   } catch (error) {
     console.error("Password reset error:", error);
