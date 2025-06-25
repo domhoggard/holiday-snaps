@@ -1,4 +1,8 @@
-/* gallery-style.css */
+/* ===================================================
+   Gallery Page Styles for HolidaySnaps
+   =================================================== */
+
+/* ─── Base & Layout ───────────────────────────────────────────────────────── */
 
 body {
   font-family: 'Nunito', sans-serif;
@@ -82,6 +86,7 @@ button {
   cursor: pointer;
   margin-top: 5px;
 }
+
 button:hover {
   background-color: #007f7f;
 }
@@ -93,27 +98,25 @@ footer {
   background-color: transparent;
 }
 
+/* ─── Gallery Thumbnails & Badges ────────────────────────────────────────── */
 
-/* --- GALLERY SPECIFIC --- */
 .photo-card {
-  width: 150px;
-  height: 150px;
-  margin: 10px;
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
   display: inline-block;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  position: relative;
+  margin: 10px;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-.photo-card img.gallery-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.gallery-img {
+  width: 150px;
+  height: 150px;           /* force uniform square thumbnails */
+  object-fit: cover;       /* crop/letterbox as needed */
+  border-radius: 6px;
+  cursor: pointer;
   display: block;
 }
 
-/* positioning the badge */
 .badge {
   position: absolute;
   bottom: 8px;
@@ -127,72 +130,81 @@ footer {
   text-transform: capitalize;
 }
 
-.badge.public    { background-color: #4CAF50; }
-.badge.friends   { background-color: #FF9800; }
-.badge.private   { background-color: #F44336; }
+.badge.public {
+  background-color: #4CAF50;
+}
 
-/* --- MODAL --- */
+.badge.friends {
+  background-color: #FF9800;
+}
+
+.badge.private {
+  background-color: #F44336;
+}
+
+/* ─── Modal Lightbox & Navigation ───────────────────────────────────────── */
+
 .modal {
   display: none;
   position: fixed;
-  z-index: 999;
   top: 0; left: 0;
-  width: 100%; height: 100%;
+  width: 100vw; height: 100vh;
   background-color: rgba(0,0,0,0.9);
-}
 
-.modal-inner {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
+  /* center contents */
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.modal-inner {
+  position: relative;      /* for close button & arrows */
   max-width: 90vw;
   max-height: 90vh;
 }
 
 .modal-content {
+  display: block;
   max-width: 100%;
   max-height: 100%;
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  object-fit: contain;     /* preserve aspect ratio */
 }
 
-/* close button */
 .modal-close {
   position: absolute;
-  top: 10px; right: 15px;
-  font-size: 36px;
+  top: 8px; right: 8px;
+  font-size: 32px;
   color: white;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 2;
 }
 
-/* arrow buttons */
+/* arrow buttons: overlap image edges, transparent wrappers */
 .modal-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
+  background: transparent !important;
+  border: none !important;
   padding: 0;
   cursor: pointer;
-  z-index: 1001;
-  width: 48px;
-  height: 48px;
+  outline: none !important;
+  z-index: 2;
 }
 
-.modal-arrow.left  { left: 10px; }
-.modal-arrow.right { right: 10px; }
+.modal-arrow.left  { left: 8px; }
+.modal-arrow.right { right: 8px; }
 
 .modal-arrow img {
-  width: 100%;
-  height: 100%;
+  width: 48px;
+  height: 48px;
   display: block;
-  /* no extra bg */
 }
 
-.modal-arrow img:hover {
+/* no hover/focus backgrounds, only a slight fade */
+.modal-arrow:hover img,
+.modal-arrow:focus img {
   opacity: 0.8;
 }
+
