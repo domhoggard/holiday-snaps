@@ -1,45 +1,20 @@
-
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   background: #FDB543;
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   color: #004d40;
 }
 
-.background {
-  padding: 0;
-}
+.background { padding: 0; }
 
 .site-header {
   background-color: #FDB543;
   padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
 }
-
-.header-inner {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  background: transparent !important;
-}
-
-.logo-small {
-  background: transparent;
-  width: 210px;
-  height: auto;
-  margin-right: 10px;
-  display: block;
-}
-
-.site-title {
-  font-size: 26px;
-  color: #00AFAA;
-  margin-right: auto;
-}
-
+.header-inner { display: flex; align-items: center; width: 100%; }
+.logo-small { width: 90px; margin-right: 10px; }
+.site-title { font-size: 26px; color: #00AFAA; margin-right: auto; }
 .main-nav a {
   margin: 0 12px;
   text-decoration: none;
@@ -49,29 +24,21 @@ body {
   align-items: center;
   font-size: 0.95em;
 }
+.main-nav img { width: 36px; height: 36px; margin-right: 8px; }
 
-.main-nav img {
-  width: 36px;
-  height: 36px;
-  margin-right: 8px;
-}
+main { padding: 20px; }
 
-main {
-  padding: 20px;
-}
-
-.upload-box, .gallery-box {
+.card {
   background-color: #FFF9D9;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
+.card h2 { margin-top: 0; }
 
-input[type="file"],
-input[type="text"],
-input[type="date"],
-select {
+.upload-box input,
+.upload-box select {
   display: block;
   width: calc(100% - 20px);
   padding: 10px;
@@ -79,8 +46,8 @@ select {
   border-radius: 6px;
   border: 1px solid #ccc;
 }
-
-button {
+.upload-box button,
+.search-box button {
   padding: 10px 16px;
   border: none;
   border-radius: 6px;
@@ -90,19 +57,20 @@ button {
   cursor: pointer;
   margin-top: 5px;
 }
-
-button:hover {
-  background-color: #007f7f;
-}
-
-#resort-list {
-  list-style-type: none;
-  padding: 0;
-}
+.upload-box button:hover,
+.search-box button:hover { background-color: #007f7f; }
 
 footer {
-  text-align: center;
-  padding: 10px;
-  font-size: 0.9em;
+  text-align: center; padding: 10px; font-size: 0.9em;
   background-color: transparent;
 }
+
+/* --- SEARCH BOX SPECIFICS --- */
+.search-box select,
+.search-box input[type="date"] {
+  width: calc(50% - 12px);
+  margin-right: 8px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+.search-box .date-range { margin-bottom: 10px; }
