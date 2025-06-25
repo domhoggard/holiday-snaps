@@ -22,11 +22,11 @@ const gallery        = document.getElementById('photo-gallery');
 const startDateInput = document.getElementById('startDate');
 const endDateInput   = document.getElementById('endDate');
 const filterBtn      = document.getElementById('filterBtn');
-const modal          = document.getElementById("modal");
-const modalImg       = document.getElementById("modal-img");
-const modalClose     = document.getElementById("modal-close");
-const modalPrev      = document.getElementById("modal-prev");
-const modalNext      = document.getElementById("modal-next");
+const modal          = document.getElementById('modal');
+const modalImg       = document.getElementById('modal-img');
+const modalClose     = document.getElementById('modal-close');
+const modalPrev      = document.getElementById('modal-prev');
+const modalNext      = document.getElementById('modal-next');
 
 const saveBtn        = document.getElementById('saveCurrentTripBtn');
 const loadTripBtn    = document.getElementById('loadSavedTripBtn');
@@ -153,14 +153,17 @@ async function loadPhotos(start, end, resortFilter=null) {
               const card = document.createElement('div');
               card.className = 'photo-card';
 
-              const img = document.createElement('img');
-              img.src = url; img.className = 'gallery-img';
+              // clicking the card opens modal
               const idx = imageList.length - 1;
-              img.onclick = () => {
+              card.onclick = () => {
                 currentIndex = idx;
-                modalImg.src = url;
+                modalImg.src = imageList[currentIndex].url;
                 modal.style.display = 'flex';
               };
+
+              const img = document.createElement('img');
+              img.src = url;
+              img.className = 'gallery-img';
 
               const badge = document.createElement('span');
               badge.className = `badge ${privacy}`;
@@ -181,7 +184,7 @@ async function loadPhotos(start, end, resortFilter=null) {
                 loadPhotos(start, end, resortFilter);
               };
 
-              // privacy‐selector (only other two options)
+              // privacy selector
               const selector = document.createElement('div');
               selector.className = 'privacy-selector';
               for (let choice of ['public','friends','private']) {
@@ -206,14 +209,13 @@ async function loadPhotos(start, end, resortFilter=null) {
         }
       }
     } catch (e) {
-      console.warn(`Skip ${uid}:`, e);
+      console.warn(`Skipping ${uid}:`, e);
     }
   }
 }
 
-// ===== FIXED PRIVACY-CHANGE =====
+// ===== PRIVACY-CHANGE helper =====
 async function changePrivacy(itemRef, newPrivacy) {
-  // determine old
   const m = itemRef.fullPath.match(/(public|friends|private)/);
   const oldPrivacy = m ? m[1] : null;
   if (!oldPrivacy || oldPrivacy === newPrivacy) return;
@@ -226,14 +228,11 @@ async function changePrivacy(itemRef, newPrivacy) {
   const newRef = ref(storage, newPath);
 
   try {
-    // download via Firebase SDK (no CORS)
     const bytes = await getBytes(itemRef);
-    // upload to new location
     await uploadBytes(newRef, bytes, {
       contentType: meta.contentType,
       customMetadata: meta.customMetadata
     });
-    // only delete when upload succeeds
     await deleteObject(itemRef);
   } catch (err) {
     console.error("⚠️ changePrivacy failed:", err);
