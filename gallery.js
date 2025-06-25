@@ -141,21 +141,19 @@ async function loadPhotos(start, end, resortFilter=null) {
               imageList.push({
                 url,
                 privacy,
-                ref: itemRef,           // for delete and metadata
-                path: itemRef.fullPath, // for privacy‐change
+                ref: itemRef,
+                path: itemRef.fullPath,
                 resort: resortName,
                 date,
                 name: itemRef.name
               });
 
-              /* build card */
+              // build thumbnail card
               const card = document.createElement('div');
               card.className = 'photo-card';
 
-              /* thumbnail */
               const img = document.createElement('img');
-              img.src = url;
-              img.className = 'gallery-img';
+              img.src = url; img.className = 'gallery-img';
               const idx = imageList.length - 1;
               img.onclick = () => {
                 currentIndex = idx;
@@ -163,16 +161,15 @@ async function loadPhotos(start, end, resortFilter=null) {
                 modal.style.display = 'flex';
               };
 
-              /* thumbnail badge */
               const badge = document.createElement('span');
               badge.className = `badge ${privacy}`;
               badge.textContent = privacy;
 
-              /* hover overlay */
+              // overlay
               const overlay = document.createElement('div');
               overlay.className = 'overlay';
 
-              /* delete button */
+              // delete button
               const delBtn = document.createElement('button');
               delBtn.title = 'Delete photo';
               delBtn.innerHTML = `<img src="icons/trash.png" alt="Del">`;
@@ -183,16 +180,16 @@ async function loadPhotos(start, end, resortFilter=null) {
                 loadPhotos(start, end, resortFilter);
               };
 
-              /* privacy‐selector badges */
+              // privacy‐selector (skip current)
               const selector = document.createElement('div');
               selector.className = 'privacy-selector';
               for (let choice of ['public','friends','private']) {
+                if (choice === privacy) continue;
                 const span = document.createElement('span');
                 span.className = `privacy-toggle ${choice}`;
                 span.textContent = choice;
                 span.onclick = async e => {
                   e.stopPropagation();
-                  if (choice === privacy) return;
                   await changePrivacy(itemRef, choice);
                   loadPhotos(start, end, resortFilter);
                   modal.style.display = 'none';
@@ -214,18 +211,22 @@ async function loadPhotos(start, end, resortFilter=null) {
 }
 
 async function changePrivacy(itemRef, newPrivacy) {
-  // get metadata
+  // skip if same (shouldn’t even show, but just in case)
+  const oldPrivacy = itemRef.fullPath.match(/\/(public|friends|private)\//)[1];
+  if (oldPrivacy === newPrivacy) return;
+
   const meta = await getMetadata(itemRef);
   const oldPath = itemRef.fullPath;
-  // swap out the privacy folder segment
   const newPath = oldPath.replace(/\/(public|friends|private)\//, `/${newPrivacy}/`);
   const newRef  = ref(storage, newPath);
-  // download blob & re‐upload
+
+  // download & re-upload
   const blob = await fetch(imageList[currentIndex].url).then(r => r.blob());
   await uploadBytes(newRef, blob, {
     contentType: meta.contentType,
     customMetadata: meta.customMetadata
   });
-  // delete old file
+
+  // remove old
   await deleteObject(itemRef);
 }
