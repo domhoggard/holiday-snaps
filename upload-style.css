@@ -111,7 +111,7 @@ main { padding: 20px; }
 }
 
 /* OVERLAY (trash + privacy choices) */
-.preview-card .overlay {
+..preview-card .overlay {
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.5);
@@ -122,11 +122,8 @@ main { padding: 20px; }
   flex-direction: column;
   align-items: center;
 
-  /* instead of centering vertically, start near the top */
-  justify-content: flex-start;
-  padding-top: 12px;  /* push everything down by 12px */
-
-  gap: 12px;
+  /* evenly distribute controls top→bottom */
+  justify-content: space-around;
 }
 .preview-card:hover .overlay {
   opacity: 1;
