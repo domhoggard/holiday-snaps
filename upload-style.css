@@ -179,4 +179,23 @@ footer {
   padding: 10px 0;
   font-size: 0.9em;
   background: transparent;
+
+   /* make sure nothing is ever clipped off the bottom */
+.upload-card .preview-card {
+  overflow: visible !important;
+  padding-bottom: 16px !important;    /* give extra room under the img */
 }
+
+/* push the img up so there’s breathing room before the date control */
+.upload-card .preview-card img {
+  display: block;
+  margin-bottom: 12px !important;
+}
+
+/* force the date picker to sit fully below the image */
+.upload-card .preview-card input[type="date"] {
+  margin-top: 0 !important;
+  position: relative;   /* lift it out of any accidental overlap */
+  z-index: 1;
+}
+
