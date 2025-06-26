@@ -82,9 +82,10 @@ main { padding: 20px; }
 .preview-card {
   background: #eee;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   text-align: center;
+  padding-bottom: 12px;
 
   /* reserve space for date picker + overlay */
   padding-bottom: 32px;
@@ -96,13 +97,13 @@ main { padding: 20px; }
   height: 100px;
   object-fit: cover;
   display: block;
+  padding-bottom: 12px;
 }
 
 /* date picker */
 .preview-card input[type="date"] {
   width: calc(100% - 16px);
-  margin-top: 12px;    /* push down below image was margin: 12px 8px 0px*/
-  margin-bottom: 12px; /* added on co-pilot advice */
+  margin: 12px 8px 0px    /* push down below image was */
   padding: 4px 6px;
   border-radius: 4px;
   border: 1px solid #ccc;
