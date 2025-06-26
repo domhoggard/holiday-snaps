@@ -13,10 +13,9 @@ body {
 
 .site-header {
   background-color: #FDB543;
-  padding: 10px 20px;
-  display: flex;
+  padding: 5px 20px;
+  display: flex; 
   align-items: center;
-  justify-content: space-between;
 }
 
 .header-inner {
