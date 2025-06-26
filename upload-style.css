@@ -101,7 +101,8 @@ main { padding: 20px; }
 /* date picker */
 .preview-card input[type="date"] {
   width: calc(100% - 16px);
-  margin: 12px 8px 0px;    /* push down below image */
+  margin-top: 12px;    /* push down below image was margin: 12px 8px 0px*/
+  margin-bottom: 12px; /* added on co-pilot advice */
   padding: 4px 6px;
   border-radius: 4px;
   border: 1px solid #ccc;
