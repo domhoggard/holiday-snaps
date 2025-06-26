@@ -12,7 +12,11 @@ body {
   padding: 5px 20px;
   display: flex; align-items: center; 
 }
-.header-inner { display: flex; align-items: center; width: 100%; }
+.header-inner { display: flex; 
+               align-items: center; 
+               width: 100%;
+               justify-content: space-between;
+              }
 .logo-small { width: 210px; margin-right: 10px; }
 .site-title { font-size: 26px; color: #00AFAA; margin-right: auto; }
 .main-nav a {
