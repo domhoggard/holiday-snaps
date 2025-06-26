@@ -1,5 +1,5 @@
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Nunito', sans-serif;
   background: #FDB543;
   margin: 0; padding: 0;
   color: #004d40;
@@ -10,7 +10,8 @@ body {
 .site-header {
   background-color: #FDB543;
   padding: 5px 20px;
-  display: flex; align-items: center; 
+  display: flex; 
+  align-items: center; 
 }
 .header-inner { display: flex; 
                align-items: center; 
