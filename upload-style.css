@@ -10,7 +10,7 @@ body {
 .background { padding: 0; }
 .site-header {
   background-color: #FDB543;
-  padding: 10px 20px;
+  padding: 5px 20px;
   display: flex; align-items: center;
 }
 .header-inner {
@@ -19,7 +19,7 @@ body {
   width: 100%;
 }
 .logo-small {
-  width: 90px; display: block;
+  width: 210px; display: block;
 }
 .main-nav a {
   margin: 0 12px;
