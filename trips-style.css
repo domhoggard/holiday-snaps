@@ -9,11 +9,11 @@ body {
 
 .site-header {
   background-color: #FDB543;
-  padding: 10px 20px;
+  padding: 5px 20px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .header-inner { display: flex; align-items: center; width: 100%; }
-.logo-small { width: 90px; margin-right: 10px; }
+.logo-small { width: 210px; margin-right: 10px; }
 .site-title { font-size: 26px; color: #00AFAA; margin-right: auto; }
 .main-nav a {
   margin: 0 12px;
@@ -24,7 +24,11 @@ body {
   align-items: center;
   font-size: 0.95em;
 }
-.main-nav img { width: 36px; height: 36px; margin-right: 8px; }
+.main-nav img { width: 36px; 
+               height: 36px; 
+               margin-right: 8px;
+               transform: scale(1.3);
+               transform-origin: center center;}
 
 main { padding: 20px; }
 
