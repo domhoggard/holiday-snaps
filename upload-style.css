@@ -197,5 +197,23 @@ footer {
   margin-top: 0 !important;
   position: relative;   /* lift it out of any accidental overlap */
   z-index: 1;
+
+/* === ensure the date input can sit below the image === */
+.preview-card {
+  position: relative;       /* allow absolute children */
+  overflow: visible;        /* let things spill out */
+  padding-bottom: 50px;     /* make room for the date picker */
+}
+
+/* pull the date picker into that space */
+.preview-card input[type="date"] {
+  position: absolute;
+  bottom: 8px;              /* 8px up from the new bottom padding */
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;                /* kill any default margins */
+  z-index: 1;
+}
+
 }
 
