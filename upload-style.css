@@ -4,35 +4,50 @@
 body {
   font-family: 'Open Sans', sans-serif;
   background: #FDB543;
-  margin: 0; padding: 0;
+  margin: 0;
+  padding: 0;
   color: #004d40;
 }
-.background { padding: 0; }
+.background {
+  padding: 0;
+}
 .site-header {
   background-color: #FDB543;
   padding: 10px 20px;
-  display: flex; align-items: center;
+  display: flex;
+  align-items: center;
 }
 .header-inner {
-  display: flex; align-items: center;
-  width: 100%; justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 .logo-small {
-  width: 90px; height: auto; display: block;
+  width: 90px;
+  height: auto;
+  display: block;
 }
 .main-nav a {
-  margin: 0 12px; text-decoration: none;
-  color: #333; font-weight: bold;
-  display: inline-flex; align-items: center;
+  margin: 0 12px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
 }
 .main-nav img {
-  width: 36px; height: 36px; margin-right: 6px;
+  width: 36px;
+  height: 36px;
+  margin-right: 6px;
 }
 
 /* ----------------------------------
    MAIN + UPLOAD CARD
 ---------------------------------- */
-main { padding: 20px; }
+main {
+  padding: 20px;
+}
 .upload-card {
   background-color: #FFF9D9;
   border-radius: 12px;
@@ -41,7 +56,9 @@ main { padding: 20px; }
   margin: 0 auto 40px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-.upload-card h2 { margin-top: 0; }
+.upload-card h2 {
+  margin-top: 0;
+}
 .upload-card label {
   display: block;
   margin-top: 12px;
@@ -79,16 +96,19 @@ main { padding: 20px; }
   margin-top: 16px;
 }
 
+/* ----------------------------------
+   PREVIEW CARD
+---------------------------------- */
 .preview-card {
+  position: relative;
   background: #eee;
   border-radius: 8px;
-  overflow: visible;
-  position: relative;
-  text-align: center;
-  padding-bottom: 12px;
-
-  /* reserve space for date picker + overlay */
-  padding-bottom: 32px;
+  overflow: visible;       /* allow date-picker to show below */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  padding-bottom: 48px;    /* space for date picker */
 }
 
 /* thumbnail */
@@ -96,25 +116,14 @@ main { padding: 20px; }
   width: 100%;
   height: 100px;
   object-fit: cover;
-  display: block;
-  padding-bottom: 12px;
-}
-
-/* date picker */
-.preview-card input[type="date"] {
-  width: calc(100% - 16px);
-  margin: 12px 8px 0px    /* push down below image was */
-  padding: 4px 6px;
   border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 0.9em;
 }
 
-/* current‐privacy badge */
+/* current-privacy badge */
 .preview-card .badge {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 8px;
+  right: 8px;
   background-color: rgba(0,0,0,0.7);
   color: #fff;
   padding: 4px 6px;
@@ -122,6 +131,22 @@ main { padding: 20px; }
   font-size: 0.75em;
   text-transform: capitalize;
   pointer-events: none;
+}
+
+/* date picker — now flows below the thumbnail */
+.preview-card input[type="date"] {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  width: calc(100% - 16px);
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 0.9em;
+  background: white;
+  z-index: 1;
 }
 
 /* ----------------------------------
@@ -133,13 +158,12 @@ main { padding: 20px; }
   background: rgba(0,0,0,0.5);
   opacity: 0;
   transition: opacity 0.2s ease;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding-bottom: 16px;  /* give bottom badge room */
+  padding-bottom: 48px;   /* leave room for the date picker */
 }
 .preview-card:hover .overlay {
   opacity: 1;
@@ -150,16 +174,20 @@ main { padding: 20px; }
   background: rgba(255,255,255,0.9);
   border: none;
   border-radius: 50%;
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 .overlay button.trash img {
-  width: 20px; height: 20px;
+  width: 20px;
+  height: 20px;
 }
 
-/* privacy‐toggle badges (only alternatives: friends/private) */
-.overlay span {
+/* privacy-toggle badges (friends & private only) */
+.overlay .privacy-toggle {
   padding: 6px 10px;
   border-radius: 6px;
   font-size: 0.9em;
@@ -167,9 +195,15 @@ main { padding: 20px; }
   text-transform: capitalize;
   cursor: pointer;
 }
-.overlay span.friends { background-color: #FF9800; }
-.overlay span.private { background-color: #F44336; }
-.overlay span:hover   { opacity: 0.8; }
+.overlay .privacy-toggle.friends {
+  background-color: #FF9800;
+}
+.overlay .privacy-toggle.private {
+  background-color: #F44336;
+}
+.overlay .privacy-toggle:hover {
+  opacity: 0.8;
+}
 
 /* ----------------------------------
    FOOTER
@@ -179,41 +213,6 @@ footer {
   padding: 10px 0;
   font-size: 0.9em;
   background: transparent;
-
-   /* make sure nothing is ever clipped off the bottom */
-.upload-card .preview-card {
-  overflow: visible !important;
-  padding-bottom: 16px !important;    /* give extra room under the img */
 }
 
-/* push the img up so there’s breathing room before the date control */
-.upload-card .preview-card img {
-  display: block;
-  margin-bottom: 12px !important;
-}
-
-/* force the date picker to sit fully below the image */
-.upload-card .preview-card input[type="date"] {
-  margin-top: 0 !important;
-  position: relative;   /* lift it out of any accidental overlap */
-  z-index: 1;
-
-/* === ensure the date input can sit below the image === */
-.preview-card {
-  position: relative;       /* allow absolute children */
-  overflow: visible;        /* let things spill out */
-  padding-bottom: 50px;     /* make room for the date picker */
-}
-
-/* pull the date picker into that space */
-.preview-card input[type="date"] {
-  position: absolute;
-  bottom: 8px;              /* 8px up from the new bottom padding */
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;                /* kill any default margins */
-  z-index: 1;
-}
-
-}
 
