@@ -1,6 +1,6 @@
-// gallery.js – optimized gallery with parallel loading, lazy‐load, in‐place updates
+// gallery.js – parallel folder listing + deferred URL fetch on scroll (lazy-load)
 
-import { auth, storage, db, logOut } from './firebase.js';
+import { auth, storage, db, logOut } from "./firebase.js";
 import {
   ref,
   listAll,
@@ -20,10 +20,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-// expose logout for onclick in HTML
+// expose logout for onclick
 window.logOut = logOut;
 
-// DOM refs
+// element refs
 const gallery        = document.getElementById("photo-gallery");
 const startDateInput = document.getElementById("startDate");
 const endDateInput   = document.getElementById("endDate");
@@ -37,53 +37,72 @@ const modalClose     = document.getElementById("modal-close");
 const modalPrev      = document.getElementById("modal-prev");
 const modalNext      = document.getElementById("modal-next");
 
-let imageList    = [];
+let imageList    = [];   // holds { itemRef, privacy, url? }
 let currentIndex = 0;
 let currentUser  = null;
 let friendIds    = [];
 let resortParam  = null;
 
-// helper to read URL params
+// helper: get URL param
 function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
-// lazy‐load observer
-const lazyLoadObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
+// Deferred thumbnail loader
+const thumbObserver = new IntersectionObserver(entries => {
+  entries.forEach(async entry => {
     if (!entry.isIntersecting) return;
     const img = entry.target;
-    img.src = img.dataset.src;
-    lazyLoadObserver.unobserve(img);
+    const idx = img.dataset.idx;
+    const photo = imageList[idx];
+    // fetch URL once
+    if (!photo.url) {
+      photo.url = await getDownloadURL(photo.itemRef);
+    }
+    img.src = photo.url;
+    thumbObserver.unobserve(img);
   });
 }, { rootMargin: "200px" });
 
-// open modal at a given index
+// Open modal at index
 function openModalAt(idx) {
   currentIndex = idx;
-  modalImg.src = imageList[idx].url;
-  modal.style.display = "flex";
+  const photo = imageList[idx];
+  // ensure URL is loaded
+  if (photo.url) {
+    modalImg.src = photo.url;
+    modal.style.display = "flex";
+  } else {
+    // load then show
+    getDownloadURL(photo.itemRef).then(url => {
+      photo.url = url;
+      modalImg.src = url;
+      modal.style.display = "flex";
+    });
+  }
 }
 
-// handle privacy change (moves file between folders)
-async function changePrivacy(itemRef, newPrivacy) {
+// Change privacy in-place
+async function changePrivacy(itemRef, newPriv, badgeEl, selectorEl) {
   const m = itemRef.fullPath.match(/\/(public|friends|private)\//);
-  const oldPrivacy = m ? m[1] : null;
-  if (!oldPrivacy || oldPrivacy === newPrivacy) return;
-
-  const meta     = await getMetadata(itemRef);
-  const bytes    = await getBytes(itemRef);
-  const newPath  = itemRef.fullPath.replace(`/${oldPrivacy}/`, `/${newPrivacy}/`);
-  const newRef   = ref(storage, newPath);
-
+  const oldPriv = m && m[1];
+  if (!oldPriv || oldPriv === newPriv) return;
+  const meta = await getMetadata(itemRef);
+  const bytes = await getBytes(itemRef);
+  const newPath = itemRef.fullPath.replace(`/${oldPriv}/`, `/${newPriv}/`);
+  const newRef  = ref(storage, newPath);
   await uploadBytes(newRef, bytes, {
     contentType: meta.contentType,
     customMetadata: meta.customMetadata
   });
   await deleteObject(itemRef);
+  // update badge
+  badgeEl.textContent = newPriv;
+  badgeEl.className   = `badge ${newPriv}`;
+  selectorEl.remove();
 }
 
-// populate saved trips dropdown
+// Populate saved trips dropdown
 async function populateSavedTrips() {
   tripsSelect.innerHTML = `<option value="">-- Select a saved trip --</option>`;
   const snap = await getDoc(doc(db, "users", currentUser.uid));
@@ -95,23 +114,20 @@ async function populateSavedTrips() {
   });
 }
 
-// optimized, parallel & progressive photo loading
+// Main loader: list all itemRefs first, then render placeholders
 async function loadPhotos(start, end, resortFilter = null) {
   gallery.innerHTML = "";
   imageList = [];
 
-  // get all users once
   const usersSnap = await getDocs(collection(db, "users"));
-  await Promise.all(usersSnap.docs.map(uDoc => processUser(uDoc.id)));
-
-  // helper: process one user's folder tree
-  async function processUser(uid) {
-    const isOwner  = uid === currentUser.uid;
-    const isFriend = friendIds.includes(uid);
-    const userFolder = ref(storage, uid);
-
+  // For each user, gather their itemRefs
+  await Promise.all(usersSnap.docs.map(async uDoc => {
+    const uid       = uDoc.id;
+    const isOwner   = uid === currentUser.uid;
+    const isFriend  = friendIds.includes(uid);
+    const userFold  = ref(storage, uid);
     try {
-      const { prefixes: resorts } = await listAll(userFolder);
+      const { prefixes: resorts } = await listAll(userFold);
       await Promise.all(resorts.map(async rf => {
         if (resortFilter && rf.name !== resortFilter) return;
         const { prefixes: dates } = await listAll(rf);
@@ -119,58 +135,58 @@ async function loadPhotos(start, end, resortFilter = null) {
           if (df.name < start || df.name > end) return;
           const { prefixes: privs } = await listAll(df);
           await Promise.all(privs.map(async pf => {
-            const privacy = pf.name;
-            const ok = privacy === "public"
-                    || (privacy === "friends" && (isOwner || isFriend))
-                    || (privacy === "private" && isOwner);
+            const priv = pf.name;
+            const ok = priv === "public"
+              || (priv === "friends" && (isOwner || isFriend))
+              || (priv === "private" && isOwner);
             if (!ok) return;
             const { items } = await listAll(pf);
-            await Promise.all(items.map(itemRef => appendCard(itemRef, privacy)));
+            items.forEach(itemRef => {
+              // queue photo
+              imageList.push({ itemRef, privacy: priv });
+            });
           }));
         }));
       }));
-    } catch (err) {
-      console.warn(`Skipping user ${uid}:`, err);
+    } catch (e) {
+      console.warn(`Skipping ${uid}:`, e);
     }
-  }
+  }));
 
-  // build & append a card as soon as we have its URL
-  async function appendCard(itemRef, privacy) {
-    const url = await getDownloadURL(itemRef);
-    const idx = imageList.length;
-    const photo = { url, privacy, itemRef };
-    imageList.push(photo);
-
-    // card container
+  // Now render one placeholder card per photo, in sequence:
+  imageList.forEach((photo, idx) => {
     const card = document.createElement("div");
     card.className = "photo-card";
-    card.onclick = () => openModalAt(idx);
+    card.onclick   = () => openModalAt(idx);
 
-    // thumbnail (lazy)
+    // placeholder img
     const img = document.createElement("img");
-    img.dataset.src = url;
-    img.className   = "gallery-img";
+    img.dataset.idx = idx;
+    img.alt        = "Loading…";
+    img.className  = "gallery-img";
+    // starts empty; thumbObserver will fill src when visible
+    thumbObserver.observe(img);
 
-    // privacy badge
+    // badge
     const badge = document.createElement("span");
-    badge.className = `badge ${privacy}`;
-    badge.textContent = privacy;
+    badge.className = `badge ${photo.privacy}`;
+    badge.textContent = photo.privacy;
 
     card.append(img, badge);
 
-    // owner overlay
-    if (itemRef.fullPath.startsWith(`${currentUser.uid}/`)) {
+    // owner controls
+    if (photo.itemRef.fullPath.startsWith(currentUser.uid + "/")) {
       const overlay = document.createElement("div");
       overlay.className = "overlay";
 
-      // delete button
+      // delete
       const delBtn = document.createElement("button");
-      delBtn.title     = "Delete photo";
+      delBtn.title     = "Delete";
       delBtn.innerHTML = `<img src="icons/trash.png" alt="Del"/>`;
       delBtn.onclick = async e => {
         e.stopPropagation();
         if (!confirm("Delete this photo?")) return;
-        await deleteObject(itemRef);
+        await deleteObject(photo.itemRef);
         card.remove();
         imageList.splice(idx, 1);
       };
@@ -179,16 +195,13 @@ async function loadPhotos(start, end, resortFilter = null) {
       const selector = document.createElement("div");
       selector.className = "privacy-selector";
       ["public","friends","private"].forEach(choice => {
-        if (choice === privacy) return;
+        if (choice === photo.privacy) return;
         const span = document.createElement("span");
         span.className = `privacy-toggle ${choice}`;
         span.textContent = choice;
-        span.onclick = async e => {
+        span.onclick = e => {
           e.stopPropagation();
-          await changePrivacy(itemRef, choice);
-          badge.textContent    = choice;
-          badge.className      = `badge ${choice}`;
-          selector.remove();
+          changePrivacy(photo.itemRef, choice, badge, selector);
         };
         selector.appendChild(span);
       });
@@ -198,19 +211,22 @@ async function loadPhotos(start, end, resortFilter = null) {
     }
 
     gallery.appendChild(card);
-    lazyLoadObserver.observe(img);
-  }
+  });
 }
 
-// auth & init
+// INITIALIZATION
 onAuthStateChanged(auth, async user => {
-  if (!user) return location.href = "login.html";
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
   currentUser = user;
   resortParam = getParam("resort");
 
+  // fill trips select
   await populateSavedTrips();
 
-  // URL-driven load
+  // if params present, auto-load
   const s = getParam("start"), e = getParam("end");
   if (resortParam && s && e) {
     startDateInput.value = s;
@@ -218,11 +234,11 @@ onAuthStateChanged(auth, async user => {
     await loadPhotos(s, e, resortParam);
   }
 
-  // get friends list
+  // load friend IDs
   const meSnap = await getDoc(doc(db, "users", user.uid));
   friendIds = meSnap.data().friends || [];
 
-  // event bindings
+  // bind controls
   filterBtn.onclick = () => {
     const s = startDateInput.value, e = endDateInput.value;
     if (!s || !e) return alert("Select both dates");
@@ -236,7 +252,7 @@ onAuthStateChanged(auth, async user => {
       savedTrips: arrayUnion({ resort: resortParam, start: s, end: e })
     });
     alert("Saved!");
-    await populateSavedTrips();
+    populateSavedTrips();
   };
   loadTripBtn.onclick = () => {
     const sel = tripsSelect.value;
@@ -247,9 +263,8 @@ onAuthStateChanged(auth, async user => {
     loadPhotos(start, end, resort);
   };
 
+  // modal nav
   modalClose.onclick = () => modal.style.display = "none";
   modalPrev.onclick  = () => openModalAt((currentIndex - 1 + imageList.length) % imageList.length);
   modalNext.onclick  = () => openModalAt((currentIndex + 1) % imageList.length);
 });
-
-
