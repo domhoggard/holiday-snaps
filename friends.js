@@ -10,6 +10,9 @@ import {
   onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
+// ← placeholder constant
+const PLACEHOLDER_PIC = "assets/images/default-profile.png";
+
 const searchInput        = document.getElementById("searchInput");
 const searchBtn          = document.getElementById("searchBtn");
 const searchResults      = document.getElementById("searchResults");
@@ -172,9 +175,12 @@ async function openFriendModal(uid) {
     dob = `${dd}/${mm}/${yy}`;
   }
 
+  // use placeholder if no profilePicture
+  const imgSrc = data.profilePicture || PLACEHOLDER_PIC;
+
   const html = `
     <img
-      src="${data.profilePicture || 'assets/images/default-profile.png'}"
+      src="${imgSrc}"
       alt="Picture of ${data.name}"
       class="profile-picture"
     />
@@ -208,4 +214,5 @@ closeBtn.addEventListener("click", () => modal.style.display = "none");
 window.addEventListener("click", e => {
   if (e.target === modal) modal.style.display = "none";
 });
+
 
