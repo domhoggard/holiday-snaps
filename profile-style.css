@@ -101,7 +101,7 @@ footer {
 .small-btn {
   font-size: 0.8em;
   padding: 6px 10px;
-  margin-left: 8px;
+  margin-left: 0px;
 }
 
 /* field-group layout */
@@ -109,6 +109,7 @@ footer {
   display: flex;
   align-items: center;
   margin: 10px 0;
+  gap: 8px; 
 }
 
 .field-group label {
@@ -118,7 +119,7 @@ footer {
 
 .field-group span,
 .field-group p {
-  flex: 1;
+  flex: 0 1 auto;
   margin: 0;
 }
 
