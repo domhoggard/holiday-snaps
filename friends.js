@@ -89,7 +89,7 @@ async function cancelRequest(uid, li) {
   btn.onclick = () => sendFriendRequest(uid, "", li);
 }
 
-// INCOMING REQUESTS
+// INCOMING REQUESTS (now clickable to view profile)
 async function loadFriendRequests(incomingIds) {
   friendRequestsList.innerHTML = "";
   requestBadge.textContent = incomingIds.length ? `(${incomingIds.length})` : "";
@@ -97,9 +97,20 @@ async function loadFriendRequests(incomingIds) {
   for (let uid of incomingIds) {
     const snap = await getDoc(doc(db, "users", uid));
     const user = snap.data();
-    const li   = document.createElement("li");
-    li.textContent = `${user.name} (${user.email})`;
 
+    // List item container
+    const li = document.createElement("li");
+    li.textContent = `${user.name} (${user.email})`;
+    li.style.cursor = "pointer";
+
+    // Click on li (but not the buttons) opens modal
+    li.addEventListener("click", e => {
+      if (e.target.tagName.toLowerCase() !== "button") {
+        openFriendModal(uid);
+      }
+    });
+
+    // Approve button
     const approveBtn = document.createElement("button");
     approveBtn.textContent = "Approve";
     approveBtn.onclick = async () => {
@@ -116,6 +127,7 @@ async function loadFriendRequests(incomingIds) {
       loadFriendList();
     };
 
+    // Decline button
     const declineBtn = document.createElement("button");
     declineBtn.textContent = "Decline";
     declineBtn.onclick = async () => {
@@ -190,9 +202,10 @@ async function openFriendModal(uid) {
 }
 
 // CLOSE MODAL
-const modal    = document.getElementById("profile-modal");
+const modal = document.getElementById("profile-modal");
 const closeBtn = document.getElementById("modal-close");
 closeBtn.addEventListener("click", () => modal.style.display = "none");
 window.addEventListener("click", e => {
   if (e.target === modal) modal.style.display = "none";
 });
+
