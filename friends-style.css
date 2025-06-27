@@ -85,6 +85,6 @@ footer {
 
 /* add gap between Approve/Decline buttons */
 #friendRequests li button {
-  margin-right: 8px;
+  margin: 5px 8px; /* 5px top, 8px right/left, 0 bottom */
 }
 
