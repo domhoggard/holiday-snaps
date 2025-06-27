@@ -1,68 +1,58 @@
-// profile.js – Profile page with full edit functionality
+// profile.js – Profile page with placeholder + working Edit Picture
 
 import { auth, db } from "./firebase.js";
 import {
-  doc,
-  getDoc,
-  updateDoc,
-  deleteDoc
+  doc, getDoc, updateDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 import {
-  getStorage,
-  ref      as storageRef,
-  uploadBytes,
-  getDownloadURL
+  getStorage, ref as storageRef,
+  uploadBytes, getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js";
 import {
   onAuthStateChanged,
-  deleteUser,
-  signOut
+  deleteUser, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-const profileInfo    = document.getElementById("profile-info");
-const editPicBtn     = document.getElementById("edit-pic-btn");
-let profilePicElem, currentUser, currentUserId, userDocRef, storage;
+const profileInfo = document.getElementById("profile-info");
+let currentUser, userDocRef, storage, previousPicURL;
 
-// Keep track of the original picture URL during edits
-let previousPicURL = null;
-
+// 1) On load, redirect if not signed in, else render
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
     return;
   }
-  currentUser    = user;
-  currentUserId  = user.uid;
-  userDocRef     = doc(db, "users", currentUserId);
-  storage        = getStorage();
-
-  await loadProfile();
-  attachEditHandlers();
+  currentUser  = user;
+  userDocRef   = doc(db, "users", user.uid);
+  storage      = getStorage();
+  await renderProfile();
 });
 
-async function loadProfile() {
+// 2) Build the markup for the profile card
+async function renderProfile() {
   const snap = await getDoc(userDocRef);
-  if (!snap.exists()) {
-    profileInfo.innerHTML = `<p>No profile data found.</p>`;
-    return;
-  }
-  const data = snap.data();
+  const data = snap.exists() ? snap.data() : {};
 
-  // Render the profile-card HTML
+  // pick placeholder or stored pic
+  const picURL = data.profilePicture || "default-profile.png";
+  previousPicURL = picURL;
+
+  // format DOB → DD/MM/YYYY
+  let dobText = "—";
+  if (data.dob) {
+    const [yyyy, mm, dd] = data.dob.split("-");
+    dobText = `${dd}/${mm}/${yyyy}`;
+  }
+
   profileInfo.innerHTML = `
-    <div class="field-group">
-      <img
-        id="profile-pic"
-        src="${data.profilePicture || "assets/images/default-profile.png"}"
-        alt="Profile Picture"
-        class="profile-picture"
-      />
+    <div class="field-group" id="pic-group">
+      <img id="profile-pic" src="${picURL}" alt="Profile Picture" class="profile-picture"/>
       <button id="edit-pic-btn" class="small-btn">Edit Picture</button>
     </div>
 
     <div class="field-group">
       <label>Date of Birth:</label>
-      <span id="dob-text">${formatDob(data.dob)}</span>
+      <span>${dobText}</span>
     </div>
 
     <div class="field-group">
@@ -82,160 +72,87 @@ async function loadProfile() {
     </div>
   `;
 
-  // Update reference to the newly rendered <img>
-  profilePicElem = document.getElementById("profile-pic");
+  // wire up event handlers
+  document.getElementById("edit-pic-btn").addEventListener("click", onEditPicture);
+  document.getElementById("edit-about-btn").addEventListener("click", () =>
+    handleTextEdit("about", "about-text", "textarea")
+  );
+  document.getElementById("edit-status-btn").addEventListener("click", () =>
+    handleTextEdit("relationshipStatus", "status-text", "input")
+  );
+  document.getElementById("delete-account-btn").addEventListener("click", deleteAccount);
 }
 
-function formatDob(dob) {
-  if (!dob) return "—";
-  const [yyyy, mm, dd] = dob.split("-");
-  return `${dd}/${mm}/${yyyy}`;
-}
-
-function attachEditHandlers() {
-  // Picture
-  document
-    .getElementById("edit-pic-btn")
-    .addEventListener("click", handlePicEdit);
-
-  // About Me
-  document
-    .getElementById("edit-about-btn")
-    .addEventListener("click", () =>
-      handleTextEdit("about", "about-text", "textarea")
-    );
-
-  // Relationship Status
-  document
-    .getElementById("edit-status-btn")
-    .addEventListener("click", () =>
-      handleTextEdit("relationshipStatus", "status-text", "input")
-    );
-
-  // Delete Account
-  document
-    .getElementById("delete-account-btn")
-    .addEventListener("click", deleteAccount);
-}
-
-// --- Profile Picture Edit with Save/Cancel ---
-function handlePicEdit() {
-  const container = editPicBtn.parentNode;
-  previousPicURL = profilePicElem.src;
-
-  container.innerHTML = `
-    <img
-      id="profile-pic"
-      src="${previousPicURL}"
-      alt="Profile Picture"
-      class="profile-picture"
-    />
-    <input type="file" id="pic-input" accept="image/*"/>
+// 3) Picture edit flow: swap in file input + Save/Cancel
+function onEditPicture() {
+  const picGroup = document.getElementById("pic-group");
+  picGroup.innerHTML = `
+    <img id="profile-pic" src="${previousPicURL}" alt="Profile Picture" class="profile-picture"/>
+    <input type="file" id="pic-input" accept="image/*" />
     <button id="save-pic-btn" class="small-btn">Save</button>
     <button id="cancel-pic-btn" class="small-btn">Cancel</button>
   `;
-
-  profilePicElem = document.getElementById("profile-pic");
-
-  container.querySelector("#save-pic-btn")
-    .addEventListener("click", async () => {
-      const fileInput = container.querySelector("#pic-input");
-      const file = fileInput.files[0];
-      if (!file) {
-        alert("Please choose an image first.");
-        return;
-      }
-      // Upload to Storage
-      const picRef = storageRef(
-        storage,
-        `profilePictures/${currentUserId}/${file.name}`
-      );
-      await uploadBytes(picRef, file);
-      const url = await getDownloadURL(picRef);
-
-      // Update Firestore
-      await updateDoc(userDocRef, { profilePicture: url });
-
-      // Reload profile UI
-      await loadProfile();
-      attachEditHandlers();
-      alert("Profile picture updated!");
-    });
-
-  container.querySelector("#cancel-pic-btn")
-    .addEventListener("click", () => {
-      // Restore original UI without saving
-      restorePicUI(container);
-    });
+  document.getElementById("save-pic-btn").addEventListener("click", savePicture);
+  document.getElementById("cancel-pic-btn").addEventListener("click", () => {
+    // restore original UI
+    renderProfile();
+  });
 }
 
-function restorePicUI(container) {
-  container.innerHTML = `
-    <img
-      id="profile-pic"
-      src="${previousPicURL}"
-      alt="Profile Picture"
-      class="profile-picture"
-    />
-    <button id="edit-pic-btn" class="small-btn">Edit Picture</button>
-  `;
-  profilePicElem = document.getElementById("profile-pic");
-  // Re-attach handler
-  document
-    .getElementById("edit-pic-btn")
-    .addEventListener("click", handlePicEdit);
+async function savePicture() {
+  const fileInput = document.getElementById("pic-input");
+  const file = fileInput.files[0];
+  if (!file) return alert("Please choose an image first.");
+
+  // upload & get URL
+  const ref = storageRef(storage, `profilePictures/${currentUser.uid}/${file.name}`);
+  await uploadBytes(ref, file);
+  const url = await getDownloadURL(ref);
+
+  // update Firestore
+  await updateDoc(userDocRef, { profilePicture: url });
+
+  // re-render
+  await renderProfile();
 }
 
-// --- Generic About/Status Editor ---
-function handleTextEdit(fieldKey, textElemId, inputTag) {
-  const container = document.getElementById(textElemId).parentNode;
-  const oldText = document.getElementById(textElemId).textContent;
+// 4) Generic text‐field editor (About + Status)
+function handleTextEdit(fieldKey, textId, tag) {
+  const container = document.getElementById(textId).parentNode;
+  const oldValue = document.getElementById(textId).textContent;
   container.innerHTML = `
-    <${inputTag}
-      id="editor"
-      ${inputTag === "textarea" ? "rows=4 cols=30" : 'type="text"'}
-    >${oldText === "—" ? "" : oldText}</${inputTag}>
-    <button id="save-btn" class="small-btn">Save</button>
-    <button id="cancel-btn" class="small-btn">Cancel</button>
+    <${tag} id="editor" ${tag==="textarea"?"rows=4 cols=30":'type="text"'}>${
+    oldValue==="—"?"":oldValue
+  }</${tag}>
+    <button id="save-text-btn" class="small-btn">Save</button>
+    <button id="cancel-text-btn" class="small-btn">Cancel</button>
   `;
 
-  container.querySelector("#save-btn")
-    .addEventListener("click", async () => {
-      const newVal = container.querySelector("#editor").value.trim();
-      await updateDoc(userDocRef, { [fieldKey]: newVal });
-      await loadProfile();
-      attachEditHandlers();
-    });
+  document.getElementById("save-text-btn").addEventListener("click", async () => {
+    const newVal = document.getElementById("editor").value.trim();
+    await updateDoc(userDocRef, { [fieldKey]: newVal });
+    await renderProfile();
+  });
 
-  container.querySelector("#cancel-btn")
-    .addEventListener("click", async () => {
-      await loadProfile();
-      attachEditHandlers();
-    });
+  document.getElementById("cancel-text-btn").addEventListener("click", renderProfile);
 }
 
-// --- Delete Account & Logout ---
+// 5) Delete account & logout unchanged
 async function deleteAccount() {
-  if (!confirm("Are you sure you want to delete your account? This cannot be undone.")) {
-    return;
-  }
+  if (!confirm("Are you sure you want to delete your account? This cannot be undone.")) return;
   try {
     await deleteDoc(userDocRef);
     await deleteUser(currentUser);
     alert("Your account has been deleted.");
     window.location.href = "index.html";
   } catch (err) {
-    console.error("Deletion failed:", err);
+    console.error(err);
     alert("Failed to delete account.");
   }
 }
 
-window.logOut = function () {
+window.logOut = () => {
   signOut(auth)
     .then(() => window.location.href = "index.html")
-    .catch(err => {
-      console.error("Logout failed:", err);
-      alert("Logout failed.");
-    });
+    .catch(err => { console.error(err); alert("Logout failed."); });
 };
-
