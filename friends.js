@@ -1,4 +1,4 @@
-// friends.js – extracted friend functions
+// friends.js – extracted friend functions + profile-popup modal
 
 import { auth, db } from "./firebase.js";
 import {
@@ -10,12 +10,12 @@ import {
   onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-const searchInput       = document.getElementById("searchInput");
-const searchBtn         = document.getElementById("searchBtn");
-const searchResults     = document.getElementById("searchResults");
+const searchInput        = document.getElementById("searchInput");
+const searchBtn          = document.getElementById("searchBtn");
+const searchResults      = document.getElementById("searchResults");
 const friendRequestsList = document.getElementById("friendRequests");
-const friendList        = document.getElementById("friendList");
-const requestBadge      = document.getElementById("requestBadge");
+const friendList         = document.getElementById("friendList");
+const requestBadge       = document.getElementById("requestBadge");
 
 let currentUserId = null;
 
@@ -23,7 +23,6 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "login.html";
   currentUserId = user.uid;
 
-  // load incoming requests & current friends
   const snap = await getDoc(doc(db, "users", user.uid));
   const data = snap.exists() ? snap.data() : {};
   loadFriendRequests(data.friendRequests || []);
@@ -42,7 +41,6 @@ searchBtn.addEventListener("click", async () => {
   searchResults.innerHTML = "";
   if (!term) return alert("Please enter a name or email to search.");
 
-  // fetch all users
   const allUsers = await getDocs(collection(db, "users"));
   const meSnap   = await getDoc(doc(db, "users", currentUserId));
   const { friends = [], sentRequests = [] } = meSnap.data();
@@ -115,7 +113,7 @@ async function loadFriendRequests(incomingIds) {
       });
       alert(`You are now friends with ${user.name}`);
       li.remove();
-      loadFriendList(); // refresh list
+      loadFriendList();
     };
 
     const declineBtn = document.createElement("button");
@@ -132,17 +130,69 @@ async function loadFriendRequests(incomingIds) {
   }
 }
 
-// FRIENDS LIST
+// FRIENDS LIST WITH CLICK HANDLER
 async function loadFriendList() {
   friendList.innerHTML = "";
-  const meSnap      = await getDoc(doc(db, "users", currentUserId));
-  const friendIds   = meSnap.data().friends || [];
+  const meSnap    = await getDoc(doc(db, "users", currentUserId));
+  const friendIds = meSnap.data().friends || [];
 
   for (let uid of friendIds) {
     const snap = await getDoc(doc(db, "users", uid));
     const f    = snap.data();
     const li   = document.createElement("li");
-    li.textContent = `${f.name} (${f.email})`;
+    li.textContent    = `${f.name} (${f.email})`;
+    li.style.cursor   = "pointer";
+    li.dataset.uid    = uid;
+    li.addEventListener("click", () => openFriendModal(uid));
     friendList.appendChild(li);
   }
 }
+
+// OPEN MODAL & LOAD FRIEND PROFILE
+async function openFriendModal(uid) {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return alert("User data not found.");
+
+  const data = snap.data();
+  let dob = "—";
+  if (data.dob) {
+    const [yy, mm, dd] = data.dob.split("-");
+    dob = `${dd}/${mm}/${yy}`;
+  }
+
+  const html = `
+    <img
+      src="${data.profilePicture || 'assets/images/default-profile.png'}"
+      alt="Picture of ${data.name}"
+      class="profile-picture"
+    />
+    <h3>${data.name}</h3>
+    <div class="field-group">
+      <label>Email:</label>
+      <span>${data.email}</span>
+    </div>
+    <div class="field-group">
+      <label>DOB:</label>
+      <span>${dob}</span>
+    </div>
+    <div class="field-group">
+      <label>About Me:</label>
+      <p>${data.about || "—"}</p>
+    </div>
+    <div class="field-group">
+      <label>Relationship:</label>
+      <span>${data.relationshipStatus || "—"}</span>
+    </div>
+  `;
+
+  document.getElementById("modal-body").innerHTML = html;
+  document.getElementById("profile-modal").style.display = "block";
+}
+
+// CLOSE MODAL
+const modal    = document.getElementById("profile-modal");
+const closeBtn = document.getElementById("modal-close");
+closeBtn.addEventListener("click", () => modal.style.display = "none");
+window.addEventListener("click", e => {
+  if (e.target === modal) modal.style.display = "none";
+});
