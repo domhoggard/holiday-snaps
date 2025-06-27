@@ -70,7 +70,7 @@ button {
   color: white;
   font-weight: bold;
   cursor: pointer;
-  margin: 5px 8px;
+  margin-top: 5px;
 }
 button:hover {
   background-color: #007f7f;
@@ -80,9 +80,6 @@ button:hover {
 #friendRequests li button {
   margin: 5px 8px;
 }
-
-#searchResults li button {
-  margin: 5px 8px;
 
 footer {
   text-align: center;
