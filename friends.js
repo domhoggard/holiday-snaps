@@ -10,8 +10,8 @@ import {
   onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-// ← placeholder constant
-const PLACEHOLDER_PIC = "assets/images/default-profile.png";
+// show this image when the user hasn't set their own
+const PLACEHOLDER_PIC = "default-profile.png";
 
 const searchInput        = document.getElementById("searchInput");
 const searchBtn          = document.getElementById("searchBtn");
@@ -101,19 +101,16 @@ async function loadFriendRequests(incomingIds) {
     const snap = await getDoc(doc(db, "users", uid));
     const user = snap.data();
 
-    // List item container
     const li = document.createElement("li");
     li.textContent = `${user.name} (${user.email})`;
     li.style.cursor = "pointer";
 
-    // Click on li (but not the buttons) opens modal
     li.addEventListener("click", e => {
       if (e.target.tagName.toLowerCase() !== "button") {
         openFriendModal(uid);
       }
     });
 
-    // Approve button
     const approveBtn = document.createElement("button");
     approveBtn.textContent = "Approve";
     approveBtn.onclick = async () => {
@@ -130,7 +127,6 @@ async function loadFriendRequests(incomingIds) {
       loadFriendList();
     };
 
-    // Decline button
     const declineBtn = document.createElement("button");
     declineBtn.textContent = "Decline";
     declineBtn.onclick = async () => {
@@ -175,8 +171,8 @@ async function openFriendModal(uid) {
     dob = `${dd}/${mm}/${yy}`;
   }
 
-  // use placeholder if no profilePicture
-  const imgSrc = data.profilePicture || PLACEHOLDER_PIC;
+  // fall back to placeholder if no profilePicture
+  const imgSrc = data.profilePicture ? data.profilePicture : PLACEHOLDER_PIC;
 
   const html = `
     <img
@@ -208,7 +204,7 @@ async function openFriendModal(uid) {
 }
 
 // CLOSE MODAL
-const modal = document.getElementById("profile-modal");
+const modal    = document.getElementById("profile-modal");
 const closeBtn = document.getElementById("modal-close");
 closeBtn.addEventListener("click", () => modal.style.display = "none");
 window.addEventListener("click", e => {
