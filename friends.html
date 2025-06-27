@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Friends – HolidaySnaps</title>
+  <link rel="stylesheet" href="friends-style.css"/>
+</head>
+<body>
+  <div class="background">
+    <header class="site-header">
+      <div class="header-inner">
+        <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
+        <nav class="main-nav">
+          <a href="profile.html"><img src="icons/profile.png" alt="Profile Icon"/>Profile</a>
+          <a href="trips.html"><img src="icons/trips.png" alt="Trips Icon"/>Trips</a>
+          <a href="upload.html"><img src="icons/upload.png" alt="Upload Icon"/>Upload</a>
+          <a href="#" onclick="logOut()"><img src="icons/logout.png" alt="Logout Icon"/>Logout</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="profile-card">
+        <h2>Search for Friends</h2>
+        <input type="text" id="searchInput" placeholder="Enter name or email" />
+        <button id="searchBtn">Search</button>
+        <ul id="searchResults"></ul>
+      </section>
+
+      <section class="profile-card">
+        <h2>Friend Requests <span id="requestBadge"></span></h2>
+        <ul id="friendRequests"></ul>
+      </section>
+
+      <section class="profile-card">
+        <h2>My Friends</h2>
+        <ul id="friendList"></ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 HolidaySnaps</p>
+    </footer>
+  </div>
+
+  <script type="module" src="friends.js"></script>
+</body>
+</html>
