@@ -1,41 +1,85 @@
-// login.js
+// profile.js – Profile page logic (friend code removed; added picture/about/status)
 
-import { auth } from "./firebase.js";
+import { auth, db } from "./firebase.js";
 import {
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail
+  doc,
+  getDoc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+import {
+  onAuthStateChanged,
+  deleteUser,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-const form = document.getElementById("login-form");
-const resetLink = document.getElementById("reset-password");
+const profileInfo = document.getElementById("profile-info");
+const profilePic  = document.getElementById("profile-pic");
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "profile.html";
-  } catch (error) {
-    alert("Login failed: " + error.message);
-  }
-});
-
-resetLink.addEventListener("click", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value.trim();
-  if (!email) {
-    return alert("Please enter your email address above first.");
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
   }
 
   try {
-    await sendPasswordResetEmail(auth, email);
-    alert(
-      "Password reset email sent! Check your inbox (and spam) for instructions."
-    );
-  } catch (error) {
-    console.error("Password reset error:", error);
-    alert("Could not send reset email: " + error.message);
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (!userDoc.exists()) {
+      profileInfo.innerHTML = `<p>No profile data found.</p>`;
+      return;
+    }
+
+    const data = userDoc.data();
+
+    // set profile picture (falls back to default)
+    profilePic.src = data.profilePicture || "default-profile.png";
+
+    // re-format DOB from YYYY-MM-DD → DD-MM-YYYY
+    let formattedDob = "—";
+    if (data.dob) {
+      const [yy, mm, dd] = data.dob.split("-");
+      formattedDob = `${dd}-${mm}-${yy}`;
+    }
+
+    profileInfo.innerHTML = `
+      <h3>Welcome, ${data.name}</h3>
+      <p><strong>Email:</strong> ${user.email}</p>
+      <p><strong>Date of Birth:</strong> ${formattedDob}</p>
+      <p><strong>About:</strong> ${data.about || "—"}</p>
+      <p><strong>Relationship Status:</strong> ${data.relationshipStatus || "—"}</p>
+      <p><a href="trips.html">View My Trips</a></p>
+      <button onclick="deleteAccount()">Delete Account</button>
+      <hr />
+    `;
+  } catch (err) {
+    console.error("❌ Failed to load profile:", err);
+    profileInfo.innerHTML = `<p>Error loading profile. See console.</p>`;
   }
 });
+
+window.deleteAccount = async function () {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  if (confirm("Are you sure you want to delete your account? This cannot be undone.")) {
+    try {
+      await deleteDoc(doc(db, "users", user.uid));
+      await deleteUser(user);
+      alert("Your account has been deleted.");
+      window.location.href = "index.html";
+    } catch (error) {
+      console.error("Account deletion failed:", error);
+      alert("Failed to delete account.");
+    }
+  }
+};
+
+window.logOut = function () {
+  signOut(auth)
+    .then(() => {
+      window.location.href = "index.html";
+    })
+    .catch(error => {
+      console.error("Logout error:", error);
+      alert("Logout failed.");
+    });
+};
