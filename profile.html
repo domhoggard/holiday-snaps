@@ -25,14 +25,21 @@
     <main>
       <section class="profile-card">
         <h2>Your Profile</h2>
-        <!-- profile picture placeholder -->
-        <img
-          id="profile-pic"
-          src="default-profile.png"
-          alt="Profile Picture"
-          class="profile-picture"
-        />
-        <div id="profile-info"></div>
+
+        <!-- Profile Picture + Edit -->
+        <div class="field-group">
+          <img
+            id="profile-pic"
+            src="default-profile.png"
+            alt="Profile Picture"
+            class="profile-picture"
+          />
+          <button id="edit-pic-btn" class="small-btn">Edit Picture</button>
+        </div>
+
+        <div id="profile-info">
+          <!-- Populated by JS -->
+        </div>
       </section>
     </main>
 
