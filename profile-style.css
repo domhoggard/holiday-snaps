@@ -95,3 +95,38 @@ footer {
 #profile-info p {
   margin: 6px 0;
 }
+
+/* small buttons for edit/save/cancel */
+.small-btn {
+  font-size: 0.8em;
+  padding: 6px 10px;
+  margin-left: 8px;
+}
+
+/* field-group layout */
+.field-group {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.field-group label {
+  width: 140px;
+  font-weight: bold;
+}
+
+.field-group span,
+.field-group p {
+  flex: 1;
+  margin: 0;
+}
+
+/* profile-picture + edit button wrapper */
+.field-group img.profile-picture {
+  margin: 0;
+}
+
+.profile-card .field-group img + .small-btn {
+  margin-left: 12px;
+}
+
