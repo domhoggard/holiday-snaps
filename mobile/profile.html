@@ -1,40 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="mobile">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Profile - HolidaySnaps</title>
-  <link rel="stylesheet" href="profile-style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Your Profile – HolidaySnaps</title>
+  <link rel="stylesheet" href="mobile-style.css">
 </head>
 <body>
-  <div class="background">
-    <header class="site-header">
-      <div class="header-inner">
-        <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
-        <nav class="main-nav">
-          <a href="profile.html"><img src="icons/profilecurrent.png" alt="Profile Icon"/>Profile</a>
-          <a href="friends.html"><img src="icons/friends.png" alt="Friends Icon"/>Friends</a>
-          <a href="trips.html"><img src="icons/trips.png" alt="Trips Icon"/>Trips</a>
-          <a href="upload.html"><img src="icons/upload.png" alt="Upload Icon"/>Upload</a>
-          <a href="#" onclick="logOut()"><img src="icons/logout.png" alt="Logout Icon"/>Logout</a>
-        </nav>
+  <header class="header">
+    <img src="../logo.png" class="logo" alt="HolidaySnaps Logo">
+    <h1>Your Profile</h1>
+  </header>
+
+  <main class="page profile-page">
+    <div class="card">
+      <div class="profile-header">
+        <img id="profile-pic" src="../default-profile.png" alt="Profile Pic">
+        <button id="edit-pic">Edit Picture</button>
       </div>
-    </header>
+      <div class="profile-info">
+        <p><strong>Date of Birth:</strong> <span id="dob"></span></p>
+        <p><strong>Love &lt;3:</strong> <span id="bio"></span></p>
+      </div>
+    </div>
+  </main>
 
-    <main>
-      <section class="profile-card">
-        <h2>Your Profile</h2>
-        <!-- Everything is rendered here by JS -->
-        <div id="profile-info"></div>
-      </section>
-    </main>
+  <nav class="bottom-nav">
+    <a href="profile.html" class="active"><img src="../icons/profile.png"><span>Profile</span></a>
+    <a href="friends.html"><img src="../icons/friends.png"><span>Friends</span></a>
+    <a href="trips.html"><img src="../icons/trips.png"><span>Trips</span></a>
+    <a href="upload.html"><img src="../icons/upload.png"><span>Upload</span></a>
+    <a href="#" onclick="logOut()"><img src="../icons/logout.png"><span>Logout</span></a>
+  </nav>
 
-    <footer>
-      <p>&copy; 2025 HolidaySnaps</p>
-    </footer>
-  </div>
-
-  <script type="module" src="profile.js"></script>
+  <script type="module" src="../profile.js"></script>
 </body>
 </html>
+
 
