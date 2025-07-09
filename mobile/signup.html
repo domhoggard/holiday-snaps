@@ -1,40 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="mobile">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Up - HolidaySnaps</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HolidaySnaps – Sign Up</title>
+  <link rel="stylesheet" href="mobile-style.css">
 </head>
 <body>
-  <div class="background">
-    <header>
-      <img src="logo.png" alt="HolidaySnaps Logo" class="logo-large" />
-      <h1>HolidaySnaps</h1>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="login.html">Login</a>
-      </nav>
-    </header>
+  <main class="page signup-page">
+    <img src="../logo.png" class="logo" alt="HolidaySnaps Logo">
+    <h1>Create Your Account</h1>
+    <form id="signup-form" class="card">
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p class="link">Already have an account? <a href="index.html">Log in</a></p>
+  </main>
 
-    <main class="homepage-main auth-main">
-  <section class="auth-box">
-        <h2>Create an Account</h2>
-        <form id="signup-form">
-          <input type="text" id="name" placeholder="Full Name" required />
-          <input type="date" id="dob" required />
-          <input type="email" id="email" placeholder="Email" required />
-          <input type="password" id="password" placeholder="Password" required />
-          <button type="submit">Sign Up</button>
-        </form>
-        <p id="signup-error"></p>
-      </section>
-    </main>
+  <nav class="bottom-nav">
+    <a href="profile.html"><img src="../icons/profile.png"><span>Profile</span></a>
+    <a href="friends.html"><img src="../icons/friends.png"><span>Friends</span></a>
+    <a href="trips.html"><img src="../icons/trips.png"><span>Trips</span></a>
+    <a href="upload.html"><img src="../icons/upload.png"><span>Upload</span></a>
+    <a href="#" onclick="logOut()"><img src="../icons/logout.png"><span>Logout</span></a>
+  </nav>
 
-    <footer>
-      <p>&copy; 2025 HolidaySnaps</p>
-    </footer>
-  </div>
-  <script type="module" src="signup.js"></script>
+  <script type="module" src="../signup.js"></script>
 </body>
 </html>
+
