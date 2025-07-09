@@ -1,15 +1,8 @@
+// upload.js
 import { auth, storage, db, logOut } from './firebase.js';
-import {
-  ref,
-  uploadBytes
-} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
-import {
-  getDoc,
-  doc
-} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
-import {
-  onAuthStateChanged
-} from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
+import { ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
+import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
 let filesData = [];
 
@@ -29,6 +22,39 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!user) location.href = "login.html";
   });
 
+  // generate a thumbnail blob (max dimension 150px)
+  function generateThumbnail(file) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const maxSize = 150;
+        let { width, height } = img;
+        if (width > height) {
+          if (width > maxSize) {
+            height = height * (maxSize / width);
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = width * (maxSize / height);
+            height = maxSize;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(blob => {
+          if (blob) resolve(blob);
+          else reject(new Error("Thumbnail generation failed"));
+        }, 'image/jpeg', 0.7);
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
   fileInput.addEventListener("change", () => {
     previewGrid.innerHTML = "";
     filesData = [];
@@ -37,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "preview-card";
 
-      // thumbnail
+      // thumbnail preview (local)
       const img = document.createElement("img");
       img.src = URL.createObjectURL(file);
       card.appendChild(img);
@@ -69,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       overlay.appendChild(delBtn);
 
-      // only show friends & private
+      // privacy toggles (friends/private)
       ["friends","private"].forEach(choice => {
         const span = document.createElement("span");
         span.className = choice;
@@ -102,10 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const resort = resortInput.value.trim();
     if (!resort) return alert("Enter a resort name.");
-
-    if (!filesData.length) {
-      return alert("No files selected.");
-    }
+    if (!filesData.length) return alert("No files selected.");
 
     let friendsList = [];
     try {
@@ -117,10 +140,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let {file, dateInput, privacy} of filesData) {
       const date = dateInput.value;
-      if (!date) {
-        return alert("Select a date for each photo.");
-      }
+      if (!date) return alert("Select a date for each photo.");
 
+      // (handle HEIC as before...)
       const ext = file.name.split('.').pop().toLowerCase();
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       if (ext === "heic" && !isMobile) {
@@ -143,9 +165,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      const path = `${user.uid}/${resort}/${date}/${privacy}/${file.name}`;
-      const storageRef = ref(storage, path);
+      // generate thumbnail
+      let thumbBlob;
+      try {
+        thumbBlob = await generateThumbnail(file);
+      } catch (e) {
+        console.warn("Thumbnail failed for", file.name, e);
+        // fall back to full file as thumbnail
+        thumbBlob = file;
+      }
+      const thumbFile = new File(
+        [thumbBlob],
+        `thumb_${file.name}`,
+        { type: 'image/jpeg' }
+      );
+
+      // build storage paths
+      const basePath = `${user.uid}/${resort}/${date}/${privacy}`;
+      const origPath  = `${basePath}/${file.name}`;
+      const thumbPath = `${basePath}/thumb_${file.name}`;
+
+      const origRef  = ref(storage, origPath);
+      const thumbRef = ref(storage, thumbPath);
+
       const metadata = {
+        contentType: file.type,
         customMetadata: {
           owner: user.uid,
           privacy,
@@ -154,11 +198,16 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       try {
-        await uploadBytes(storageRef, file, metadata);
+        // upload thumbnail first
+        await uploadBytes(thumbRef, thumbFile, {
+          contentType: 'image/jpeg',
+          customMetadata: metadata.customMetadata
+        });
+        // then original
+        await uploadBytes(origRef, file, metadata);
       } catch (err) {
         console.error("Upload failed for", file.name, err);
-        alert("Failed to upload " + file.name);
-        return;
+        return alert("Failed to upload " + file.name);
       }
     }
 
@@ -169,4 +218,3 @@ document.addEventListener("DOMContentLoaded", () => {
     filesData = [];
   });
 });
-
