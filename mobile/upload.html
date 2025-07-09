@@ -1,48 +1,40 @@
-<!-- upload.html (unchanged) -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="mobile">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Upload Photos – HolidaySnaps</title>
-  <link rel="stylesheet" href="upload-style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Upload – HolidaySnaps</title>
+  <link rel="stylesheet" href="mobile-style.css">
 </head>
 <body>
-  <div class="background">
-    <header class="site-header">
-      <div class="header-inner">
-        <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
-        <nav class="main-nav">
-          <a href="profile.html"><img src="icons/profile.png" alt="Profile"/>Profile</a>
-          <a href="friends.html"><img src="icons/friends.png" alt="Friends Icon"/>Friends</a>
-          <a href="trips.html"><img src="icons/trips.png" alt="Trips"/>Trips</a>
-          <a href="upload.html"><img src="icons/uploadcurrent.png" alt="Upload Icon"/>Upload</a>  
-          <a href="#" id="logout-link"><img src="icons/logout.png" alt="Logout"/>Logout</a>
-        </nav>
-      </div>
-    </header>
+  <header class="header">
+    <img src="../logo.png" class="logo" alt="HolidaySnaps Logo">
+    <h1>Upload Photos</h1>
+  </header>
 
-    <main>
-      <section class="card upload-card">
-        <h2>Upload Photos</h2>
+  <main class="page upload-page">
+    <form class="card">
+      <label for="resort-name">Resort Name</label>
+      <input type="text" id="resort-name" placeholder="e.g. Kiani Beach">
 
-        <label for="resort-name">Resort Name</label>
-        <input type="text" id="resort-name" placeholder="e.g. Kiani Beach" />
+      <label for="file-input">Choose Photos</label>
+      <input type="file" id="file-input" accept="image/*" multiple>
 
-        <label for="file-input">Choose Photos</label>
-        <input type="file" id="file-input" accept="image/*" multiple />
+      <div id="preview-grid" class="grid"></div>
 
-        <div id="preview-grid" class="preview-grid"></div>
+      <button id="submit-btn">Submit Photos</button>
+    </form>
+  </main>
 
-        <button id="submit-btn">Submit Photos</button>
-      </section>
-    </main>
+  <nav class="bottom-nav">
+    <a href="profile.html"><img src="../icons/profile.png"><span>Profile</span></a>
+    <a href="friends.html"><img src="../icons/friends.png"><span>Friends</span></a>
+    <a href="trips.html"><img src="../icons/trips.png"><span>Trips</span></a>
+    <a href="upload.html" class="active"><img src="../icons/upload.png"><span>Upload</span></a>
+    <a href="#" onclick="logOut()"><img src="../icons/logout.png"><span>Logout</span></a>
+  </nav>
 
-    <footer>
-      <p>&copy; 2025 HolidaySnaps</p>
-    </footer>
-  </div>
-
-  <script type="module" src="upload.js"></script>
+  <script type="module" src="../upload.js"></script>
 </body>
 </html>
+
