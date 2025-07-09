@@ -1,34 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="mobile">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HolidaySnaps – Home</title>
-  <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HolidaySnaps – Login</title>
+  <link rel="stylesheet" href="mobile-style.css">
 </head>
 <body>
-  <div class="background">
-    <main class="homepage-main">
-      <img src="logo.png" class="homepage-logo" alt="HolidaySnaps Logo"/>
-      <section class="login-box">
-        <h2>Welcome Back</h2>
-        <p>Upload and explore holiday memories by resort and date!</p>
-        <form id="login-form">
-          <input type="email" id="email" placeholder="Email" required />
-          <input type="password" id="password" placeholder="Password" required />
-          <button type="submit">Log In</button>
-        </form>
-        <p class="signup-link">
-          <a href="#" id="reset-password">Forgot your password?</a>
-        </p>
-        <p class="signup-link">New here? <a href="signup.html">Create an account</a></p>
-      </section>
-    </main>
-    <footer>
-      <p>&copy; 2025 HolidaySnaps mobile</p>
-    </footer>
-  </div>
-  <script type="module" src="login.js"></script>
+  <main class="page login-page">
+    <img src="../logo.png" class="logo" alt="HolidaySnaps Logo">
+    <h1>Welcome Back</h1>
+    <p>Upload and explore holiday memories by resort and date!</p>
+    <form id="login-form" class="card">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Log In</button>
+    </form>
+    <p class="link"><a href="#" id="reset-password">Forgot your password?</a></p>
+    <p class="link">New here? <a href="signup.html">Create an account</a></p>
+  </main>
+
+  <!-- bottom nav -->
+  <nav class="bottom-nav">
+    <a href="profile.html"><img src="../icons/profile.png"><span>Profile</span></a>
+    <a href="friends.html"><img src="../icons/friends.png"><span>Friends</span></a>
+    <a href="trips.html"><img src="../icons/trips.png"><span>Trips</span></a>
+    <a href="upload.html"><img src="../icons/upload.png"><span>Upload</span></a>
+    <a href="#" onclick="logOut()"><img src="../icons/logout.png"><span>Logout</span></a>
+  </nav>
+
+  <script type="module" src="../login.js"></script>
 </body>
 </html>
