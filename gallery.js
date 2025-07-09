@@ -1,5 +1,4 @@
-// gallery.js – parallel folder listing + deferred URL fetch on scroll (lazy-load)
-
+// gallery.js
 import { auth, storage, db, logOut } from "./firebase.js";
 import {
   ref,
@@ -20,89 +19,109 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-// expose logout for onclick
 window.logOut = logOut;
 
-// element refs
-const gallery        = document.getElementById("photo-gallery");
+// panels
+const yourGallery    = document.getElementById("your-photos");
+const friendsGallery= document.getElementById("friends-photos");
+const publicGallery = document.getElementById("public-photos");
+
+// date & trip controls
 const startDateInput = document.getElementById("startDate");
 const endDateInput   = document.getElementById("endDate");
 const filterBtn      = document.getElementById("filterBtn");
 const saveBtn        = document.getElementById("saveCurrentTripBtn");
 const loadTripBtn    = document.getElementById("loadSavedTripBtn");
 const tripsSelect    = document.getElementById("savedTripsSelect");
-const modal          = document.getElementById("modal");
-const modalImg       = document.getElementById("modal-img");
-const modalClose     = document.getElementById("modal-close");
-const modalPrev      = document.getElementById("modal-prev");
-const modalNext      = document.getElementById("modal-next");
 
-let imageList    = [];   // holds { itemRef, privacy, url? }
+// modal elements
+const modal      = document.getElementById("modal");
+const modalImg   = document.getElementById("modal-img");
+const modalClose = document.getElementById("modal-close");
+const modalPrev  = document.getElementById("modal-prev");
+const modalNext  = document.getElementById("modal-next");
+
+let imageList    = [];   // { thumbRef, fullRef, privacy, owner, friendOK }
 let currentIndex = 0;
 let currentUser  = null;
 let friendIds    = [];
 let resortParam  = null;
 
-// helper: get URL param
-function getParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
-}
-
-// Deferred thumbnail loader
+// for lazy-loading thumbnails
 const thumbObserver = new IntersectionObserver(entries => {
   entries.forEach(async entry => {
     if (!entry.isIntersecting) return;
     const img = entry.target;
     const idx = img.dataset.idx;
     const photo = imageList[idx];
-    // fetch URL once
-    if (!photo.url) {
-      photo.url = await getDownloadURL(photo.itemRef);
+    if (!photo.thumbUrl) {
+      photo.thumbUrl = await getDownloadURL(photo.thumbRef);
     }
-    img.src = photo.url;
+    img.src = photo.thumbUrl;
     thumbObserver.unobserve(img);
   });
 }, { rootMargin: "200px" });
 
-// Open modal at index
+// open full image in modal
 function openModalAt(idx) {
   currentIndex = idx;
   const photo = imageList[idx];
-  // ensure URL is loaded
-  if (photo.url) {
-    modalImg.src = photo.url;
+  if (photo.fullUrl) {
+    modalImg.src = photo.fullUrl;
     modal.style.display = "flex";
   } else {
-    // load then show
-    getDownloadURL(photo.itemRef).then(url => {
-      photo.url = url;
+    getDownloadURL(photo.fullRef).then(url => {
+      photo.fullUrl = url;
       modalImg.src = url;
       modal.style.display = "flex";
     });
   }
 }
 
-// Change privacy in-place
-async function changePrivacy(itemRef, newPriv, badgeEl, selectorEl) {
-  const m = itemRef.fullPath.match(/\/(public|friends|private)\//);
+// change privacy of both thumb and full
+async function changePrivacy(fullRef, thumbRef, newPriv, badgeEl, selectorEl) {
+  const m = fullRef.fullPath.match(/\/(public|friends|private)\//);
   const oldPriv = m && m[1];
   if (!oldPriv || oldPriv === newPriv) return;
-  const meta = await getMetadata(itemRef);
-  const bytes = await getBytes(itemRef);
-  const newPath = itemRef.fullPath.replace(`/${oldPriv}/`, `/${newPriv}/`);
-  const newRef  = ref(storage, newPath);
-  await uploadBytes(newRef, bytes, {
-    contentType: meta.contentType,
-    customMetadata: meta.customMetadata
+
+  const [fullMeta, thumbMeta] = await Promise.all([
+    getMetadata(fullRef),
+    getMetadata(thumbRef)
+  ]);
+  const [fullBytes, thumbBytes] = await Promise.all([
+    getBytes(fullRef),
+    getBytes(thumbRef)
+  ]);
+
+  const newFullPath  = fullRef.fullPath.replace(`/${oldPriv}/`, `/${newPriv}/`);
+  const newThumbPath = thumbRef.fullPath.replace(`/${oldPriv}/`, `/${newPriv}/`);
+  const newFullRef   = ref(storage, newFullPath);
+  const newThumbRef  = ref(storage, newThumbPath);
+
+  await uploadBytes(newFullRef, fullBytes, {
+    contentType: fullMeta.contentType,
+    customMetadata: fullMeta.customMetadata
   });
-  await deleteObject(itemRef);
-  // update badge
+  await uploadBytes(newThumbRef, thumbBytes, {
+    contentType: thumbMeta.contentType,
+    customMetadata: thumbMeta.customMetadata
+  });
+  await deleteObject(fullRef);
+  await deleteObject(thumbRef);
+
   badgeEl.textContent = newPriv;
   badgeEl.className   = `badge ${newPriv}`;
   selectorEl.remove();
+
+  // update our in-memory refs
+  const photo = imageList.find(p => p.fullRef.fullPath === fullRef.fullPath);
+  if (photo) {
+    photo.fullRef  = newFullRef;
+    photo.thumbRef = newThumbRef;
+  }
 }
 
-// Populate saved trips dropdown
+// pull in saved trips
 async function populateSavedTrips() {
   tripsSelect.innerHTML = `<option value="">-- Select a saved trip --</option>`;
   const snap = await getDoc(doc(db, "users", currentUser.uid));
@@ -114,18 +133,20 @@ async function populateSavedTrips() {
   });
 }
 
-// Main loader: list all itemRefs first, then render placeholders
+// main loader
 async function loadPhotos(start, end, resortFilter = null) {
-  gallery.innerHTML = "";
+  // clear panels
+  yourGallery.innerHTML    = "";
+  friendsGallery.innerHTML = "";
+  publicGallery.innerHTML  = "";
   imageList = [];
 
   const usersSnap = await getDocs(collection(db, "users"));
-  // For each user, gather their itemRefs
   await Promise.all(usersSnap.docs.map(async uDoc => {
-    const uid       = uDoc.id;
-    const isOwner   = uid === currentUser.uid;
-    const isFriend  = friendIds.includes(uid);
-    const userFold  = ref(storage, uid);
+    const uid      = uDoc.id;
+    const isOwner  = uid === currentUser.uid;
+    const isFriend = friendIds.includes(uid);
+    const userFold = ref(storage, uid);
     try {
       const { prefixes: resorts } = await listAll(userFold);
       await Promise.all(resorts.map(async rf => {
@@ -140,10 +161,27 @@ async function loadPhotos(start, end, resortFilter = null) {
               || (priv === "friends" && (isOwner || isFriend))
               || (priv === "private" && isOwner);
             if (!ok) return;
+
             const { items } = await listAll(pf);
+            // group thumb_ vs full
+            const grouped = {};
             items.forEach(itemRef => {
-              // queue photo
-              imageList.push({ itemRef, privacy: priv });
+              const nm = itemRef.name;
+              const base = nm.replace(/^thumb_/, "");
+              if (!grouped[base]) grouped[base] = {};
+              if (nm.startsWith("thumb_")) grouped[base].thumbRef = itemRef;
+              else                          grouped[base].fullRef  = itemRef;
+            });
+            Object.values(grouped).forEach(g => {
+              if (g.fullRef) {
+                imageList.push({
+                  thumbRef: g.thumbRef  || g.fullRef,
+                  fullRef:  g.fullRef,
+                  privacy:  priv,
+                  owner:    isOwner,
+                  friendOK: isFriend
+                });
+              }
             });
           }));
         }));
@@ -153,18 +191,17 @@ async function loadPhotos(start, end, resortFilter = null) {
     }
   }));
 
-  // Now render one placeholder card per photo, in sequence:
+  // render in three panels
   imageList.forEach((photo, idx) => {
     const card = document.createElement("div");
     card.className = "photo-card";
     card.onclick   = () => openModalAt(idx);
 
-    // placeholder img
+    // placeholder img for lazy-load
     const img = document.createElement("img");
     img.dataset.idx = idx;
     img.alt        = "Loading…";
     img.className  = "gallery-img";
-    // starts empty; thumbObserver will fill src when visible
     thumbObserver.observe(img);
 
     // badge
@@ -174,21 +211,24 @@ async function loadPhotos(start, end, resortFilter = null) {
 
     card.append(img, badge);
 
-    // owner controls
-    if (photo.itemRef.fullPath.startsWith(currentUser.uid + "/")) {
+    // owner-only controls
+    if (photo.owner) {
       const overlay = document.createElement("div");
       overlay.className = "overlay";
 
-      // delete
+      // delete both full and thumb
       const delBtn = document.createElement("button");
       delBtn.title     = "Delete";
       delBtn.innerHTML = `<img src="icons/trash.png" alt="Del"/>`;
       delBtn.onclick = async e => {
         e.stopPropagation();
         if (!confirm("Delete this photo?")) return;
-        await deleteObject(photo.itemRef);
+        await deleteObject(photo.fullRef);
+        // only delete thumb if different
+        if (photo.thumbRef.fullPath !== photo.fullRef.fullPath) {
+          await deleteObject(photo.thumbRef);
+        }
         card.remove();
-        imageList.splice(idx, 1);
       };
 
       // privacy toggles
@@ -201,7 +241,7 @@ async function loadPhotos(start, end, resortFilter = null) {
         span.textContent = choice;
         span.onclick = e => {
           e.stopPropagation();
-          changePrivacy(photo.itemRef, choice, badge, selector);
+          changePrivacy(photo.fullRef, photo.thumbRef, choice, badge, selector);
         };
         selector.appendChild(span);
       });
@@ -210,7 +250,14 @@ async function loadPhotos(start, end, resortFilter = null) {
       card.appendChild(overlay);
     }
 
-    gallery.appendChild(card);
+    // append to correct panel
+    if (photo.owner) {
+      yourGallery.appendChild(card);
+    } else if (photo.privacy === "friends") {
+      friendsGallery.appendChild(card);
+    } else if (photo.privacy === "public") {
+      publicGallery.appendChild(card);
+    }
   });
 }
 
@@ -221,24 +268,21 @@ onAuthStateChanged(auth, async user => {
     return;
   }
   currentUser = user;
-  resortParam = getParam("resort");
+  resortParam = new URLSearchParams(window.location.search).get("resort");
 
-  // fill trips select
   await populateSavedTrips();
 
-  // if params present, auto-load
-  const s = getParam("start"), e = getParam("end");
+  const s = new URLSearchParams(window.location.search).get("start");
+  const e = new URLSearchParams(window.location.search).get("end");
   if (resortParam && s && e) {
     startDateInput.value = s;
     endDateInput.value   = e;
     await loadPhotos(s, e, resortParam);
   }
 
-  // load friend IDs
   const meSnap = await getDoc(doc(db, "users", user.uid));
   friendIds = meSnap.data().friends || [];
 
-  // bind controls
   filterBtn.onclick = () => {
     const s = startDateInput.value, e = endDateInput.value;
     if (!s || !e) return alert("Select both dates");
@@ -263,7 +307,6 @@ onAuthStateChanged(auth, async user => {
     loadPhotos(start, end, resort);
   };
 
-  // modal nav
   modalClose.onclick = () => modal.style.display = "none";
   modalPrev.onclick  = () => openModalAt((currentIndex - 1 + imageList.length) % imageList.length);
   modalNext.onclick  = () => openModalAt((currentIndex + 1) % imageList.length);
