@@ -1,59 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="mobile">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Trips - HolidaySnaps</title>
-  <link rel="stylesheet" href="trips-style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Trips – HolidaySnaps</title>
+  <link rel="stylesheet" href="mobile-style.css">
 </head>
 <body>
-  <div class="background">
-    <header class="site-header">
-      <div class="header-inner">
-        <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
-        <nav class="main-nav"> 
-          <a href="profile.html"><img src="icons/profile.png" alt="Profile Icon"/>Profile</a>
-          <a href="friends.html"><img src="icons/friends.png" alt="Friends Icon"/>Friends</a>
-          <a href="trips.html"><img src="icons/tripscurrent.png" alt="Trips"/>Trips</a>
-          <a href="upload.html"><img src="icons/upload.png" alt="Upload Icon"/>Upload</a>
-          <a href="#" id="logout-link"><img src="icons/logout.png" alt="Logout Icon"/>Logout</a>
-        </nav>
-      </div>
-    </header>
+  <header class="header">
+    <img src="../logo.png" class="logo" alt="HolidaySnaps Logo">
+    <h1>Saved Trips</h1>
+  </header>
 
-    <main>
-      <!-- Search all resorts + save -->
-      <section class="card search-box">
-        <h2>Search All Resorts</h2>
-        <select id="search-resort">
-          <option value="">-- Select a resort --</option>
+  <main class="page trips-page">
+    <section class="card">
+      <div class="controls">
+        <select id="savedTripsSelect">
+          <option value="">-- Select a saved trip --</option>
         </select>
-        <div class="date-range">
-          <input type="date" id="search-startDate" />
-          <input type="date" id="search-endDate" />
-        </div>
-        <button id="searchAllBtn">View in Gallery</button>
-        <button id="saveTripBtn">Save Trip</button>
-      </section>
+        <button id="loadSavedTripBtn">Load Trip</button>
+        <button id="saveCurrentTripBtn">Save Trip</button>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Filter by Date</h2>
+      <input type="date" id="startDate">
+      <input type="date" id="endDate">
+      <button id="filterBtn">Filter</button>
+    </section>
+  </main>
 
-      <!-- Saved trips -->
-      <section class="card">
-        <h2>Saved Trips</h2>
-        <ul id="saved-trips"></ul>
-      </section>
+  <nav class="bottom-nav">
+    <a href="profile.html"><img src="../icons/profile.png"><span>Profile</span></a>
+    <a href="friends.html"><img src="../icons/friends.png"><span>Friends</span></a>
+    <a href="trips.html" class="active"><img src="../icons/trips.png"><span>Trips</span></a>
+    <a href="upload.html"><img src="../icons/upload.png"><span>Upload</span></a>
+    <a href="#" onclick="logOut()"><img src="../icons/logout.png"><span>Logout</span></a>
+  </nav>
 
-      <!-- My saved trips as “My Resorts” -->
-      <section class="card">
-        <h2>Your Resorts</h2>
-        <ul id="resort-list"></ul>
-      </section>
-    </main>
-
-    <footer>
-      <p>&copy; 2025 HolidaySnaps</p>
-    </footer>
-  </div>
-
-  <script type="module" src="trips.js"></script>
+  <script type="module" src="../trips.js"></script>
 </body>
 </html>
+
