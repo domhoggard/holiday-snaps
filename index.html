@@ -3,6 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <!-- Mobile redirect: serve /mobile/ copy on phones/tablets or narrow screens -->
+  <script>
+    (function(){
+      const ua = navigator.userAgent || "";
+      const isMobileUA = /Mobi|Android|iPhone|iPad|iPod/.test(ua);
+      const isSmallScreen = window.innerWidth <= 600;
+      // only redirect if not already under /mobile/
+      if ((isMobileUA || isSmallScreen) && !location.pathname.startsWith('/mobile/')) {
+        // build target path
+        let path = location.pathname;
+        if (path.endsWith('/')) {
+          path += 'index.html';
+        }
+        // prepend /mobile
+        const target = '/mobile' + path;
+        location.replace(target);
+      }
+    })();
+  </script>
+
   <title>HolidaySnaps – Home</title>
   <link rel="stylesheet" href="style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
