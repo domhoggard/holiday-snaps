@@ -116,17 +116,39 @@ footer {
 }
 
 /* ----------------------------------
-   RESPONSIVE / MOBILE
+   MOBILE / RESPONSIVE ADAPTATIONS
 ---------------------------------- */
 @media (max-width: 600px) {
-  .site-header .header-inner { flex-direction: column; align-items: flex-start; }
+  /* Header & nav */
+  .header-inner { flex-direction: column; align-items: flex-start; }
   .main-nav { flex-wrap: wrap; }
   .main-nav a { margin: 8px 0; }
-  .preview-grid, .photo-gallery { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-  .photo-card { margin: 5px; }
-  .gallery-img { width: 100px; height: 100px; }
-  .upload-card, .profile-card { padding: 10px; margin: 10px 0; }
-  .upload-card input[type="text"], .upload-card input[type="file"], .saved-trips-controls select,
-  #startDate, #endDate { width: 100%; }
+
+  /* Forms and buttons full-width */
+  input[type="text"], input[type="email"], input[type="password"],
+  input[type="date"], select, button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Grids */
+  .preview-grid, .photo-gallery {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+  }
+
+  /* Thumbnails */
+  .gallery-img, .preview-card img {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* Cards and sections */
+  .upload-card, .profile-card, .card {
+    margin: 8px;
+    padding: 12px;
+  }
+
+  /* Footer */
   footer { font-size: 0.8em; }
 }
