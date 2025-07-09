@@ -1,87 +1,43 @@
-<!-- gallery.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="mobile">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gallery - HolidaySnaps</title>
-  <link rel="stylesheet" href="gallery-style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gallery – HolidaySnaps</title>
+  <link rel="stylesheet" href="mobile-style.css">
 </head>
 <body>
-  <div class="background">
-    <header class="site-header">
-      <div class="header-inner">
-        <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
-        <nav class="main-nav">
-          <a href="profile.html"><img src="icons/profile.png" alt="Profile"/>Profile</a>
-          <a href="friends.html"><img src="icons/friends.png" alt="Friends Icon"/>Friends</a>
-          <a href="trips.html"><img src="icons/trips.png" alt="Trips"/>Trips</a>
-          <a href="upload.html"><img src="icons/upload.png" alt="Upload Icon"/>Upload</a>
-          <a href="#" onclick="logOut()"><img src="icons/logout.png" alt="Logout"/>Logout</a>
-        </nav>
-      </div>
-    </header>
+  <header class="header">
+    <img src="../logo.png" class="logo" alt="HolidaySnaps Logo">
+    <h1>Photo Gallery</h1>
+  </header>
 
-    <main>
-      <!-- SAVED TRIPS -->
-      <section class="profile-card">
-        <h2>Saved Trips</h2>
-        <div class="saved-trips-controls">
-          <select id="savedTripsSelect">
-            <option value="">-- Select a saved trip --</option>
-          </select>
-          <button id="loadSavedTripBtn">Load Saved Trip</button>
-          <button id="saveCurrentTripBtn">Save Current Trip</button>
-        </div>
-      </section>
-
-      <!-- DATE FILTER -->
-      <section class="profile-card">
-        <h2>Search Photos</h2>
-        <input type="date" id="startDate" />
-        <input type="date" id="endDate" />
-        <button id="filterBtn">Filter</button>
-      </section>
-
-      <!-- YOUR PHOTOS -->
-      <section class="profile-card">
-        <h2>Your Photos</h2>
-        <div id="your-photos" class="photo-gallery"></div>
-      </section>
-
-      <!-- FRIENDS' PHOTOS -->
-      <section class="profile-card">
-        <h2>Friends' Photos</h2>
-        <div id="friends-photos" class="photo-gallery"></div>
-      </section>
-
-      <!-- PUBLIC PHOTOS -->
-      <section class="profile-card">
-        <h2>Public Photos</h2>
-        <div id="public-photos" class="photo-gallery"></div>
-      </section>
-    </main>
-
-    <footer>
-      <p>&copy; 2025 HolidaySnaps</p>
-    </footer>
-  </div>
-
-  <!-- Modal Viewer -->
-  <div id="modal" class="modal">
-    <div class="modal-inner">
-      <span id="modal-close" class="modal-close">&times;</span>
-      <button id="modal-prev" class="modal-arrow left">
-        <img src="icons/arrow-left.png" alt="Previous">
-      </button>
-      <img id="modal-img" class="modal-content" />
-      <button id="modal-next" class="modal-arrow right">
-        <img src="icons/arrow-right.png" alt="Next">
-      </button>
-      <!-- overlay controls injected by JS -->
+  <main class="page gallery-page">
+    <div id="your-photos" class="grid section">
+      <h2>Your Photos</h2>
+      <!-- photos injected here -->
     </div>
-  </div>
+    <div id="friends-photos" class="grid section">
+      <h2>Friends' Photos</h2>
+      <!-- photos -->
+    </div>
+    <div id="public-photos" class="grid section">
+      <h2>Public Photos</h2>
+      <!-- photos -->
+    </div>
+  </main>
 
-  <script type="module" src="gallery.js"></script>
+  <!-- modal markup can stay as desktop version, or moved here if you like -->
+
+  <nav class="bottom-nav">
+    <a href="profile.html"><img src="../icons/profile.png"><span>Profile</span></a>
+    <a href="friends.html"><img src="../icons/friends.png"><span>Friends</span></a>
+    <a href="trips.html"><img src="../icons/trips.png"><span>Trips</span></a>
+    <a href="upload.html"><img src="../icons/upload.png"><span>Upload</span></a>
+    <a href="#" onclick="logOut()"><img src="../icons/logout.png"><span>Logout</span></a>
+  </nav>
+
+  <script type="module" src="../gallery.js"></script>
 </body>
 </html>
+
