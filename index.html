@@ -3,23 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  
-  <!-- Mobile redirect: serve /mobile/ copy on phones/tablets or narrow screens -->
+
+  <!-- MOBILE REDIRECT (use matchMedia + relative path) -->
   <script>
     (function(){
-      const ua = navigator.userAgent || "";
-      const isMobileUA = /Mobi|Android|iPhone|iPad|iPod/.test(ua);
-      const isSmallScreen = window.innerWidth <= 600;
-      // only redirect if not already under /mobile/
-      if ((isMobileUA || isSmallScreen) && !location.pathname.startsWith('/mobile/')) {
-        // build target path
-        let path = location.pathname;
-        if (path.endsWith('/')) {
-          path += 'index.html';
-        }
-        // prepend /mobile
-        const target = '/mobile' + path;
-        location.replace(target);
+      // detect narrow viewports (≤600px)
+      const isSmall = window.matchMedia("(max-width: 600px)").matches;
+      // skip if already in /mobile/
+      if (isSmall && !location.pathname.includes("/mobile/")) {
+        // pull filename (fallback to index.html)
+        let file = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+        if (!file) file = "index.html";
+        // preserve query & hash
+        const qs = location.search + location.hash;
+        // redirect into mobile folder
+        location.replace("mobile/" + file + qs);
       }
     })();
   </script>
@@ -53,3 +51,4 @@
   <script type="module" src="login.js"></script>
 </body>
 </html>
+
