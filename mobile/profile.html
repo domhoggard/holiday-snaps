@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile - HolidaySnaps</title>
+  <link rel="stylesheet" href="profile-style.css"/>
+</head>
+<body>
+  <div class="background">
+    <header class="site-header">
+      <div class="header-inner">
+        <img src="logo.png" alt="HolidaySnaps Logo" class="logo-small"/>
+        <nav class="main-nav">
+          <a href="profile.html"><img src="icons/profilecurrent.png" alt="Profile Icon"/>Profile</a>
+          <a href="friends.html"><img src="icons/friends.png" alt="Friends Icon"/>Friends</a>
+          <a href="trips.html"><img src="icons/trips.png" alt="Trips Icon"/>Trips</a>
+          <a href="upload.html"><img src="icons/upload.png" alt="Upload Icon"/>Upload</a>
+          <a href="#" onclick="logOut()"><img src="icons/logout.png" alt="Logout Icon"/>Logout</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="profile-card">
+        <h2>Your Profile</h2>
+        <!-- Everything is rendered here by JS -->
+        <div id="profile-info"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 HolidaySnaps</p>
+    </footer>
+  </div>
+
+  <script type="module" src="profile.js"></script>
+</body>
+</html>
+

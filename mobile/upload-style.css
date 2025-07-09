@@ -1,0 +1,214 @@
+/* ----------------------------------
+   GLOBAL + HEADER
+---------------------------------- */
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #FDB543;
+  margin: 0; padding: 0;
+  color: #004d40;
+}
+
+.background { padding: 0; }
+
+.site-header {
+  background-color: #FDB543;
+  padding: 5px 20px;
+  display: flex; 
+  align-items: center; 
+}
+.header-inner { display: flex; 
+               align-items: center; 
+               width: 100%;
+               justify-content: space-between;
+              }
+.logo-small { width: 210px; margin-right: 10px; }
+.site-title { font-size: 26px; color: #00AFAA; margin-right: auto; }
+.main-nav a {
+  margin: 0 12px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.95em;
+}
+.main-nav img { width: 36px; 
+               height: 36px; 
+               margin-right: 8px;
+               transform: scale(1.3);
+               transform-origin: center center;}
+
+main { padding: 20px; }
+.upload-card {
+  background-color: #FFF9D9;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.upload-card h2 { margin-top: 0; }
+.upload-card label {
+  display: block; margin-top: 12px;
+  font-weight: bold;
+}
+.upload-card input[type="text"],
+.upload-card input[type="file"] {
+  width: calc(100% - 20px);
+  padding: 8px 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.upload-card button {
+  margin-top: 16px;
+  padding: 10px 18px;
+  background-color: #00AFAA;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.upload-card button:hover {
+  background-color: #007f7f;
+}
+
+/* ----------------------------------
+   PREVIEW GRID
+---------------------------------- */
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(144px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ----------------------------------
+   PREVIEW CARD
+---------------------------------- */
+.preview-card {
+  position: relative;
+  background: #eee;
+  border-radius: 8px;
+  overflow: visible;       /* date picker and overlay can show */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  padding-bottom: 48px;    /* room for date picker */
+}
+
+/* thumbnail */
+.preview-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* current-privacy badge */
+.preview-card .badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  background-color: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 4px 6px;
+  border-radius: 8px;
+  font-size: 0.75em;
+  text-transform: capitalize;
+  pointer-events: none;
+}
+
+/* date picker — sits below the thumbnail */
+.preview-card input[type="date"] {
+  position: absolute;
+  bottom: 8px; left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  width: calc(100% - 16px);
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 0.9em;
+  background: white;
+  z-index: 1;
+}
+
+/* ----------------------------------
+   HOVER OVERLAY (STACKED)
+---------------------------------- */
+.preview-card .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-bottom: 48px;    /* leave room for the date picker */
+}
+.preview-card:hover .overlay {
+  opacity: 1;
+}
+
+/* trash button */
+.overlay button.trash {
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.overlay button.trash img {
+  width: 20px; height: 20px;
+}
+
+/* privacy-toggle badges */
+.overlay span {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: #fff;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.overlay span.friends {
+  background-color: #FF9800;
+}
+.overlay span.private {
+  background-color: #F44336;
+}
+.overlay span:hover {
+  opacity: 0.8;
+}
+
+/* ----------------------------------
+   FOOTER
+---------------------------------- */
+footer {
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.9em;
+  background: transparent;
+}
+
+/* ----------------------------------
+   RESPONSIVE / MOBILE
+---------------------------------- */
+@media (max-width: 600px) {
+  .site-header .header-inner { flex-direction: column; align-items: flex-start; }
+  .main-nav { flex-wrap: wrap; }
+  .main-nav a { margin: 8px 0; }
+  .preview-grid, .photo-gallery { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+  .photo-card { margin: 5px; }
+  .gallery-img { width: 100px; height: 100px; }
+  .upload-card, .profile-card { padding: 10px; margin: 10px 0; }
+  .upload-card input[type="text"], .upload-card input[type="file"], .saved-trips-controls select,
+  #startDate, #endDate { width: 100%; }
+  footer { font-size: 0.8em; }
+}

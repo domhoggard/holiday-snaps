@@ -1,0 +1,202 @@
+/* ----------------------------------
+   GLOBAL + HEADER
+---------------------------------- */
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #FDB543;
+  margin: 0; padding: 0;
+  color: #004d40;
+}
+.background { padding: 0; }
+.site-header {
+  background-color: #FDB543;
+  padding: 5px 20px;
+  display: flex; align-items: center;
+}
+.header-inner {
+  display: flex; 
+  align-items: center; 
+  width: 100%;
+  justify-content: space-between;
+}
+.logo-small {
+  width: 210px; 
+  height: auto; 
+  display: block;
+}
+.main-nav a {
+  margin: 0 12px; text-decoration: none;
+  color: #333; font-weight: bold;
+  display: inline-flex; align-items: center;
+}
+.main-nav img { width: 36px; 
+               height: 36px; 
+               margin-right: 6px; 
+               transform: scale(1.3);
+               transform-origin: center center;
+              }
+/* ----------------------------------
+   MAIN + CARDS
+---------------------------------- */
+main { padding: 20px; }
+.profile-card {
+  background-color: #FFF9D9;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.profile-card h2 { margin-top: 0; }
+
+/* Saved Trips */
+.saved-trips-controls {
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+}
+.saved-trips-controls select {
+  flex: 1 1 auto; padding: 8px;
+  border-radius: 6px; border: 1px solid #ccc;
+}
+.saved-trips-controls button {
+  padding: 8px 12px; border: none; border-radius: 6px;
+  background-color: #00AFAA; color: white; font-weight: bold;
+  cursor: pointer;
+}
+.saved-trips-controls button:hover {
+  background-color: #007f7f;
+}
+
+/* Date filter */
+#startDate, #endDate {
+  padding: 8px; margin-right: 8px;
+  border-radius: 6px; border: 1px solid #ccc;
+}
+#filterBtn {
+  padding: 8px 12px; border: none; border-radius: 6px;
+  background-color: #00AFAA; color: white; font-weight: bold;
+  cursor: pointer;
+}
+#filterBtn:hover { background-color: #007f7f; }
+
+/* ----------------------------------
+   GALLERY THUMBNAILS
+---------------------------------- */
+.photo-card {
+  display: inline-block;
+  position: relative;
+  margin: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #eee;
+}
+.gallery-img {
+  width: 150px; height: 150px;
+  object-fit: cover;
+  cursor: pointer;
+  display: block;
+}
+.badge {
+  position: absolute; bottom: 8px; left: 8px;
+  background-color: rgba(0,0,0,0.7);
+  color: #fff; padding: 4px 8px;
+  border-radius: 10px; font-size: 0.75em;
+  text-transform: capitalize;
+}
+.badge.public   { background-color: #4CAF50; }
+.badge.friends  { background-color: #FF9800; }
+.badge.private  { background-color: #F44336; }
+
+/* ----------------------------------
+   HOVER OVERLAY (STACKED)
+---------------------------------- */
+.photo-card .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0; transition: opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.photo-card:hover .overlay {
+  opacity: 1;
+}
+.overlay button {
+  background: rgba(255,255,255,0.9);
+  border: none; border-radius: 50%;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.overlay button img {
+  width: 20px; height: 20px;
+}
+/* privacy-selector badges */
+.privacy-selector {
+  display: flex; gap: 6px;
+}
+.privacy-toggle {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 0.75em;
+  color: #fff;
+  text-transform: capitalize;
+  transition: opacity 0.2s;
+}
+.privacy-toggle.public   { background-color: #4CAF50; }
+.privacy-toggle.friends  { background-color: #FF9800; }
+.privacy-toggle.private  { background-color: #F44336; }
+.privacy-toggle:hover {
+  opacity: 0.75;
+}
+
+/* ----------------------------------
+   MODAL
+---------------------------------- */
+.modal {
+  display: none;
+  position: fixed; z-index: 999;
+  inset: 0;
+  background-color: rgba(0,0,0,0.9);
+  justify-content: center; align-items: center;
+}
+.modal-inner {
+  position: relative;
+}
+.modal-content {
+  max-width: 80vw; max-height: 80vh;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.modal-close {
+  position: absolute; top: -10px; right: -10px;
+  font-size: 32px; color: white; cursor: pointer;
+}
+/* arrows */
+.modal-arrow {
+  position: absolute; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none; padding: 0;
+  cursor: pointer; z-index: 1001;
+}
+.modal-arrow.left  { left: -24px; }
+.modal-arrow.right { right: -24px; }
+.modal-arrow img { width: 36px; height: 36px; }
+
+/* ----------------------------------
+   RESPONSIVE / MOBILE
+---------------------------------- */
+@media (max-width: 600px) {
+  .site-header .header-inner { flex-direction: column; align-items: flex-start; }
+  .main-nav { flex-wrap: wrap; }
+  .main-nav a { margin: 8px 0; }
+  .preview-grid, .photo-gallery { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+  .photo-card { margin: 5px; }
+  .gallery-img { width: 100px; height: 100px; }
+  .upload-card, .profile-card { padding: 10px; margin: 10px 0; }
+  .upload-card input[type="text"], .upload-card input[type="file"], .saved-trips-controls select,
+  #startDate, #endDate { width: 100%; }
+  footer { font-size: 0.8em; }
+}

@@ -1,0 +1,147 @@
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #FDB543;
+  margin: 0; padding: 0;
+  color: #004d40;
+}
+
+.background { padding: 0; }
+
+.site-header {
+  background-color: #FDB543;
+  padding: 5px 20px;
+  display: flex; 
+  align-items: center; 
+}
+.header-inner { 
+  display: flex; 
+  align-items: center; 
+  width: 100%;
+  justify-content: space-between;
+}
+.logo-small { width: 210px; margin-right: 10px; }
+.site-title { font-size: 26px; color: #00AFAA; margin-right: auto; }
+.main-nav a {
+  margin: 0 12px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.95em;
+}
+.main-nav img {
+  width: 36px; height: 36px; margin-right: 8px;
+  transform: scale(1.3);
+  transform-origin: center center;
+}
+
+main { padding: 20px; }
+
+.profile-card {
+  background-color: #FFF9D9;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-card h2 {
+  margin-top: 0;
+}
+
+input[type="text"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #00AFAA;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+button:hover {
+  background-color: #007f7f;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9em;
+  background-color: transparent;
+}
+
+/* profile-style.css, at bottom */
+
+/* profile picture styling */
+.profile-picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  /* sit to the left of fields, with some breathing room */
+  margin-right: 12px;
+}
+
+/* tighten up paragraphs in profile-info */
+#profile-info p {
+  margin: 6px 0;
+}
+
+/* small buttons for edit/save/cancel */
+.small-btn {
+  font-size: 0.8em;
+  padding: 6px 10px;
+  margin-left: 0px;
+}
+
+/* field-group layout */
+.field-group {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  gap: 8px; 
+}
+
+.field-group label {
+  width: 140px;
+  font-weight: bold;
+}
+
+.field-group span,
+.field-group p {
+  flex: 0 1 auto;
+  margin: 0;
+}
+
+/* profile-picture + edit button wrapper */
+.field-group img.profile-picture {
+  margin: 0;
+}
+
+.profile-card .field-group img + .small-btn {
+  margin-left: 12px;
+}
+
+/* ========================= */
+/* Delete‐Account button styling */
+.actions {
+  margin-top: 20px;
+}
+.actions button {
+  background-color: #e53935;
+}
+.actions button:hover {
+  background-color: #c62828;
+}
+
+

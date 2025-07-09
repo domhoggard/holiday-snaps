@@ -1,0 +1,132 @@
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #FDB543;
+  margin: 0; padding: 0;
+  color: #004d40;
+}
+
+.background { padding: 0; }
+
+.site-header {
+  background-color: #FDB543;
+  padding: 5px 20px;
+  display: flex; 
+  align-items: center; 
+}
+.header-inner { display: flex; 
+               align-items: center; 
+               width: 100%;
+               justify-content: space-between;
+              }
+.logo-small { width: 210px; margin-right: 10px; }
+.site-title { font-size: 26px; color: #00AFAA; margin-right: auto; }
+.main-nav a {
+  margin: 0 12px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.95em;
+}
+.main-nav img { width: 36px; 
+               height: 36px; 
+               margin-right: 8px;
+               transform: scale(1.3);
+               transform-origin: center center;}
+
+main { padding: 20px; }
+
+.card {
+  background-color: #FFF9D9;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.card h2 { margin-top: 0; }
+
+/* --- Search box + save button --- */
+.search-box select,
+.search-box input[type="date"] {
+  width: calc(50% - 12px);
+  margin-right: 8px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+.search-box .date-range { margin-bottom: 10px; }
+.search-box button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #00AFAA;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-right: 8px;
+}
+.search-box button:hover { background-color: #007f7f; }
+
+/* --- Saved Trips list --- */
+#saved-trips {
+  list-style: none;
+  padding: 0;
+}
+#saved-trips li {
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#saved-trips li span {
+  flex: 1;
+}
+#saved-trips li button {
+  margin-left: 8px;
+  padding: 4px 8px;
+  font-size: 0.85em;
+}
+
+/* --- Upload box styles --- */
+.upload-box input,
+.upload-box select {
+  display: block;
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.upload-box button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #00AFAA;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+}
+.upload-box button:hover { background-color: #007f7f; }
+
+footer {
+  text-align: center; padding: 10px; font-size: 0.9em;
+  background-color: transparent;
+}
+
+/* ----------------------------------
+   RESPONSIVE / MOBILE
+---------------------------------- */
+@media (max-width: 600px) {
+  .site-header .header-inner { flex-direction: column; align-items: flex-start; }
+  .main-nav { flex-wrap: wrap; }
+  .main-nav a { margin: 8px 0; }
+  .preview-grid, .photo-gallery { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+  .photo-card { margin: 5px; }
+  .gallery-img { width: 100px; height: 100px; }
+  .upload-card, .profile-card { padding: 10px; margin: 10px 0; }
+  .upload-card input[type="text"], .upload-card input[type="file"], .saved-trips-controls select,
+  #startDate, #endDate { width: 100%; }
+  footer { font-size: 0.8em; }
+}
