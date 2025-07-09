@@ -1,3 +1,4 @@
+<!-- gallery.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +16,7 @@
           <a href="profile.html"><img src="icons/profile.png" alt="Profile"/>Profile</a>
           <a href="friends.html"><img src="icons/friends.png" alt="Friends Icon"/>Friends</a>
           <a href="trips.html"><img src="icons/trips.png" alt="Trips"/>Trips</a>
-           <a href="upload.html"><img src="icons/upload.png" alt="Upload Icon"/>Upload</a>
+          <a href="upload.html"><img src="icons/upload.png" alt="Upload Icon"/>Upload</a>
           <a href="#" onclick="logOut()"><img src="icons/logout.png" alt="Logout"/>Logout</a>
         </nav>
       </div>
@@ -42,10 +43,22 @@
         <button id="filterBtn">Filter</button>
       </section>
 
-      <!-- PHOTO GALLERY -->
+      <!-- YOUR PHOTOS -->
       <section class="profile-card">
-        <h2>Photo Gallery</h2>
-        <div id="photo-gallery" class="photo-gallery"></div>
+        <h2>Your Photos</h2>
+        <div id="your-photos" class="photo-gallery"></div>
+      </section>
+
+      <!-- FRIENDS' PHOTOS -->
+      <section class="profile-card">
+        <h2>Friends' Photos</h2>
+        <div id="friends-photos" class="photo-gallery"></div>
+      </section>
+
+      <!-- PUBLIC PHOTOS -->
+      <section class="profile-card">
+        <h2>Public Photos</h2>
+        <div id="public-photos" class="photo-gallery"></div>
       </section>
     </main>
 
@@ -65,7 +78,7 @@
       <button id="modal-next" class="modal-arrow right">
         <img src="icons/arrow-right.png" alt="Next">
       </button>
-      <!-- overlay controls will be injected here by JS -->
+      <!-- overlay controls injected by JS -->
     </div>
   </div>
 
