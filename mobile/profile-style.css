@@ -7,42 +7,24 @@ body {
   color: #004d40;
 }
 
-.background { padding: 0; }
-
 .site-header {
   background-color: #FDB543;
-  padding: 10px 16px;
+  padding: 10px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
 }
 
 .logo-small {
-  width: 140px;
-}
-
-.menu-toggle {
-  font-size: 28px;
-  background: none;
-  border: none;
-  color: #004d40;
-  cursor: pointer;
+  width: 160px;
+  margin-bottom: 10px;
 }
 
 .main-nav {
-  display: none;
-  flex-direction: column;
-  background: #FFF9D9;
-  position: absolute;
-  top: 60px;
-  right: 10px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  padding: 10px;
-}
-
-.main-nav.open {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
 }
 
 .main-nav a {
@@ -50,19 +32,19 @@ body {
   color: #333;
   font-weight: bold;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 10px;
-  font-size: 1em;
+  font-size: 0.85em;
 }
 
 .main-nav img {
-  width: 28px;
-  height: 28px;
-  margin-right: 8px;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
 }
 
 main {
-  padding: 16px;
+  padding: 12px;
 }
 
 .profile-card {
@@ -73,8 +55,8 @@ main {
 }
 
 .profile-card h2 {
-  margin-top: 0;
-  font-size: 1.4em;
+  font-size: 1.3em;
+  margin-bottom: 12px;
 }
 
 input[type="text"], button {
@@ -98,7 +80,7 @@ button:hover {
 footer {
   text-align: center;
   padding: 10px;
-  font-size: 0.9em;
+  font-size: 0.85em;
 }
 
 /* Profile picture */
@@ -110,7 +92,7 @@ footer {
   margin-bottom: 12px;
 }
 
-/* Field groups stack vertically */
+/* Stack field groups vertically */
 .field-group {
   display: flex;
   flex-direction: column;
@@ -137,3 +119,4 @@ footer {
 .actions button:hover {
   background-color: #c62828;
 }
+
