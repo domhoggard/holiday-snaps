@@ -184,3 +184,51 @@ main { padding: 20px; }
 .modal-arrow.left  { left: -24px; }
 .modal-arrow.right { right: -24px; }
 .modal-arrow img { width: 36px; height: 36px; }
+
+/* --- Mobile Navigation & Gallery Styles --- */
+@media (max-width: 600px) {
+  /* 1. Stack the header elements */
+  .header-inner {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
+
+  /* 2. Make the navigation a horizontal bar of icons */
+  .main-nav {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 15px;
+  }
+
+  /* 3. Hide the text, show only icons for a cleaner look */
+  .main-nav a {
+    font-size: 0; /* Effectively hides the text labels */
+    margin: 0;
+  }
+
+  .main-nav img {
+    width: 28px; /* Slightly larger icons for easy tapping */
+    height: 28px;
+  }
+
+  /* 4. Fix Gallery Filters (Date inputs usually go full-width on mobile) */
+  .profile-card input[type="date"], 
+  .saved-trips-controls select {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .profile-card button {
+    width: 100%;
+    padding: 12px;
+  }
+
+  /* 5. Modal Fix: Make arrows easier to hit on mobile */
+  .modal-arrow {
+    padding: 20px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+  }
+}
