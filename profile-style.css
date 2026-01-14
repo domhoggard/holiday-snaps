@@ -80,31 +80,25 @@ footer {
   background-color: transparent;
 }
 
-/* profile-style.css, at bottom */
-
 /* profile picture styling */
 .profile-picture {
   width: 150px;
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  /* sit to the left of fields, with some breathing room */
   margin-right: 12px;
 }
 
-/* tighten up paragraphs in profile-info */
 #profile-info p {
   margin: 6px 0;
 }
 
-/* small buttons for edit/save/cancel */
 .small-btn {
   font-size: 0.8em;
   padding: 6px 10px;
   margin-left: 0px;
 }
 
-/* field-group layout */
 .field-group {
   display: flex;
   align-items: center;
@@ -123,7 +117,6 @@ footer {
   margin: 0;
 }
 
-/* profile-picture + edit button wrapper */
 .field-group img.profile-picture {
   margin: 0;
 }
@@ -132,8 +125,6 @@ footer {
   margin-left: 12px;
 }
 
-/* ========================= */
-/* Delete‐Account button styling */
 .actions {
   margin-top: 20px;
 }
@@ -144,7 +135,7 @@ footer {
   background-color: #c62828;
 }
 
-/* --- Mobile Navigation & Gallery Styles --- */
+/* --- MOBILE RESPONSIVE STYLES --- */
 @media (max-width: 600px) {
   /* 1. Stack the header elements */
   .header-inner {
@@ -153,7 +144,7 @@ footer {
     padding: 10px;
   }
 
-  /* 2. Make the navigation a horizontal bar of icons */
+  /* 2. Mobile Icon Navigation */
   .main-nav {
     display: flex;
     justify-content: space-around;
@@ -161,35 +152,46 @@ footer {
     margin-top: 15px;
   }
 
-  /* 3. Hide the text, show only icons for a cleaner look */
   .main-nav a {
-    font-size: 0; /* Effectively hides the text labels */
+    font-size: 0; 
     margin: 0;
   }
 
   .main-nav img {
-    width: 28px; /* Slightly larger icons for easy tapping */
+    width: 28px;
     height: 28px;
   }
 
-  /* 4. Fix Gallery Filters (Date inputs usually go full-width on mobile) */
-  .profile-card input[type="date"], 
-  .saved-trips-controls select {
-    width: 100%;
-    margin-bottom: 10px;
+  /* 3. Stack Profile Fields Vertically */
+  .field-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-bottom: 15px;
   }
 
-  .profile-card button {
+  .field-group label {
     width: 100%;
-    padding: 12px;
+    font-size: 0.9em;
+    color: #007f7f;
   }
 
-  /* 5. Modal Fix: Make arrows easier to hit on mobile */
-  .modal-arrow {
-    padding: 20px;
-    background: rgba(0,0,0,0.3);
-    border-radius: 50%;
+  /* 4. Center Profile Picture */
+  .profile-picture {
+    margin: 0 auto 15px auto;
+    display: block;
+  }
+
+  /* 5. Full-width Buttons & Inputs */
+  button, .actions button, input[type="text"] {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1em;
+  }
+
+  .profile-card .field-group img + .small-btn {
+    margin-left: 0;
+    margin-top: 10px;
   }
 }
-
 
