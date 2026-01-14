@@ -128,3 +128,37 @@ header nav a {
   justify-content: center;    /* vertical centering */
   align-items: center;        /* horizontal centering */
 }
+
+/* --- Mobile Specific Styles --- */
+@media (max-width: 600px) {
+  /* 1. Make the Logo slightly smaller so it doesn't take up the whole screen */
+  .homepage-logo, .signup-logo, header .logo-large {
+    width: 180px;
+  }
+
+  /* 2. Adjust text sizes for smaller screens */
+  header h1 {
+    font-size: 1.5em;
+  }
+
+  /* 3. Give the form boxes more room (less side padding) */
+  .login-box, .auth-box {
+    padding: 15px;
+    width: 95%; /* Use almost the full width of the phone */
+  }
+
+  /* 4. Stack Navigation links vertically if they get too crowded */
+  header nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  /* 5. Increase button & input height for "fat fingers" (accessibility) */
+  .login-box input, .auth-box input, 
+  .login-box button, .auth-box button {
+    padding: 15px; 
+    font-size: 1.1em;
+  }
+}
