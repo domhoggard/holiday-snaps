@@ -3,25 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <!-- MOBILE REDIRECT (use matchMedia + relative path) -->
-  <script>
-    (function(){
-      // detect narrow viewports (≤600px)
-      const isSmall = window.matchMedia("(max-width: 600px)").matches;
-      // skip if already in /mobile/
-      if (isSmall && !location.pathname.includes("/mobile/")) {
-        // pull filename (fallback to index.html)
-        let file = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-        if (!file) file = "index.html";
-        // preserve query & hash
-        const qs = location.search + location.hash;
-        // redirect into mobile folder
-        location.replace("mobile/" + file + qs);
-      }
-    })();
-  </script>
-
   <title>HolidaySnaps – Home</title>
   <link rel="stylesheet" href="style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
